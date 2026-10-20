@@ -1,0 +1,208 @@
+name: Installationspakete bauen
+# Baut die Installationspakete aus dem (nicht oeffentlichen) Quelltext-Repo; Zugriff ueber einen Nur-Lese-Schluessel.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Stand im Quelltext-Repo (Tag oder Zweig)"
+        default: "main"
+
+jobs:
+  # RADE fuer Windows wie bei freedv-gui per Cross-Compiler unter Linux bauen (unter MSYS2 scheitert der Opus-Bau an Pfaden)
+  rade-win:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: djamplifier/rigvibe-src
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.SRC_DEPLOY_KEY }}
+      - name: Werkzeuge
+        run: sudo apt-get install -y -qq mingw-w64 autoconf automake libtool cmake >/dev/null
+      - name: librade.dll bauen
+        run: RADE_CROSS=mingw64 bash packaging/rade/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: librade-win
+          path: packaging/codec2/
+
+  build:
+    needs: rade-win
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+          - os: macos-latest        # Apple Silicon
+          - os: macos-15-intel      # Intel-Mac
+          - os: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: djamplifier/rigvibe-src
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.SRC_DEPLOY_KEY }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Python-Abhaengigkeiten
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Hamlib (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $v = "4.6.5"
+          Invoke-WebRequest "https://github.com/Hamlib/Hamlib/releases/download/$v/hamlib-w64-$v.zip" -OutFile hamlib.zip
+          Expand-Archive hamlib.zip -DestinationPath hl
+          Move-Item "hl/hamlib-w64-$v" packaging/hamlib
+      - name: Hamlib (macOS, mit Bibliotheken)
+        if: runner.os == 'macOS'
+        run: |
+          brew install hamlib dylibbundler
+          mkdir -p packaging/hamlib/bin packaging/hamlib/lib
+          for b in rigctl rigctld rotctl rotctld; do cp "$(brew --prefix hamlib)/bin/$b" packaging/hamlib/bin/; done
+          dylibbundler -of -b -x packaging/hamlib/bin/rigctld -x packaging/hamlib/bin/rotctld -x packaging/hamlib/bin/rigctl -x packaging/hamlib/bin/rotctl -d packaging/hamlib/lib -p @executable_path/../lib/
+      - name: Hamlib (Linux, selbst gebaut)
+        if: runner.os == 'Linux'
+        # Ubuntu 22.04 liefert Hamlib 4.3 – zu alt fuer den Icom-Panadapter (async/multicast_data_*); daher 4.6.5 aus den Quellen,
+        # ohne libusb/readline, damit das AppImage auch auf schlanken Systemen (z. B. NixOS) laeuft
+        run: |
+          v=4.6.5
+          curl -sSL "https://github.com/Hamlib/Hamlib/releases/download/$v/hamlib-$v.tar.gz" | tar xz
+          cd hamlib-$v && ./configure --prefix="$RUNNER_TEMP/hl" --disable-static --without-cxx-binding --without-libusb --without-readline --without-xml-support >/dev/null && make -j4 >/dev/null && make install >/dev/null && cd ..
+          mkdir -p packaging/hamlib/bin packaging/hamlib/lib
+          for b in rigctl rigctld rotctl rotctld; do cp "$RUNNER_TEMP/hl/bin/$b" packaging/hamlib/bin/; done
+          cp -L "$RUNNER_TEMP"/hl/lib/libhamlib.so.4 packaging/hamlib/lib/
+          LD_LIBRARY_PATH=packaging/hamlib/lib packaging/hamlib/bin/rigctld --version
+
+      - name: codec2 fuer FreeDV (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-codec2 mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc make autoconf automake libtool git unzip patch gettext-devel pkgconf
+      - name: codec2 kopieren (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          mkdir -p packaging/codec2
+          cp /mingw64/bin/libcodec2*.dll packaging/codec2/libcodec2.dll
+          for d in libgcc_s_seh-1.dll libwinpthread-1.dll libstdc++-6.dll; do [ -f /mingw64/bin/$d ] && cp /mingw64/bin/$d packaging/codec2/ || true; done
+          ls -la packaging/codec2
+      - name: codec2 fuer FreeDV (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install codec2
+          mkdir -p packaging/codec2
+          cp -L "$(brew --prefix codec2)/lib/libcodec2.dylib" packaging/codec2/libcodec2.dylib
+      - name: codec2 fuer FreeDV (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y libcodec2-1.0 || sudo apt-get install -y libcodec2-0.9
+          mkdir -p packaging/codec2
+          cp -L $(ls /usr/lib/x86_64-linux-gnu/libcodec2.so.* | head -1) packaging/codec2/libcodec2.so
+
+      - name: RADE fuer FreeDV (Windows, aus dem Linux-Cross-Bau)
+        if: runner.os == 'Windows'
+        uses: actions/download-artifact@v4
+        with:
+          name: librade-win
+          path: packaging/codec2
+      - name: RADE fuer FreeDV (macOS/Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = macOS ]; then brew install autoconf automake libtool >/dev/null; else sudo apt-get install -y -qq autoconf automake libtool >/dev/null; fi
+          bash packaging/rade/build.sh
+
+      - name: SDR-Bibliotheken (RTL-SDR, HackRF direkt per USB)
+        shell: bash
+        run: .github/scripts/sdrlibs.sh
+
+      - name: Add MSBuild to PATH
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v2
+      - name: WinUSB-Treiberhelfer (libwdi, statt Zadig)
+        if: runner.os == 'Windows'
+        shell: cmd
+        env:
+          WDI_MACROS: '"WDK_DIR=\"../wdk/Windows Kits/8.0\""'
+        run: |
+          cd %RUNNER_TEMP%
+          git clone -q --depth 1 -b v1.5.1 https://github.com/pbatard/libwdi.git
+          cd libwdi
+          curl -sSL https://go.microsoft.com/fwlink/p/?LinkID=253170 -o wdk-redist.msi
+          start /wait msiexec /a wdk-redist.msi /qn TARGETDIR=%CD%\wdk
+          python %GITHUB_WORKSPACE%\.github\scripts\libwdi-patch.py || exit /b 1
+          for %%P in (Win32 x64) do msbuild libwdi.sln /m /v:m /p:Configuration=Release,Platform=%%P,BuildMacros=${{ env.WDI_MACROS }} || exit /b 1
+          copy x64\Release\examples\wdi-simple.exe %GITHUB_WORKSPACE%\packaging\sdrlibs\ || exit /b 1
+          %GITHUB_WORKSPACE%\packaging\sdrlibs\wdi-simple.exe --vid 0x0BDA --pid 0x2838 --iid 0 --type 0 --name "RTL-SDR" --extract --dest %RUNNER_TEMP%\wdi-test || exit /b 1
+          dir %RUNNER_TEMP%\wdi-test
+      - name: JavaScript verkleinern (kein lesbarer Quelltext im Paket)
+        shell: bash
+        run: |
+          npm i --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/terser" terser@5.31.6
+          T="$RUNNER_TEMP/terser/node_modules/terser/bin/terser"
+          for f in static/js/*.js static/m/m.js desktop/main.js desktop/preload.js desktop/updater.js; do
+            node "$T" "$f" --compress --mangle --comments false -o "$f.min" && mv "$f.min" "$f"
+          done
+      - name: Dienst bauen (PyInstaller)
+        run: python packaging/build.py
+      - name: Dienst-Selbsttest
+        shell: bash
+        env:
+          WW_PRESENCE_URL: ""        # Testlauf nicht als Nutzer zaehlen
+          WW_REPORT_URL: ""
+        run: |
+          exe=dist/RigVibe/RigVibe; [ "$RUNNER_OS" = Windows ] && exe=$exe.exe
+          "$exe" --port 8099 --no-browser --data "$RUNNER_TEMP/wwdata" &
+          for i in $(seq 1 40); do curl -sf http://127.0.0.1:8099/api/state > /dev/null && break; sleep 2; done
+          curl -sf http://127.0.0.1:8099/api/hamlib/models -o "$RUNNER_TEMP/models.json"; head -c 200 "$RUNNER_TEMP/models.json"; echo
+          curl -sf http://127.0.0.1:8099/api/radios | grep -q '"connected":true'
+          curl -sf http://127.0.0.1:8099/api/freedv; echo
+          curl -sf http://127.0.0.1:8099/api/freedv | grep -q '"available":true'
+          curl -sf http://127.0.0.1:8099/api/freedv | grep -q '"rade":true'
+          curl -sf http://127.0.0.1:8099/api/sdr/usb; echo
+          curl -sf http://127.0.0.1:8099/api/sdr/usb | grep -q '"rtlsdr":true,"hackrf":true,"iio":true'
+          curl -sf http://127.0.0.1:8099/api/sdr/usb | grep -q '"rtl433":"rtl_433 version'
+          if [ "$RUNNER_OS" = Windows ]; then   # WinUSB-Treiber ohne Zadig: Helfer dabei und Einrichtung laeuft (CI hat Adminrechte, keine Nachfrage)
+            curl -sf http://127.0.0.1:8099/api/sdr/usb | grep -q '"wdi":true'
+            r=$(curl -s -m 300 -X POST -H 'content-type: application/json' -d '{"kind":"rtlusb"}' http://127.0.0.1:8099/api/sdr/usbdriver); echo "Treiber: $r"
+            echo "$r" | grep -q '"ok":true'
+          fi
+          curl -sf http://127.0.0.1:8099/api/mesh/selftest; echo
+          curl -sf http://127.0.0.1:8099/api/mesh/selftest | grep -q '"ok":true'
+          # HTTPS aus der gepackten Fassung (Zertifikate): Kartenkachel ueber den Server-Proxy
+          ok=; for i in 1 2 3; do ct=$(curl -s -o /dev/null -w '%{content_type}' http://127.0.0.1:8099/api/tile/2/2/1.png); echo "Kachel: $ct"; case "$ct" in image/*) ok=1; break;; esac; sleep 5; done; [ -n "$ok" ]
+          npm i --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/ui" puppeteer-core@23.11.1
+          node .github/scripts/ui-selbsttest.cjs
+
+      - name: Desktop-Programm bauen
+        working-directory: desktop
+        shell: bash
+        run: |
+          npm ci || npm install
+          npx electron-builder --publish never
+      - name: Linux-Server-Paket (fertig uebersetzter Dienst fuer systemd, Selbstaktualisierung)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          V=$(dist/RigVibe/RigVibe --version | awk '{print $2}'); echo "Version $V"; [ -n "$V" ]
+          tar -C dist -czf "desktop/dist/RigVibe-$V-Linux-Server.tar.gz" RigVibe
+          ls -la desktop/dist/*Server*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RigVibe-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            desktop/dist/*.exe
+            desktop/dist/*.dmg
+            desktop/dist/*.AppImage
+            desktop/dist/*.deb
+            desktop/dist/*-Linux-Server.tar.gz

@@ -1,0 +1,47 @@
+RigVibe – Lizenzbedingungen / License terms
+Copyright (C) 2026 Marcus Adena, DM5MN. Alle Rechte vorbehalten. All rights reserved.
+
+DEUTSCH
+
+1. Gegenstand. Diese Bedingungen gelten für das Programm RigVibe ab Version 1.4.6 (Desktop-Programm, Dienst,
+   Handy-Ansicht, Firmware-Dateien und Dokumentation, soweit sie vom Rechteinhaber stammen). Versionen bis
+   einschließlich 1.4.5 wurden unter der GNU General Public License 3 veröffentlicht; für diese Versionen gilt
+   weiterhin die GPL.
+
+2. Nutzung. Der Rechteinhaber erlaubt jeder natürlichen Person, RigVibe für private Zwecke und für den Amateurfunk
+   kostenlos zu installieren und zu nutzen, auf beliebig vielen eigenen Geräten. Ein Anspruch darauf, dass die
+   Nutzung künftig kostenlos bleibt, besteht nicht; Änderungen werden rechtzeitig angekündigt.
+
+3. Nicht erlaubt sind – soweit nicht gesetzlich ausdrücklich gestattet (insbesondere §§ 69d, 69e UrhG) –
+   a) das Programm oder Teile davon zu verändern, zu übersetzen, zu dekompilieren oder zurückzuentwickeln,
+   b) das Programm weiterzugeben, zu verkaufen, zu vermieten oder auf anderen Seiten zum Herunterladen anzubieten;
+      auf die offizielle Download-Seite darf gern verwiesen werden,
+   c) Lizenz- und Schutzhinweise zu entfernen.
+
+4. Haftung. Da RigVibe unentgeltlich überlassen wird, haftet der Rechteinhaber nur für Vorsatz und grobe
+   Fahrlässigkeit sowie bei arglistig verschwiegenen Mängeln; die Haftung nach dem Produkthaftungsgesetz bleibt
+   unberührt. Für die Einhaltung der Amateurfunk-Vorschriften (Frequenzen, Leistung, Betriebsarten) ist die
+   bedienende Person verantwortlich – das gilt besonders für die Steuerung von Sendern und Rotoren.
+
+5. Fremdkomponenten. Mitgelieferte Programme und Bibliotheken Dritter (z. B. Hamlib, rtl_tcp, rtl_433) stehen unter
+   ihren eigenen Lizenzen; sie sind in LIZENZEN.md aufgeführt. Diese Bedingungen schränken die Rechte aus jenen
+   Lizenzen nicht ein.
+
+6. Es gilt deutsches Recht.
+
+ENGLISH (convenience translation; the German text prevails)
+
+1. Scope. These terms apply to RigVibe from version 1.4.6 on. Versions up to and including 1.4.5 were released under
+   the GNU General Public License 3 and remain under the GPL.
+2. Use. Any natural person may install and use RigVibe free of charge for private purposes and amateur radio, on any
+   number of own devices. There is no entitlement that use remains free of charge in the future; changes will be
+   announced in good time.
+3. Unless expressly permitted by law, you may not modify, translate, decompile or reverse engineer the program,
+   redistribute, sell, rent or offer it for download elsewhere (linking to the official download page is welcome),
+   or remove licence or copyright notices.
+4. Liability. As RigVibe is provided free of charge, liability is limited to intent and gross negligence and to
+   fraudulently concealed defects; liability under product liability law is not affected. The operator is
+   responsible for complying with amateur radio regulations.
+5. Third-party components bundled with RigVibe (e.g. Hamlib, rtl_tcp, rtl_433) are subject to their own licences,
+   listed in LIZENZEN.md. These terms do not restrict any rights under those licences.
+6. German law applies.
