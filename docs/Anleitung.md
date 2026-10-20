@@ -2,7 +2,7 @@
 
 RigVibe ist ein Programm für die Funkstation: Funkgerät steuern, Logbuch führen, Digitalbetrieb (PSK, RTTY, Olivia, MT63, SSTV und mehr), Winlink-E-Mail über Funk, Satelliten, Rotor und Karten – alles in einem Fenster.
 
-> **Lizenz und Haftung:** RigVibe ist freie Software unter der GNU General Public License 3 und wird **ohne jede Gewährleistung** bereitgestellt. Die Nutzung – insbesondere die Steuerung von Sendern, Funkgeräten und Rotoren – erfolgt auf eigene Verantwortung. Für die Einhaltung der Amateurfunk-Vorschriften ist die bedienende Person verantwortlich. Einzelheiten und alle Fremdlizenzen: [LIZENZEN.md](../LIZENZEN.md) bzw. im Programm unter **Hilfe → Lizenzen und Fremdkomponenten**.
+> **Lizenz und Haftung:** RigVibe ist kostenlos nutzbar, alle Rechte vorbehalten (Lizenzbedingungen in der Datei LICENSE bzw. im Programm unter **Hilfe → Lizenzen und Fremdkomponenten**). Für die Steuerung von Sendern, Funkgeräten und Rotoren ist die bedienende Person verantwortlich. Für die Einhaltung der Amateurfunk-Vorschriften ist die bedienende Person verantwortlich. Einzelheiten und alle Fremdlizenzen: [LIZENZEN.md](../LIZENZEN.md) bzw. im Programm unter **Hilfe → Lizenzen und Fremdkomponenten**.
 
 **Inhalt**
 1. [Installation](#1-installation)
@@ -161,9 +161,11 @@ RigVibe und Funkgerät arbeiten wie ein Gerät: Die eigene Bedienlogik des Funkg
 
 #### Ton
 
-Über ein Interface (Digirig, AIOC) oder ein APRS-Kabel an einer USB-Soundkarte; im Digitalbetrieb diese Soundkarte wählen (wird für das Gerät gespeichert). Den Ausgangspegel der Soundkarte fürs Senden sehr niedrig stellen (etwa 2 %), sonst verzerrt das Funkgerät.
+Über ein Interface (Digirig, AIOC) oder ein APRS-Kabel an einer USB-Soundkarte; im Digitalbetrieb diese Soundkarte wählen (wird für das Gerät gespeichert). Der Mikrofoneingang ist sehr empfindlich: Unter **Funkgerät → Verbinden** steht deshalb der **Sendepegel zur Soundkarte** für Quansheng auf **4 %** (bei voll aufgedrehter Soundkarte). Gemessen mit USB-Soundkarte und zwei Übertragern: APRS kommt mit 2–8 % sauber an, ab etwa 15 % begrenzt das Funkgerät und es verzerrt. Andere Soundkarten brauchen eventuell einen anderen Wert – mit **Tune** im Digitalbetrieb prüfen.
 
 **Wichtig bei USB-C und Soundkarte am selben Rechner:** Der Lautsprecherausgang des Funkgeräts ist nicht massebezogen. Hängen Funkgerät und Soundkarte beide am Rechner, schließt die gemeinsame Masse ihn kurz – an der Soundkarte kommt dann nur Knacken an, kein Ton. Abhilfe: je ein **Massetrennfilter (Übertrager, „Ground Loop Isolator“) in der Lautsprecher- und in der Mikrofonleitung**. Ohne USB-C-Verbindung (nur Akku) tritt das nicht auf.
+
+**Soundkarte nicht gefunden:** Browser vergeben der Soundkarte je Profil eine eigene Kennung. RigVibe merkt sich deshalb auch ihren Namen und findet sie darüber wieder. Ist die Karte wirklich nicht angeschlossen, sendet RigVibe nicht (kein stummer Träger) und meldet „Soundkarte … nicht gefunden“.
 
 - Ein verbundenes SDR (HackRF, OpenWebRX …) kann dem Handfunkgerät als **Panadapter** folgen (siehe unten).
 
@@ -452,6 +454,12 @@ Die rote Taste **Aufnahme** in der Werkzeugleiste der Gerätesteuerung nimmt den
 
 ![Rekorder in der Gerätesteuerung](bilder/50-rekorder.png)
 
+### Baken-Monitor (NCDXF/IARU)
+
+**Ansicht → Baken-Monitor** zeigt die 18 Baken des internationalen Bakenprojekts, die reihum je 10 Sekunden auf 14,100 / 18,110 / 21,150 / 24,930 und 28,200 MHz senden. **Start** stimmt das Gerät auf das gewählte Bakenband in CW ab; die Zeile der gerade sendenden Bake ist umrandet. RigVibe misst jede Aussendung im empfangenen Ton (wie beim Rekorder: Empfänger direkt oder Soundkarten-Eingang): **grün** = gehört mit Signal-Rausch-Abstand in dB, die **Punkte** zeigen, bis zu welcher Leistungsstufe die Bake hörbar war (100 W · 10 W · 1 W · 0,1 W). Mit **alle Bänder nacheinander** wechselt RigVibe nach jedem 3-Minuten-Zyklus aufs nächste Band – so entsteht ein Bild der aktuellen Ausbreitung. Die Rechneruhr muss stimmen.
+
+![Baken-Monitor](bilder/51-baken.png)
+
 ### Sprachspeicher (CQ-Ruf automatisch)
 
 ![Sprachspeicher](bilder/35-sprachspeicher.png)
@@ -561,6 +569,23 @@ Die Werkzeugleiste des Logbuchs: **Logbücher · Neuer Eintrag**, **DX-Cluster �
 
 **Mehrere Logbücher:** **Mehr … → Logbuch-Verwaltung**: anlegen, umbenennen, sichern, wiederherstellen. QSOs lassen sich per Ausschneiden/Kopieren und Einfügen zwischen Logbüchern verschieben.
 
+**Papierlog nachtragen** (**Mehr …** bzw. **Datei → Papierlog nachtragen**): alte Logbuchseiten schnell abtippen – je Zeile ein QSO. Datum, Band, Betriebsart und Rapport werden aus der Zeile darüber übernommen, die Zeit genügt als „1405“ oder nur als Minuten („12“ = gleiche Stunde wie darüber). Enter springt ins nächste Feld, am Zeilenende in eine neue Zeile. Land und „neues Land“ erscheinen sofort, doppelte QSOs werden markiert und nicht gespeichert.
+
+![Papierlog nachtragen](bilder/52-papierlog.png)
+
+**Hot-Ordner** (**F8 → Programme & Sicherung**): ADIF-Dateien, die in diesem Ordner landen – z. B. von einem anderen Programm oder über einen Cloud-Ordner vom Handy –, kommen automatisch ins aktive Logbuch; doppelte QSOs werden übersprungen, die Datei wandert danach in den Unterordner „importiert“.
+
+**Zwei Installationen abgleichen** (z. B. Shack-PC und Laptop; **F8 → Programme & Sicherung**): Adresse der anderen RigVibe-Installation eintragen (im eigenen Netz oder über Tailscale, dort unter **Zugang & API** fürs Netz freigeben) und **Jetzt abgleichen** – oder **alle 15 Minuten automatisch**. Fehlende QSOs werden in beide Richtungen übernommen, QSL-Vermerke zusammengeführt (bestätigt gewinnt). Gelöscht wird beim Abgleich nie; abgeglichen wird nur mit einer Installation desselben Rufzeichens.
+
+**QSL-Karten** (**Mehr …**, **Datei** oder Bereich **QSL & Online**):
+
+- **QSL-Karte gestalten:** Hintergrundbild oder Farbverlauf, großes Rufzeichen, eigene Textzeilen mit Platzhaltern (`<NAME>`, `<QTH>`, `<LOC>`, `<COUNTRY>`, `<CQZ>`, `<ITU>`), Feld mit bis zu drei QSOs und „via Büro/direkt“. Auf Wunsch druckt RigVibe einen **QR-Code** mit den QSO-Daten (ADIF) auf die Karte.
+- **Per E-Mail senden (Auswahl):** je Gegenstation eine Karte als Bild, dazu die QSO-Daten als ADIF-Datei; die Adresse kommt aus dem Logbuch oder Callbook. Gesendete QSOs werden als „QSL gesendet (E-Mail)“ markiert. Nötig ist ein E-Mail-Konto unter **F8 → Fehler & Updates → SMTP-Server**. Bemerkungen und andere private Felder werden nie mitgeschickt.
+- **Drucken (Auswahl):** Karten im Format 14 × 9 cm.
+- **Karte einlesen (QR-Code):** QR-Code einer eingegangenen Karte vor die Kamera halten oder ein Foto wählen – RigVibe sucht die QSOs im Logbuch und markiert sie als bestätigt (Büro, direkt oder E-Mail). Gelesen werden QR-Codes mit QSO-Daten im ADIF-Format, z. B. von RigVibe-Karten.
+
+![QSL-Karte gestalten](bilder/53-qslkarte.png)
+
 **Import/Export:** **Mehr … → ADIF importieren/exportieren**, Cabrillo-Export, Logbuch drucken, QSL-Etiketten drucken.
 
 **Contest-Modus:** Taste **Contest** öffnet die Einstellungen: **Contest-Name** (wird als Contest-ID in jedes QSO geschrieben), **Wertung** und nächste **laufende Nummer**.
@@ -576,6 +601,7 @@ Die Werkzeugleiste des Logbuchs: **Logbücher · Neuer Eintrag**, **DX-Cluster �
 ![Contest-Punktestand](bilder/45-contest-punktestand.png)
 
 - **Cabrillo-Export** (**Mehr … → Cabrillo**): nur die QSOs dieses Contests, mit Kategorie (Betrieb, Band, Betriebsart, Leistung) und auf Wunsch der eigenen Punktzahl (CLAIMED-SCORE).
+- **EDI-Export** (**Mehr … → EDI-Export (UKW-Contest)**): EDI-Datei (REG1TEST) für UKW-Contests nach IARU Region 1, z. B. den DARC-UKW-Contest – je Band eine Datei, Punkte = Entfernung in km, neue Großfelder und doppelte QSOs markiert, Summen und ODX im Kopf.
 
 **Diplome:** **Diplome** zeigt DXCC, DXCC-Challenge, WAZ, WAS, WAC, WPX, ITU-Zonen, Europa, DOK, IOTA, VUCC-Locatorfelder, US-Counties und den CQ DX Marathon – wahlweise gearbeitet oder bestätigt.
 
@@ -600,9 +626,21 @@ Die Werkzeugleiste des Logbuchs: **Logbücher · Neuer Eintrag**, **DX-Cluster �
 
 ![Club-Anzeigetafel](bilder/48-club.png)
 
+### Für deutsche Stationen
+
+Diese Funktionen erscheinen nur, wenn das eigene Rufzeichen deutsch ist (**F8 → Station**); DARC-Funktionen nur mit dem Haken **DARC-Mitglied**.
+
+- **Ausbildungsfunkbetrieb (§ 12 AFuV):** In den **Stationsprofilen** ein Profil mit dem Ausbildungsrufzeichen als Rufzeichen und dem eigenen Rufzeichen als **Ausbilder** anlegen und aktivieren. Der Eintrag fragt dann nach der/dem **Auszubildenden**. **Mehr … → Ausbildungsnachweis drucken** erstellt je Auszubildendem eine Liste aller Verbindungen mit Ausbildungsrufzeichen, Ausbilder, Zeitraum und Unterschriftszeilen.
+- **Rufzeichenliste der Bundesnetzagentur** als Callbook-Ersatz (siehe [Online-Dienste](#9-online-dienste)).
+- **Prüfungstrainer** (**Werkzeuge → Prüfungstrainer**): alle 1750 Fragen der Bundesnetzagentur für die Klassen N, E und A (3. Auflage, März 2024; wird beim ersten Öffnen direkt bei der BNetzA geladen). **Üben** fragt nach Klasse, Prüfungsteil und Kapitel und merkt sich, was sicher sitzt – unsichere Fragen kommen öfter. Der **Übungsbogen** stellt 25 zufällige Fragen je Prüfungsteil und zeigt am Ende Ergebnis und Lösungen. Tasten 1–4 bzw. A–D wählen die Antwort, Enter geht weiter.
+- **Amateurfunk-Lexikon** (**Werkzeuge**, bei deutscher Oberfläche): Q-Gruppen, Abkürzungen und Begriffe mit Suche.
+
+![Prüfungstrainer](bilder/54-pruefungstrainer.png)
+
 ## 8. DX-Cluster, Alarme und WSJT-X
 
 - **DX-Cluster:** Server in den Optionen eintragen. Spots werden markiert: **rot = neues Land**, **orange = neues Band**, grau = schon gearbeitet. Klick stimmt Funkgerät und Betriebsart ab. **Alarme** meldet neue Länder/Bänder oder bestimmte Rufzeichen (mit Ton). **Spot** sendet einen eigenen Spot.
+- **Filter und Alarme:** **nur DX** blendet Stationen vom eigenen Kontinent aus. Unter **Alarme** gibt es eine **Ausschlussliste** (Wörter oder Rufzeichen im Rufzeichen, Kommentar oder Spotter, `*` am Ende = Anfang, z. B. `SKIMMER*`) – solche Spots erscheinen nicht und lösen keinen Alarm aus. Läuft ein Contest, meldet **Spot wäre ein neuer Multiplikator** jede Station, die dir einen neuen Multiplikator bringen würde.
 - **WSJT-X / JTDX:** In WSJT-X unter *Einstellungen → Berichte* „UDP-Server“ auf `127.0.0.1` und Port `2237` stellen, Haken bei „Akzeptiere UDP-Anfragen“. Geloggte QSOs landen automatisch im Logbuch. Das Fenster **Spot-Alarm (FT8)** zeigt alle Decodes mit Land und Status; **Doppelklick** ruft die Station in WSJT-X an, **TX stopp** beendet das Senden.
 - **Was fehlt mir?** (**Ansicht → Was fehlt mir?**): Stationen aus DX-Cluster und WSJT-X, geordnet danach, was sie deinem Log bringen – **neues Land**, Land neu auf dem Band oder in der Betriebsartengruppe (CW, Sprache, Digital), **neue CQ-Zone**, auf UKW **neues Locatorfeld**. Je mehr, desto höher der Wert. Klick stimmt auf einen Cluster-Spot ab bzw. lässt WSJT-X die Station anrufen. Auf Wunsch eine **Desktop-Benachrichtigung** bei neuem Land oder allem Neuen. Nach dem Loggen fällt die Station heraus.
 
@@ -619,6 +657,7 @@ Die Werkzeugleiste des Logbuchs: **Logbücher · Neuer Eintrag**, **DX-Cluster �
 In den Optionen unter **Online-Dienste**:
 
 - **Callbook:** HamQTH (kostenlos) und/oder QRZ.com (XML-Abo) – liefern Name, QTH, Locator, Foto beim Tippen des Rufzeichens.
+- **Rufzeichenliste der Bundesnetzagentur** (nur bei deutschem Rufzeichen): Name, Ort und Klasse deutscher Stationen auch ohne Callbook-Zugang. RigVibe lädt die Liste monatlich direkt bei der BNetzA (rund 10 MB) und füllt beim Tippen Name und QTH; mit HamQTH/QRZ.com ergänzt sie fehlende Angaben. Abschaltbar unter **Online-Dienste**.
 - **QRZ.com-Logbuch:** API-Schlüssel aus dem QRZ-Logbuch.
 - **eQSL:** Benutzername und Passwort.
 - **LoTW:** Zugangsdaten für den Abgleich und das **.p12-Zertifikat** (aus TQSL exportieren) mit Passwort für den Upload.
@@ -630,9 +669,9 @@ Neue QSOs können automatisch hochgeladen werden (Haken „Neue QSOs sofort …�
 
 ![Digitalbetrieb](bilder/10-digitalbetrieb.png)
 
-**Einrichten:** Funkgerät-Audio mit dem Rechner verbinden (USB-Soundkarte im Funkgerät oder Interface). Im **Wasserfall** den **Eingang** wählen und **Empfang** einschalten, im Fenster **Senden** den **Ausgang** und den **Pegel** (so einstellen, dass die ALC des Funkgeräts nicht ausschlägt). Funkgerät auf USB bzw. die Daten-Betriebsart (USB-D/PKTUSB) stellen.
+**Einrichten:** Funkgerät-Audio mit dem Rechner verbinden (USB-Soundkarte im Funkgerät oder Interface). Im **Wasserfall** den **Eingang** wählen und **Empfang** einschalten, im Fenster **Senden** den **Ausgang** und den **Pegel** (so einstellen, dass die ALC des Funkgeräts nicht ausschlägt). Der Pegel ist fein abgestuft (1 % … 100 %, kleine Werte in feinen Schritten) und wird beim Funkgerät gespeichert – er gilt damit auch in anderen Browsern und am Handy. Eintragen lässt er sich auch unter **Funkgerät → Verbinden → Sendepegel zur Soundkarte** (Komma erlaubt, leer = Voreinstellung: 50 %, Quansheng 4 %). Er gilt für Digitalbetrieb, APRS/Packet, SSTV und Funkruf. Funkgerät auf USB bzw. die Daten-Betriebsart (USB-D/PKTUSB) stellen.
 
-**Je Gerät getrennt:** Eingang, Ausgang, Sendepegel, Pegelautomatik und die Sendeverzögerung für Packet merkt sich RigVibe für jedes Gerät einzeln. Wechselst du z. B. vom Kurzwellengerät zum Handfunkgerät, schaltet der Digitalbetrieb auf dessen Soundkarte um. **Pegel auto** (neben der Pegelanzeige) gleicht den Eingang automatisch aus – praktisch bei Handfunkgeräten, deren Lautstärkeregler jedes Mal anders steht; daneben steht die aktuelle Verstärkung. Geschlossene Rauschsperre (Stille) wird nicht hochgezogen. Übersteuert schon die Soundkarte, meldet RigVibe „Eingang übersteuert“ – dann die Lautstärke am Funkgerät zurückdrehen.
+**Je Gerät getrennt:** Eingang, Ausgang, Sendepegel (in der Gerätekonfiguration), Pegelautomatik und die Sendeverzögerung für Packet merkt sich RigVibe für jedes Gerät einzeln. Wechselst du z. B. vom Kurzwellengerät zum Handfunkgerät, schaltet der Digitalbetrieb auf dessen Soundkarte um. **Pegel auto** (neben der Pegelanzeige) gleicht den Eingang automatisch aus – praktisch bei Handfunkgeräten, deren Lautstärkeregler jedes Mal anders steht; daneben steht die aktuelle Verstärkung. Geschlossene Rauschsperre (Stille) wird nicht hochgezogen. Übersteuert schon die Soundkarte, meldet RigVibe „Eingang übersteuert“ – dann die Lautstärke am Funkgerät zurückdrehen.
 
 **Betriebsarten** (Auswahl oben links im Wasserfall oder Menü **Betriebsart**):
 
@@ -706,7 +745,8 @@ Mit einem sendefähigen SDR (ADALM-Pluto, HackRF One, Hermes Lite 2, Parameter `
 
 **SSTV-Fenster** über die Werkzeugleiste (**SSTV**) oder das Menü **SSTV**.
 
-- **Empfang** einschalten. Der Modus wird am Bildanfang (VIS-Kennung) automatisch erkannt; Schräglauf durch ungenaue Soundkarten wird ausgeglichen. Läuft ein Bild schon, Modus wählen und **Jetzt starten**.
+- **Empfang** einschalten. Der Modus wird am Bildanfang (VIS-Kennung) automatisch erkannt; Schräglauf durch ungenaue Soundkarten wird ausgeglichen.
+- **Einstieg mitten im Bild:** Läuft ein Bild schon, wenn du einschaltest oder auf die Frequenz gehst, erkennt RigVibe den Modus nach wenigen Zeilen am Zeilentakt (Martin M1 nach etwa 3 Sekunden) und dekodiert ab dort. Das Bild heißt dann **Teilbild** und endet, sobald nur noch Rauschen kommt. Auch eine schwache VIS-Kennung, die nicht gelesen werden konnte, schadet so nicht mehr. Von Hand geht es weiterhin: Modus wählen und **Jetzt starten**.
 - Empfangene Bilder werden automatisch in **SSTV-Bilder** (Galerie) gespeichert.
 - 18 Modi: Martin M1/M2, Scottie S1/S2/DX, Robot 36/72, PD 50/90/120/160/180/240/290, Wraase SC2-180, Pasokon P3/P5/P7.
 

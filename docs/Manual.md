@@ -4,7 +4,7 @@ RigVibe is a program for the radio station: radio control, logbook, digital mode
 
 *Deutsche Anleitung: [Anleitung.md](Anleitung.md)*
 
-> **License and liability:** RigVibe is free software under the GNU General Public License 3 and is provided **without any warranty**. Use – especially controlling transmitters, radios and rotators – is at your own risk. The operator is responsible for complying with amateur radio regulations. Details and all third-party licenses: [LIZENZEN.md](../LIZENZEN.md) or in the program under **Help → Licenses and third-party components**.
+> **License and liability:** RigVibe is free of charge, all rights reserved (licence terms in the file LICENSE or in the program under **Help → Licenses and third-party components**). The operator is responsible for controlling transmitters, radios and rotators. The operator is responsible for complying with amateur radio regulations. Details and all third-party licenses: [LIZENZEN.md](../LIZENZEN.md) or in the program under **Help → Licenses and third-party components**.
 
 **Language:** RigVibe shows its interface in German or English. Switch under **Options (F8) → Appearance → Sprache / Language**. A new browser follows the language of the station until a language is chosen there.
 
@@ -167,9 +167,11 @@ RigVibe and the radio work as one device: the radio's own operating logic rests,
 
 #### Audio
 
-Via an interface (Digirig, AIOC) or an APRS cable on a USB sound card; select that sound card in digital mode (remembered per device). Set the sound card's output level for transmitting very low (about 2 %), otherwise the radio distorts.
+Via an interface (Digirig, AIOC) or an APRS cable on a USB sound card; select that sound card in digital mode (remembered per device). The microphone input is very sensitive, so under **Radio → Connect** the **transmit level to the sound card** defaults to **4 %** for Quansheng (sound card turned fully up). Measured with a USB sound card and two isolation transformers: APRS decodes cleanly at 2–8 %; from about 15 % the radio limits and distorts. Other sound cards may need a different value – check with **Tune** in digital mode.
 
 **Important with USB-C and a sound card on the same computer:** the radio's speaker output is not ground-referenced. If both the radio and the sound card are connected to the computer, the common ground shorts it – the sound card then only gets clicks, no audio. Remedy: one **ground loop isolator (transformer) each in the speaker and in the microphone line**. Without the USB-C connection (battery only) this does not happen.
+
+**Sound card not found:** browsers give the sound card a separate ID per profile, so RigVibe also remembers its name and finds it again that way. If the card really is not connected, RigVibe does not transmit (no silent carrier) and reports “sound card … not found”.
 
 - A connected SDR (HackRF, OpenWebRX …) can follow the handheld as a **panadapter** (see below).
 
@@ -458,6 +460,12 @@ The red **Record** button in the toolbar of Radio control records the **received
 
 ![Recorder in Radio control](bilder/50-rekorder.png)
 
+### Beacon monitor (NCDXF/IARU)
+
+**View → Beacon monitor** shows the 18 beacons of the international beacon project, transmitting in turn for 10 seconds each on 14.100 / 18.110 / 21.150 / 24.930 and 28.200 MHz. **Start** tunes the radio to the chosen beacon band in CW; the beacon currently transmitting is outlined. RigVibe measures every transmission in the received audio (as for the recorder: receiver directly or sound card input): **green** = heard, with signal-to-noise ratio in dB; the **dots** show down to which power step the beacon was audible (100 W · 10 W · 1 W · 0.1 W). With **all bands in turn** RigVibe moves to the next band after each 3-minute cycle – giving a picture of current propagation. The computer clock must be correct.
+
+![Beacon monitor](bilder/51-baken.png)
+
 ### Voice keyer (automatic CQ)
 
 ![Voice keyer](bilder/35-sprachspeicher.png)
@@ -567,6 +575,23 @@ The logbook toolbar: **Logbooks · New entry**, **DX cluster · Spot alarm · QS
 
 **Several logbooks:** **More … → Logbook management**: create, rename, back up, restore. QSOs can be moved between logbooks with cut/copy and paste.
 
+**Enter paper log** (**More …** or **File → Enter paper log**): type in old log pages quickly – one QSO per line. Date, band, mode and report are taken from the line above; the time can be “1405” or just the minutes (“12” = same hour as above). Enter moves to the next field and at the end of the line to a new line. Country and “new country” appear at once; duplicate QSOs are marked and not saved.
+
+![Enter paper log](bilder/52-papierlog.png)
+
+**Hot folder** (**F8 → Programs & backup**): ADIF files that land in this folder – e.g. from another program or from the phone via a cloud folder – are imported into the active logbook automatically; duplicates are skipped and the file is then moved to the sub-folder “importiert”.
+
+**Synchronise two installations** (e.g. shack PC and laptop; **F8 → Programs & backup**): enter the address of the other RigVibe installation (in your own network or via Tailscale; allow network access there under **Access & API**) and click **Synchronise now** – or tick **automatically every 15 minutes**. Missing QSOs are copied in both directions, QSL flags merged (confirmed wins). Nothing is ever deleted; only installations with the same call sign are synchronised.
+
+**QSL cards** (**More …**, **File** or the **QSL & online** pane):
+
+- **Design QSL card:** background picture or colour gradient, large call sign, your own text lines with placeholders (`<NAME>`, `<QTH>`, `<LOC>`, `<COUNTRY>`, `<CQZ>`, `<ITU>`), a box with up to three QSOs and “via bureau/direct”. Optionally RigVibe prints a **QR code** with the QSO data (ADIF) on the card.
+- **Send by e-mail (selection):** one card per station as a picture, plus the QSO data as an ADIF file; the address comes from the logbook or callbook. Sent QSOs are marked “QSL sent (e-mail)”. You need an e-mail account under **F8 → Errors & updates → SMTP server**. Comments and other private fields are never sent.
+- **Print (selection):** cards in 14 × 9 cm format.
+- **Read card (QR code):** hold the QR code of an incoming card in front of the camera or choose a photo – RigVibe finds the QSOs in the logbook and marks them confirmed (bureau, direct or e-mail). QR codes with QSO data in ADIF format are read, e.g. from RigVibe cards.
+
+![Design QSL card](bilder/53-qslkarte.png)
+
 **Import/export:** **More … → import/export ADIF**, Cabrillo export, print logbook, print QSL labels.
 
 **Contest mode:** the **Contest** button opens the settings: **contest name** (written as contest ID into every QSO), **scoring** and next **serial number**.
@@ -582,6 +607,7 @@ The logbook toolbar: **Logbooks · New entry**, **DX cluster · Spot alarm · QS
 ![Contest score](bilder/45-contest-punktestand.png)
 
 - **Cabrillo export** (**More … → Cabrillo**): only the QSOs of this contest, with category (operator, band, mode, power) and optionally your own score (CLAIMED-SCORE).
+- **EDI export** (**More … → EDI export (VHF contest)**): EDI file (REG1TEST) for VHF/UHF contests in IARU Region 1 – one file per band, points = distance in km, new large squares and duplicates marked, totals and ODX in the header.
 
 **Awards:** **Awards** shows DXCC, DXCC Challenge, WAZ, WAS, WAC, WPX, ITU zones, Europe, DOK, IOTA, VUCC grid squares, US counties and the CQ DX Marathon – worked or confirmed.
 
@@ -606,9 +632,19 @@ The logbook toolbar: **Logbooks · New entry**, **DX cluster · Spot alarm · QS
 
 ![Club scoreboard](bilder/48-club.png)
 
+### For German stations
+
+These functions appear only when your own call sign is German (**F8 → Station**); DARC functions only with **DARC member** ticked.
+
+- **Training operation (§ 12 AFuV):** create a station profile with the training call sign and your own call sign as **instructor**; the entry form then asks for the **trainee**, and **More … → Print training record** lists all contacts per trainee with signature lines.
+- **Bundesnetzagentur call sign list** as a callbook (see [Online services](#9-online-services)).
+- **Exam trainer** (**Tools → Licence exam trainer**): all 1750 official German exam questions for classes N, E and A, with learning progress and practice sheets.
+- **Amateur radio glossary** (with German user interface).
+
 ## 8. DX cluster, alerts and WSJT-X
 
 - **DX cluster:** enter the server in the options. Spots are marked: **red = new country**, **orange = new band**, grey = already worked. A click tunes radio and mode. **Alerts** reports new countries/bands or particular callsigns (with sound). **Spot** sends your own spot.
+- **Filters and alarms:** **DX only** hides stations from your own continent. Under **Alerts** there is an **exclusion list** (words or call signs in call, comment or spotter, `*` at the end = prefix, e.g. `SKIMMER*`) – such spots are hidden and never alarm. While a contest is running, **spot would be a new multiplier** reports every station that would give you a new multiplier.
 - **WSJT-X / JTDX:** in WSJT-X under *Settings → Reporting* set “UDP Server” to `127.0.0.1` and port `2237`, tick “Accept UDP requests”. Logged QSOs go into the logbook automatically. The **Spot alarm (FT8)** window shows all decodes with country and status; a **double-click** calls the station in WSJT-X, **TX stop** ends transmitting.
 - **What do I need?** (**View → What do I need?**): stations from the DX cluster and WSJT-X, ranked by what they bring to your log – **new country**, country new on the band or in the mode group (CW, phone, digital), **new CQ zone**, on VHF **new grid square**. The more, the higher the value. A click tunes to a cluster spot or lets WSJT-X call the station. Optionally a **desktop notification** for a new country or everything new. After logging the station drops out.
 
@@ -625,6 +661,7 @@ The logbook toolbar: **Logbooks · New entry**, **DX cluster · Spot alarm · QS
 In the options under **Online services**:
 
 - **Callbook:** HamQTH (free) and/or QRZ.com (XML subscription) – deliver name, QTH, locator, photo while typing the callsign.
+- **Bundesnetzagentur call sign list** (German call signs only): name, town and licence class of German stations without a callbook account. RigVibe downloads the list monthly directly from BNetzA (about 10 MB) and fills in name and QTH while you type; together with HamQTH/QRZ.com it adds missing details. Can be switched off under **Online services**.
 - **QRZ.com logbook:** API key from the QRZ logbook.
 - **eQSL:** user name and password.
 - **LoTW:** credentials for syncing and the **.p12 certificate** (exported from TQSL) with password for uploading.
@@ -636,9 +673,9 @@ New QSOs can be uploaded automatically (ticks “New QSOs to … immediately”)
 
 ![Digital modes](bilder/10-digitalbetrieb.png)
 
-**Setup:** connect the radio's audio to the computer (USB sound card in the radio or an interface). In the **waterfall** choose the **input** and switch on **Receive**; in the **Transmit** window choose the **output** and the **level** (set so that the radio's ALC does not move). Set the radio to USB or the data mode (USB-D/PKTUSB).
+**Setup:** connect the radio's audio to the computer (USB sound card in the radio or an interface). In the **waterfall** choose the **input** and switch on **Receive**; in the **Transmit** window choose the **output** and the **level** (set so that the radio's ALC does not move). The level is finely graded (1 % … 100 %, small values in fine steps) and stored with the radio, so it also applies in other browsers and on the phone. It can also be entered under **Radio → Connect → transmit level to the sound card** (empty = default: 50 %, Quansheng 4 %). It applies to digital modes, APRS/packet, SSTV and paging. Set the radio to USB or the data mode (USB-D/PKTUSB).
 
-**Per device:** RigVibe stores input, output, transmit level, automatic level and the packet transmit delay separately for each device. Switching e.g. from the HF radio to the handheld switches Digital modes to its sound card. **Pegel auto** (next to the level meter) evens out the input automatically – handy for handhelds whose volume knob is different every time; the current gain is shown next to it. A closed squelch (silence) is not amplified. If the sound card itself is overdriven, RigVibe reports “Eingang übersteuert” – turn the volume on the radio down.
+**Per device:** RigVibe stores input, output, transmit level (in the device configuration), automatic level and the packet transmit delay separately for each device. Switching e.g. from the HF radio to the handheld switches Digital modes to its sound card. **Pegel auto** (next to the level meter) evens out the input automatically – handy for handhelds whose volume knob is different every time; the current gain is shown next to it. A closed squelch (silence) is not amplified. If the sound card itself is overdriven, RigVibe reports “Eingang übersteuert” – turn the volume on the radio down.
 
 **Modes** (selection top left in the waterfall or menu **Mode**):
 
@@ -712,7 +749,8 @@ With a transmit-capable SDR (ADALM-Pluto, HackRF One, Hermes Lite 2, parameter `
 
 **SSTV window** via the toolbar (**SSTV**) or the **SSTV** menu.
 
-- Switch on **Receive**. The mode is detected automatically at the start of the picture (VIS code); slant from inaccurate sound cards is corrected. If a picture is already running, choose the mode and **Start now**.
+- Switch on **Receive**. The mode is detected automatically at the start of the picture (VIS code); slant from inaccurate sound cards is corrected.
+- **Joining mid-picture:** if a picture is already running when you switch on or tune in, RigVibe detects the mode from the line timing after a few lines (Martin M1 after about 3 seconds) and decodes from there. The picture is marked **partial** and ends as soon as only noise remains. A weak VIS code that could not be read no longer matters either. Manual start still works: choose the mode and **Start now**.
 - Received pictures are saved automatically in **SSTV pictures** (gallery).
 - 18 modes: Martin M1/M2, Scottie S1/S2/DX, Robot 36/72, PD 50/90/120/160/180/240/290, Wraase SC2-180, Pasokon P3/P5/P7.
 
