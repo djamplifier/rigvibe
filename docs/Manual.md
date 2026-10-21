@@ -112,7 +112,7 @@ More settings:
 - **Levels & filters** (bottom): the radio's controls as cards; up to six **sets**, e.g. one for SSB and one for CW.
 - **Bands & modes** (toolbar): favourites in folders (a click tunes), the radio's menus and all settings.
 - **Remember** (toolbar): save the current frequency as a quick memory (marker on the scale) or as a favourite. Everything about storing is also in the **Memory** menu.
-- **Digital voice in the display:** when a decoder hears a station (DMR, D-STAR, C4FM/YSF, M17, NXDN, P25 – from the radio's receiver or the SDR following it as panadapter), it appears under the frequency like on a digital radio: callsign and name (DMR: from the DMR ID), below that the talkgroup with its name, time slot, room or repeater and short text. After the transmission the line fades and disappears after five minutes. A click shows **last heard**; an entry from it takes the callsign into the logbook.
+- **Digital voice in the display:** when a decoder hears a station (DMR, D-STAR, C4FM/YSF, M17, NXDN, P25 – from the radio's receiver, the SDR following it as panadapter, or from the sound card audio in the **Digital voice** mode of digital modes), it appears under the frequency like on a digital radio: callsign and name (DMR: from the DMR ID), below that the talkgroup with its name, time slot, room or repeater and short text. After the transmission the line fades and disappears after five minutes. A click shows **last heard**; an entry from it takes the callsign into the logbook.
 
 ![Digital voice in the display (D-STAR example)](bilder/42-digitalfunk-display.png)
 
@@ -158,6 +158,17 @@ RigVibe and the radio work as one device: the radio's own operating logic rests,
 - **Squelch** and **S-meter** are computed by RigVibe; **Band overview** shows the band as spectrum and waterfall (the radio sweeps it).
 - **Audio output (radio)** under “Levels & filters”: a fixed level for the sound card, independent of the radio's volume knob.
 - Disconnecting in RigVibe returns the radio to normal operation.
+
+#### Audio and data over USB-C – no sound card (RigVibe firmware version 6 or later)
+
+With the RigVibe firmware version 6 or later, digital modes with the UV-K1 / UV-K5 V3 need no sound card, no APRS cable and no isolation transformers – just the USB-C cable:
+
+- **Receive:** the radio samples its receive audio itself (9.6 kHz) and sends it to RigVibe over USB-C. Digital modes take it automatically as input (“receiver”); APRS, packet, SSTV, RTTY and the other decoders work with it. Hum and clicks from ground loops cannot happen on this path.
+- **Transmit:** RigVibe turns the transmit audio into a sequence of tones that the radio's tone generator produces with exact timing; the service keys PTT and holds it exactly until the last tone. This works for **APRS and packet 1200 Bd, SSTV, KG-STV, RTTY, CW, DTMF, FT8, FT4, MFSK, DominoEX, THOR, Hellschreiber, PSK31/63/125, QPSK31/63/125, Olivia and Contestia**. For PSK, QPSK, Olivia and Contestia RigVibe generates a special form made of pure tones (constant level; for PSK the phase turns in the middle of the symbol via a briefly higher tone) – every other station decodes it as usual, fldigi included. With other radios and via a sound card RigVibe keeps sending the normal form. **MT63** (many simultaneous tones), **Throb** and voice still need a sound card – RigVibe says so. 9600 Bd packet does not work over USB.
+- **Clock:** the UV-K1 has no crystal for its clock; it can be off by about 1 % (measured: 0.6 % slow). RigVibe keeps measuring the clock on the receive audio and corrects it for receiving and transmitting – otherwise SSTV pictures, for example, come out slanted. After connecting, the correction needs about 15 seconds of receive audio. From **version 7** the firmware also keeps tone changes on a fixed schedule and has twice the buffer – SSTV over USB then works cleanly in all modes; the assistant offers the update.
+- **Carrier keying (version 8 or later):** instead of a tone the firmware can retune the transmitter itself (10 Hz steps) and key the power amplifier. The Quansheng then sends **FT8, FT4 and JS8 Fast and Turbo in USB** like an SSB radio (tones are placed to within 10 Hz; FT8's error correction absorbs that – measured: clean decode, +11 dB) and **real CW** (carrier on/off instead of a tone in FM; in USB the carrier sits higher by the CW pitch, profile parameter `cw_pitch`, speed `wpm`). With the radio in FM, FT8/FT4 go out as a tone sequence in FM. POCSAG this way is not reliable yet (the synthesizer settles too slowly after each retune) – keep using a sound card or another device for it.
+- **Packet/APRS:** with the Quansheng, RigVibe selects normal FM at full bandwidth – the unfiltered data demodulator and the narrow bandwidth clearly worsen reception over USB (measured).
+- **Firmware updates over USB:** once version 6 is installed, the assistant installs new firmware over USB – no update mode, no key press: RigVibe writes it into a free firmware slot in the radio's memory, the radio checks the checksum, installs it and restarts (a few seconds). Settings, memory channels and calibration are kept. As a way back the firmware keeps a protected backup “Main”: hold **MENU** while switching on and choose “Main”.
 
 #### With the regular F4HWN firmware
 
@@ -701,6 +712,43 @@ New QSOs can be uploaded automatically (ticks “New QSOs to … immediately”)
 - **RigVibe Sweeper:** decodes up to 16 signals at the same time (BPSK, RTTY or CW); a click moves a signal to the main decoder.
 - **World map:** shows the stations heard.
 
+### FT8 and FT4
+
+![FT8 in digital modes](bilder/57-ft8.png)
+
+Choose mode **FT8** or **FT4** (group FT8/FT4) in digital modes, then **Receive**. After every UTC time slot (FT8 15 s, FT4 7.5 s) RigVibe decodes all signals in the passband – like WSJT-X, using ft8_lib. Each line: time (UTC), signal-to-noise ratio in dB, audio frequency in Hz, text. Callsigns in angle brackets were only sent as a short hash (e.g. long or unusual callsigns). The computer clock must be accurate to about one second.
+
+- **Transmit:** type the text (e.g. `CQ <MYCALL> <MYLOC>`, `N1CALL <MYCALL> -12`, `N1CALL <MYCALL> RR73`) and **TX Send** – RigVibe transmits in the **next** time slot, 0.5 s after it starts, on the audio frequency of the red marker in the waterfall (click the waterfall to set it). Under **Time slot** you can fix **even** (:00/:30) or **odd** (:15/:45). A six-character locator is shortened to four. Text FT8 cannot encode is rejected with a hint.
+- **Which devices:** any radio via the sound card (audio like WSJT-X), SDRs that can transmit, and the Quansheng UV-K1/K5 over USB-C: with the RigVibe firmware version 8 or later in USB directly as carrier keying, otherwise as a tone sequence. Receiving also works via receivers and WebSDR.
+- An automatic QSO sequence like in WSJT-X is not built in – WSJT-X can still be used via the interface for that.
+
+### JS8 (JS8Call)
+
+![JS8 in digital modes](bilder/58-js8.png)
+
+Choose **JS8 Normal**, **JS8 Fast**, **JS8 Turbo** or **JS8 Slow** (group JS8) – compatible with JS8Call, checked against the original in both directions. Periods are 15 s, 10 s, 6 s and 30 s; Normal is by far the most used. After every period RigVibe decodes all signals in the passband and assembles multi-frame messages; a complete message ends with ♢. Each line: time (UTC), signal-to-noise ratio, audio frequency, text.
+
+- **Transmit:** type the text and **TX Send** – RigVibe splits it into frames and sends them in consecutive periods on the audio frequency of the red marker. Like JS8Call, RigVibe understands `CQ CQ CQ <MYLOC>` (CQ), `HEARTBEAT`, directed commands such as `N1CALL SNR?`, `N1CALL HW CPY?`, `N1CALL ACK`, `N1CALL MSG text`, and free text (your own callsign is put in front). **Time slot** fixes the period as with FT8.
+- **Reading free text:** JS8Call sends free text as numbers from a large dictionary (262,144 words). Without the dictionary such words show as ▯ – CQ, heartbeat, directed commands and text from RigVibe are always readable. RigVibe does not ship the dictionary (it belongs to JS8Call and is licensed under the GPLv3). To read JS8Call free text, set it up once yourself:
+  1. Download the file **`jsc_map.cpp`** from the JS8Call source code: on **github.com/js8call/js8call** open `jsc_map.cpp` and save it via **Raw** or **Download raw file** (about 6 MB).
+  2. Put the file, unchanged, into the folder **`js8`** in RigVibe's data folder – `~/Library/Application Support/RigVibe/js8` (Mac), `%APPDATA%\RigVibe\js8` (Windows) or `~/.local/share/rigvibe/js8` (Linux). RigVibe creates the folder the first time JS8 is used.
+  3. Reload RigVibe (browser: reload the page). On the next JS8 reception RigVibe reads the file and shows the free text in full.
+
+  RigVibe itself sends free text character by character – every JS8Call reads that even without the dictionary, it just needs a few more frames.
+- **Devices:** any radio via the sound card, SDRs that can transmit, receivers and WebSDR (receive only). **Quansheng UV-K1/K5** with the RigVibe firmware version 8 or later in USB: **JS8 Fast and Turbo** directly as carrier keying (tested on air). JS8 Normal and Slow do not work with the Quansheng: their tone spacing (6.25 and 3.125 Hz) is finer than the firmware's 10 Hz steps, and unlike FT8, JS8 cannot cope with the merged grid.
+- JS8Call's automatic replies, relaying and message store are not built in.
+
+### Digital voice (DMR, D-STAR, YSF, M17) from the sound card
+
+![Digital voice in digital modes (D-STAR example)](bilder/56-digitalfunk.png)
+
+
+Mode **Digital voice** (group Digital voice) in digital modes, then **Receive**: RigVibe itself detects whether DMR, D-STAR, C4FM/YSF or M17 is being sent in the sound card audio (P25 and NXDN are only detected) and decodes callsign, destination or talkgroup, repeater and short text. The lines appear in the receive window and, as with the receivers, as **digital voice in the display**; with the optional voice module the speech can be heard too. Transmitting is not possible in this mode.
+
+- **Which audio:** ideally the unaltered demodulator (data jack "9600"/discriminator) – then all modes work. The speaker or headphone output lacks the low frequencies; D-STAR (two levels) copes well with that, DMR, YSF and M17 (four levels) mostly do not.
+- **Quansheng UV-K1/K5 with RigVibe firmware:** for the time of reception RigVibe switches to the raw demodulator at full bandwidth and back afterwards. Measured at the audio output with a USB sound card: **D-STAR 119 of 120** headers, DMR practically not. Without a sound card RigVibe uses the audio over USB-C – that is rarely enough for digital voice.
+- **Reliable for all modes:** a receiver (SDR such as RTL-SDR/HackRF, KiwiSDR, OpenWebRX) – there RigVibe decodes from the unaltered demodulator (window **Receiver**, click the signal or use signal identification).
+
 ### FreeDV (digital voice)
 
 **View → FreeDV (digital voice)** in digital modes. Choose the mode (**RADE**, **RADE V2**, **700D**, **700E** or **1600** – on the FreeDV frequencies mostly RADE today), **Receive from** (the radio's sound card or a receiver/WebSDR), **Speaker**, **Microphone** and **Transmit to radio**, then **▶ Receive**. Green = synchronized, next to it the signal-to-noise ratio. To talk hold **PTT** (or choose “latches”). The radio is set to USB.
@@ -759,6 +807,17 @@ With a transmit-capable SDR (ADALM-Pluto, HackRF One, Hermes Lite 2, parameter `
 ![SSTV transmit](bilder/12-sstv-senden.png)
 
 Choose the background (test picture, own image file, last received picture), up to three text lines with placeholders (`<CALL> de <MYCALL>`, `ur <RST>` …), text colour and position. With **insert the other station's received picture small** the other station sees how its picture arrived. The preview shows the result and the transmit duration.
+
+### KG-STV (digital pictures)
+
+![KG-STV reception in progress](bilder/55-kgstv.png)
+
+KG-STV transmits the picture digitally in blocks of 16 × 16 pixels, each with its own checksum – a corrupted block is simply missing, the rest of the picture stays sharp. Pictures are compatible with the original KG-STV program (JJ0OBZ), used for example by ARISS for transmissions from the ISS.
+
+- **Receive:** runs automatically as soon as **Receive** is on in the SSTV window – alongside analogue SSTV, no mode selection needed. The picture builds up block by block (display “block 216 / 300”) together with the other station's callsign. Finished pictures go to the gallery with the callsign; text messages appear in the receive window.
+- **Transmit:** **Send image …**, mode **KG-STV 4L-FSK** (faster, about 70 s for 320 × 240) or **KG-STV MSK** (more robust, about 90 s). **Picture quality** 0–15 (10 = default; lower = sharper but longer) and **error protection (FEC)** for difficult paths (takes about half as long again). Pictures are always sent as 320 × 240.
+- Radio on USB or FM as for SSTV; audio between 1200 and 1800 Hz. Slight mistuning (±60 Hz) does no harm.
+- With the **Quansheng UV-K1/K5 with RigVibe firmware** KG-STV also works without a sound card over USB-C (transmit and receive).
 
 ## 12. Winlink (e-mail over radio)
 

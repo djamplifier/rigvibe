@@ -106,7 +106,7 @@ Weitere Einstellungen:
 - **Pegel & Filter** (unten): die Regler des Geräts als Kärtchen; bis zu sechs **Sätze**, z. B. einer für SSB und einer für CW.
 - **Bänder & Betriebsarten** (Werkzeugleiste): Favoriten in Ordnern (Klick stimmt ab), die Menüs des Geräts und alle Einstellungen.
 - **Merken** (Werkzeugleiste): die aktuelle Frequenz als Schnellspeicher (Marke auf der Skala) oder als Favorit sichern. Alles zum Speichern steht auch im Menü **Speicher**.
-- **Digitalfunk im Display:** Hört ein Dekoder gerade eine Station (DMR, D-STAR, C4FM/YSF, M17, NXDN, P25 – vom Empfänger des Geräts oder dem SDR, das ihm als Panadapter folgt), steht sie wie bei einem Digitalfunkgerät unter der Frequenz: Rufzeichen und Name (bei DMR aus der DMR-ID), darunter Sprechgruppe mit Namen, Zeitschlitz, Raum bzw. Relais und Kurztext. Nach der Aussendung wird die Zeile blass und verschwindet nach fünf Minuten. Ein Klick zeigt **zuletzt gehört**; ein Eintrag daraus übernimmt das Rufzeichen ins Logbuch.
+- **Digitalfunk im Display:** Hört ein Dekoder gerade eine Station (DMR, D-STAR, C4FM/YSF, M17, NXDN, P25 – vom Empfänger des Geräts, dem SDR, das ihm als Panadapter folgt, oder aus dem Soundkarten-Ton in der Betriebsart **Digitalfunk** des Digitalbetriebs), steht sie wie bei einem Digitalfunkgerät unter der Frequenz: Rufzeichen und Name (bei DMR aus der DMR-ID), darunter Sprechgruppe mit Namen, Zeitschlitz, Raum bzw. Relais und Kurztext. Nach der Aussendung wird die Zeile blass und verschwindet nach fünf Minuten. Ein Klick zeigt **zuletzt gehört**; ein Eintrag daraus übernimmt das Rufzeichen ins Logbuch.
 
 ![Digitalfunk im Display (Beispiel D-STAR)](bilder/42-digitalfunk-display.png)
 
@@ -152,6 +152,17 @@ RigVibe und Funkgerät arbeiten wie ein Gerät: Die eigene Bedienlogik des Funkg
 - **Rauschsperre** und **S-Meter** rechnet RigVibe; **Bandübersicht** zeigt das Band als Spektrum und Wasserfall (das Funkgerät tastet es ab).
 - **Tonausgang (Funkgerät)** unter „Pegel & Filter“: fester Pegel für die Soundkarte, unabhängig vom Lautstärkeregler am Gerät.
 - Beim Trennen in RigVibe kehrt das Funkgerät in den normalen Betrieb zurück.
+
+#### Ton und Daten über USB-C – ohne Soundkarte (RigVibe-Firmware ab Stand 6)
+
+Mit der RigVibe-Firmware ab Stand 6 braucht der Digitalbetrieb mit dem UV-K1 / UV-K5 V3 keine Soundkarte, kein APRS-Kabel und keine Übertrager mehr – nur das USB-C-Kabel:
+
+- **Empfang:** Das Funkgerät tastet seinen Empfangston selbst ab (9,6 kHz) und schickt ihn über USB-C an RigVibe. Der Digitalbetrieb nimmt ihn automatisch als Eingang („Empfänger“), APRS, Packet, SSTV, RTTY und die anderen Dekoder arbeiten damit. Brumm und Knacken durch Masseschleifen gibt es auf diesem Weg nicht.
+- **Senden:** RigVibe rechnet den Sendeton in eine Folge aus Tönen um, die der Tongenerator im Funkgerät taktgenau erzeugt; die PTT schaltet dabei der Dienst und hält sie genau bis zum letzten Ton. Das geht für **APRS und Packet 1200 Bd, SSTV, KG-STV, RTTY, CW, DTMF, FT8, FT4, MFSK, DominoEX, THOR, Hellschreiber, PSK31/63/125, QPSK31/63/125, Olivia und Contestia**. Für PSK, QPSK, Olivia und Contestia erzeugt RigVibe dabei eine eigene Form aus reinen Tönen (gleichbleibende Lautstärke; bei PSK dreht die Phase in der Symbolmitte über einen kurz höheren Ton) – jede Gegenstation dekodiert sie wie gewohnt, auch fldigi. Mit anderen Funkgeräten und über eine Soundkarte sendet RigVibe weiter die normale Form. **MT63** (viele Töne gleichzeitig), **Throb** und Sprache gehen weiter nur über eine Soundkarte – RigVibe meldet das dann. Packet mit 9600 Bd geht über USB nicht.
+- **Takt:** Der UV-K1 hat keinen Quarz für seine Uhr; sie geht bis etwa 1 % falsch (gemessen: 0,6 % zu langsam). RigVibe misst den Takt laufend am Empfangston und gleicht ihn beim Empfang und beim Senden aus – sonst laufen z. B. SSTV-Bilder schräg. Der Abgleich braucht nach dem Verbinden etwa 15 Sekunden Empfang. Ab **Stand 7** hält die Firmware die Tonwechsel außerdem auf festem Zeitplan und hat einen doppelt so großen Vorrat – SSTV über USB läuft damit in allen Modi sauber; der Assistent bietet das Update an.
+- **Träger-Umtastung (ab Stand 8):** Die Firmware kann statt eines Tons den Sender selbst umstimmen (Raster 10 Hz) und die Endstufe takten. Damit sendet der Quansheng **FT8, FT4 sowie JS8 Fast und Turbo in USB** wie ein SSB-Gerät (die Töne liegen 10-Hz-genau; die Fehlerkorrektur von FT8 gleicht das aus – gemessen: sauber dekodiert, +11 dB) und **echtes CW** (Träger an/aus statt Ton in FM; in USB liegt der Träger um die CW-Tonhöhe höher, Profil-Parameter `cw_pitch`, Tempo `wpm`). Steht das Funkgerät auf FM, gehen FT8/FT4 als Tonfolge in FM. POCSAG auf diesem Weg ist noch nicht zuverlässig (der Synthesizer schwingt nach jedem Umstimmen zu langsam ein) – dafür weiter Soundkarte oder ein anderes Gerät.
+- **Packet/APRS:** RigVibe stellt beim Quansheng normale FM in voller Bandbreite ein – der ungefilterte Daten-Demodulator und die schmale Bandbreite verschlechtern über USB den Empfang deutlich (gemessen).
+- **Firmware-Updates über USB:** Ist Stand 6 einmal drauf, spielt der Assistent neue Firmware über USB ein – ohne Update-Modus und ohne Tastendruck: RigVibe schreibt sie in ein freies Firmware-Fach im Speicher des Funkgeräts, das Funkgerät prüft die Prüfsumme, spielt sie ein und startet neu (wenige Sekunden). Einstellungen, Speicherkanäle und Abgleich bleiben. Als Rückweg hält die Firmware eine geschützte Sicherung „Main“: **MENU** beim Einschalten halten, „Main“ wählen.
 
 #### Mit der normalen F4HWN-Firmware
 
@@ -697,6 +708,43 @@ Neue QSOs können automatisch hochgeladen werden (Haken „Neue QSOs sofort …�
 - **RigVibe Sweeper:** dekodiert bis zu 16 Signale gleichzeitig (BPSK, RTTY oder CW); Klick übernimmt ein Signal in den Haupt-Dekoder.
 - **Weltkarte:** zeigt die gehörten Stationen.
 
+### FT8 und FT4
+
+![FT8 im Digitalbetrieb](bilder/57-ft8.png)
+
+Betriebsart **FT8** oder **FT4** (Gruppe FT8/FT4) im Digitalbetrieb, dann **Empfang**. RigVibe dekodiert nach jedem UTC-Zeitschlitz (FT8 15 s, FT4 7,5 s) alle Signale im Durchlass – wie WSJT-X, mit ft8_lib. Jede Zeile: Uhrzeit (UTC), Störabstand in dB, Tonhöhe in Hz, Text. Rufzeichen in spitzen Klammern sind nur als Kurzzeichen übertragen (z. B. lange oder ungewöhnliche Rufzeichen). Die Rechneruhr muss auf etwa eine Sekunde genau gehen.
+
+- **Senden:** Text eintippen (z. B. `CQ <MYCALL> <MYLOC>`, `N1CALL <MYCALL> -12`, `N1CALL <MYCALL> RR73`) und **TX Senden** – RigVibe sendet im **nächsten** Zeitschlitz, 0,5 s nach dessen Beginn, auf der Tonhöhe der roten Marke im Wasserfall (Klick in den Wasserfall stellt sie). Unter **Zeitschlitz** lässt sich fest **gerade** (:00/:30) oder **ungerade** (:15/:45) wählen. Ein sechsstelliger Locator wird auf vier Stellen gekürzt. Was FT8 nicht kodieren kann, lehnt RigVibe mit einem Hinweis ab.
+- **Welche Geräte:** jedes Funkgerät über die Soundkarte (Ton wie WSJT-X), sendefähige SDRs, und der Quansheng UV-K1/K5 über USB-C: mit RigVibe-Firmware ab Stand 8 in USB direkt als Träger-Umtastung, sonst als Tonfolge. Empfang auch über Empfänger und WebSDR.
+- Ein automatischer QSO-Ablauf wie in WSJT-X ist nicht eingebaut – dafür lässt sich WSJT-X weiter über die Schnittstelle nutzen.
+
+### JS8 (JS8Call)
+
+![JS8 im Digitalbetrieb](bilder/58-js8.png)
+
+Betriebsart **JS8 Normal**, **JS8 Fast**, **JS8 Turbo** oder **JS8 Slow** (Gruppe JS8) – kompatibel mit JS8Call, gegen das Original in beide Richtungen geprüft. Perioden 15 s, 10 s, 6 s bzw. 30 s; am meisten genutzt wird Normal. RigVibe dekodiert nach jeder Periode alle Signale im Durchlass und setzt mehrteilige Nachrichten zusammen; eine fertige Nachricht endet mit ♢. Jede Zeile: Uhrzeit (UTC), Störabstand, Tonhöhe, Text.
+
+- **Senden:** Text eintippen und **TX Senden** – RigVibe zerlegt ihn in Rahmen und sendet sie in aufeinanderfolgenden Perioden auf der Tonhöhe der roten Marke. Wie JS8Call versteht RigVibe `CQ CQ CQ <MYLOC>` (CQ), `HEARTBEAT`, gerichtete Befehle wie `N1CALL SNR?`, `N1CALL HW CPY?`, `N1CALL ACK`, `N1CALL MSG Text` sowie Freitext (das eigene Rufzeichen wird vorangestellt). Unter **Zeitschlitz** lässt sich die Periode wie bei FT8 festlegen.
+- **Freitext lesen:** JS8Call schickt Freitext als Nummern aus einem großen Wörterbuch (262 144 Wörter). Ohne das Wörterbuch erscheinen solche Wörter als ▯ – CQ, Heartbeat, gerichtete Befehle und Text von RigVibe sind immer lesbar. RigVibe liefert das Wörterbuch nicht mit (es gehört zu JS8Call und steht unter der GPLv3). Wer JS8Call-Freitext lesen möchte, richtet es einmal selbst ein:
+  1. Die Datei **`jsc_map.cpp`** aus dem JS8Call-Quelltext herunterladen: auf **github.com/js8call/js8call** die Datei `jsc_map.cpp` öffnen und über **Raw** bzw. **Download raw file** speichern (rund 6 MB).
+  2. Die Datei unverändert in den Ordner **`js8`** im Datenordner von RigVibe legen – `~/Library/Application Support/RigVibe/js8` (Mac), `%APPDATA%\RigVibe\js8` (Windows) bzw. `~/.local/share/rigvibe/js8` (Linux). Den Ordner legt RigVibe beim ersten Start von JS8 an.
+  3. RigVibe neu laden (Browser: Seite neu laden). Beim nächsten JS8-Empfang liest RigVibe die Datei ein und zeigt den Freitext vollständig.
+
+  RigVibe selbst sendet Freitext Zeichen für Zeichen – das liest jedes JS8Call auch ohne Wörterbuch, braucht aber etwas mehr Rahmen.
+- **Geräte:** jedes Funkgerät über die Soundkarte, sendefähige SDRs, Empfänger und WebSDR (nur Empfang). **Quansheng UV-K1/K5** mit RigVibe-Firmware ab Stand 8 in USB: **JS8 Fast und Turbo** direkt als Träger-Umtastung (auf Funk geprüft). JS8 Normal und Slow gehen mit dem Quansheng nicht: Ihr Tonabstand (6,25 bzw. 3,125 Hz) ist feiner als die 10-Hz-Schritte der Firmware, und anders als FT8 verkraftet JS8 das zusammengelegte Raster nicht.
+- Automatische Antworten, Relais und die Nachrichten-Ablage von JS8Call sind nicht eingebaut.
+
+### Digitalfunk (DMR, D-STAR, YSF, M17) über die Soundkarte
+
+![Digitalfunk im Digitalbetrieb (Beispiel D-STAR)](bilder/56-digitalfunk.png)
+
+
+Betriebsart **Digitalfunk** (Gruppe Digitalfunk) im Digitalbetrieb, dann **Empfang**: RigVibe erkennt im Ton der Soundkarte selbst, ob DMR, D-STAR, C4FM/YSF oder M17 gesendet wird (P25 und NXDN werden nur erkannt), und dekodiert Rufzeichen, Ziel bzw. Sprechgruppe, Relais und Kurztext. Die Zeilen erscheinen im Empfangsfenster und wie bei den Empfängern als **Digitalfunk im Display**; mit dem optionalen Sprachmodul ist auch die Sprache zu hören. Senden geht in dieser Betriebsart nicht.
+
+- **Welcher Ton:** am besten der unverfälschte Demodulator (Datenbuchse „9600“/Diskriminator) – dann klappen alle Verfahren. Am Lautsprecher- bzw. Kopfhörerausgang fehlen die tiefen Töne; das verkraftet D-STAR (zwei Stufen) gut, DMR, YSF und M17 (vier Stufen) meist nicht.
+- **Quansheng UV-K1/K5 mit RigVibe-Firmware:** RigVibe schaltet für die Dauer des Empfangs auf den Roh-Demodulator in voller Bandbreite und danach zurück. Gemessen am Tonausgang mit USB-Soundkarte: **D-STAR 119 von 120** Funkköpfen, DMR praktisch nicht. Ohne Soundkarte nimmt RigVibe den Ton über USB-C – das reicht für Digitalfunk nur selten.
+- **Sicher für alle Verfahren:** ein Empfänger (SDR wie RTL-SDR/HackRF, KiwiSDR, OpenWebRX) – dort dekodiert RigVibe aus dem unverfälschten Demodulator (Fenster **Empfänger**, Signal anklicken bzw. Signal-Erkennung).
+
 ### FreeDV (digitale Sprache)
 
 **Ansicht → FreeDV (digitale Sprache)** im Digitalbetrieb. Modus wählen (**RADE**, **RADE V2**, **700D**, **700E** oder **1600** – auf den FreeDV-Frequenzen heute meist RADE), **Empfang von** (Soundkarte des Funkgeräts oder ein Empfänger/WebSDR), **Lautsprecher**, **Mikrofon** und **Senden zum Funkgerät** einstellen, **▶ Empfang**. Grün = synchronisiert, daneben der Störabstand. Zum Sprechen **PTT** gedrückt halten (oder „rastet ein“). Das Funkgerät steht dabei auf USB.
@@ -755,6 +803,17 @@ Mit einem sendefähigen SDR (ADALM-Pluto, HackRF One, Hermes Lite 2, Parameter `
 ![SSTV senden](bilder/12-sstv-senden.png)
 
 Hintergrund wählen (Testbild, eigene Bilddatei, zuletzt empfangenes Bild), bis zu drei Textzeilen mit Platzhaltern (`<CALL> de <MYCALL>`, `ur <RST>` …), Textfarbe und -lage. Mit **Empfangenes Bild der Gegenstation klein einfügen** sieht die Gegenstation, wie ihr Bild angekommen ist. Die Vorschau zeigt das Ergebnis und die Sendedauer.
+
+### KG-STV (digitale Bilder)
+
+![KG-STV-Empfang im Aufbau](bilder/55-kgstv.png)
+
+KG-STV überträgt das Bild digital in Blöcken zu 16 × 16 Bildpunkten, jeder mit eigener Prüfsumme – ein gestörter Block fehlt einfach, der Rest des Bildes bleibt scharf. Die Bilder sind mit dem Original-Programm KG-STV (JJ0OBZ) verträglich, das z. B. ARISS für Aussendungen von der ISS nutzt.
+
+- **Empfang:** läuft automatisch mit, sobald im SSTV-Fenster **Empfang** an ist – neben dem analogen SSTV, ohne Moduswahl. Das Bild baut sich Block für Block auf (Anzeige „Block 216 / 300“), das Rufzeichen der Gegenstation steht dabei. Fertige Bilder landen mit Rufzeichen in der Galerie; Textnachrichten erscheinen im Empfangsfenster.
+- **Senden:** **Bild senden …**, Modus **KG-STV 4L-FSK** (schneller, ca. 70 s für 320 × 240) oder **KG-STV MSK** (robuster, ca. 90 s). **Bildqualität** 0–15 (10 = Standard; kleiner = schärfer, aber länger) und **Fehlerschutz (FEC)** für schwierige Verbindungen (dauert etwa die Hälfte länger). Gesendet wird immer 320 × 240.
+- Funkgerät auf USB bzw. FM wie bei SSTV; Ton zwischen 1200 und 1800 Hz. Leichtes Verstimmen (±60 Hz) stört nicht.
+- Beim **Quansheng UV-K1/K5 mit RigVibe-Firmware** geht KG-STV auch ohne Soundkarte über USB-C (senden und empfangen).
 
 ## 12. Winlink (E-Mail über Funk)
 

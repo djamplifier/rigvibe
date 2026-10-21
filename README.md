@@ -4,15 +4,15 @@
 
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 
-## Download (Version 1.4.6)
+## Download (Version 1.4.7)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.4.6-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.4.6/RigVibe-1.4.6-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.4.6-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.6/RigVibe-1.4.6-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.4.6-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.6/RigVibe-1.4.6-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.4.6-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.4.6/RigVibe-1.4.6-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.4.6_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.4.6/rigvibe_1.4.6_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.4.6-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.4.6/RigVibe-1.4.6-Linux-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.4.7-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.4.7-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.4.7-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.4.7-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.4.7_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/rigvibe_1.4.7_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.4.7-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Linux-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -28,14 +28,14 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
   Alarmen, FT8-Alert und Antworten über WSJT-X, Bandkarte, Graulinie, Sonnendaten, Kalender (Contests, DXpeditionen),
   QSL (Papier, LoTW, eQSL), Uploads zu QRZ.com/eQSL/LoTW/Club Log, Diplome, Etiketten, Cabrillo, ADIF,
   POTA/SOTA/WWFF mit Stationsprofilen, Filter-Bedingungen und gespeicherte Ansichten, QSO-Austausch mit N1MM, VarAC, JTAlert, GridTracker
-- **Digitalbetrieb**: Wasserfall, PSK/QPSK, RTTY, CW, MFSK, DominoEX, THOR, Olivia, Contestia, Throb, MT63, Hellschreiben,
-  SSTV (18 Bildmodi mit Vorlagen und Galerie), FreeDV (RADE V1/V2, 700D/700E/1600, mit FreeDV Reporter), Makros, RigVibe Sweeper (bis 16 Signale gleichzeitig),
+- **Digitalbetrieb**: Wasserfall, FT8, FT4, JS8 (kompatibel zu JS8Call), PSK/QPSK, RTTY, CW, MFSK, DominoEX, THOR, Olivia, Contestia, Throb, MT63, Hellschreiben,
+  SSTV (18 Bildmodi mit Vorlagen und Galerie), KG-STV, Digitalfunk (DMR, D-STAR, YSF, M17 aus dem Soundkarten-Ton), FreeDV (RADE V1/V2, 700D/700E/1600, mit FreeDV Reporter), Makros, RigVibe Sweeper (bis 16 Signale gleichzeitig),
   Chat (Tastatur-QSO) über ARDOP, VARA, Packet und Telnet
 - **Signalerkennung per Klick**: Klick auf ein Signal im Wasserfall zeigt die Betriebsart (z. B. RTTY mit Baud/Shift, FT8, PSK31,
   SSTV mit Bildmodus, FreeDV RADE/700D/700E/1600, CW mit Tempo, Olivia, Sprache, AM) – SSTV und FreeDV schon nach 4 Sekunden – und öffnet auf Wunsch gleich den passenden Dekoder
 - **Empfänger ohne Funkgerät**: KiwiSDR, OpenWebRX, öffentliche Empfängerlisten, Wasserfall 2D/3D mit DX-Cluster- und POTA/SOTA/WWFF-Spots (Rufzeichen mit Flagge, Klick stimmt ab)
 - **Eigene SDRs**: RTL-SDR (auch V4), HackRF One und ADALM-Pluto direkt (Pluto auch im Netzwerk, mit automatischer Suche), Hermes Lite 2 im Netz; **Senden** mit HackRF, Pluto und Hermes Lite 2
-- **Handfunkgeräte Quansheng UV-K1 / UV-K5 V3** über USB-C: mit der mitgelieferten RigVibe-Firmware (Aufspielen per Assistent, ohne Zusatzprogramm) steuert RigVibe das Gerät komplett – Frequenz, Betriebsart, Leistung, Senden über USB, Rauschsperre, Bandübersicht, fester Tonpegel für die Soundkarte
+- **Handfunkgeräte Quansheng UV-K1 / UV-K5 V3** über USB-C: mit der mitgelieferten RigVibe-Firmware (Aufspielen per Assistent, ohne Zusatzprogramm) steuert RigVibe das Gerät komplett – Frequenz, Betriebsart, Leistung, Senden über USB, Rauschsperre, Bandübersicht, fester Tonpegel für die Soundkarte; Ton und Daten über das USB-C-Kabel ohne Soundkarte (APRS, Packet, SSTV, KG-STV, PSK, RTTY …), FT8/FT4/JS8 und echtes CW direkt mit dem Sender, Firmware-Updates über USB
 - **QO-100**: Pluto mit LNB im Vollduplex, Uplink automatisch, LNB-Drift über die Bake ausgeglichen, Transponder-Bandplan, Satelliten-QSO im Logbuch (nur in den Amateurfunkbändern)
 - **Handy-Ansicht** (/m, als App installierbar): Gerät mit PTT, Wasserfall, Meshtastic, Winlink, APRS, Logbuch – von unterwegs über **Tailscale**
 - **APRS und Packet Radio** mit eigenem Modem: APRS-Karte im Umkreis (auch APRS-IS), Nachrichten mit Quittung, Bake mit eigenem Text, DOK und QRV-Frequenz, Packet-Chat (AX.25)
