@@ -4,15 +4,15 @@
 
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 
-## Download (Version 1.4.7)
+## Download (Version 1.4.8)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.4.7-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.4.7-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.4.7-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.4.7-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.4.7_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/rigvibe_1.4.7_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.4.7-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.4.7/RigVibe-1.4.7-Linux-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.4.8-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.4.8-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.4.8-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.4.8-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.4.8_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/rigvibe_1.4.8_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.4.8-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Linux-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -28,7 +28,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
   Alarmen, FT8-Alert und Antworten über WSJT-X, Bandkarte, Graulinie, Sonnendaten, Kalender (Contests, DXpeditionen),
   QSL (Papier, LoTW, eQSL), Uploads zu QRZ.com/eQSL/LoTW/Club Log, Diplome, Etiketten, Cabrillo, ADIF,
   POTA/SOTA/WWFF mit Stationsprofilen, Filter-Bedingungen und gespeicherte Ansichten, QSO-Austausch mit N1MM, VarAC, JTAlert, GridTracker
-- **Digitalbetrieb**: Wasserfall, FT8, FT4, JS8 (kompatibel zu JS8Call), PSK/QPSK, RTTY, CW, MFSK, DominoEX, THOR, Olivia, Contestia, Throb, MT63, Hellschreiben,
+- **Digitalbetrieb**: Wasserfall, FT8 und FT4 (QSO per Klick mit automatischem Ablauf), JS8 (kompatibel zu JS8Call), PSK/QPSK, RTTY, CW, MFSK, DominoEX, THOR, Olivia, Contestia, Throb, MT63, Hellschreiben,
   SSTV (18 Bildmodi mit Vorlagen und Galerie), KG-STV, Digitalfunk (DMR, D-STAR, YSF, M17 aus dem Soundkarten-Ton), FreeDV (RADE V1/V2, 700D/700E/1600, mit FreeDV Reporter), Makros, RigVibe Sweeper (bis 16 Signale gleichzeitig),
   Chat (Tastatur-QSO) über ARDOP, VARA, Packet und Telnet
 - **Signalerkennung per Klick**: Klick auf ein Signal im Wasserfall zeigt die Betriebsart (z. B. RTTY mit Baud/Shift, FT8, PSK31,

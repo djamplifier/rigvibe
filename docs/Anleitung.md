@@ -716,7 +716,19 @@ Betriebsart **FT8** oder **FT4** (Gruppe FT8/FT4) im Digitalbetrieb, dann **Empf
 
 - **Senden:** Text eintippen (z. B. `CQ <MYCALL> <MYLOC>`, `N1CALL <MYCALL> -12`, `N1CALL <MYCALL> RR73`) und **TX Senden** – RigVibe sendet im **nächsten** Zeitschlitz, 0,5 s nach dessen Beginn, auf der Tonhöhe der roten Marke im Wasserfall (Klick in den Wasserfall stellt sie). Unter **Zeitschlitz** lässt sich fest **gerade** (:00/:30) oder **ungerade** (:15/:45) wählen. Ein sechsstelliger Locator wird auf vier Stellen gekürzt. Was FT8 nicht kodieren kann, lehnt RigVibe mit einem Hinweis ab.
 - **Welche Geräte:** jedes Funkgerät über die Soundkarte (Ton wie WSJT-X), sendefähige SDRs, und der Quansheng UV-K1/K5 über USB-C: mit RigVibe-Firmware ab Stand 8 in USB direkt als Träger-Umtastung, sonst als Tonfolge. Empfang auch über Empfänger und WebSDR.
-- Ein automatischer QSO-Ablauf wie in WSJT-X ist nicht eingebaut – dafür lässt sich WSJT-X weiter über die Schnittstelle nutzen.
+
+#### QSO mit einem Klick
+
+![FT8-QSO mit festem Ablauf](bilder/59-ft8qso.png)
+
+Mit FT8 oder FT4 geht das Fenster **FT8/FT4** auf (sonst über **Ansicht**). Es listet jeden Zeitschlitz: CQ-Rufe grün, Nachrichten an dich rot, die Station deines laufenden QSO gelb hinterlegt, deine eigenen Durchgänge grau.
+
+- **Station anklicken:** ein Klick auf eine Zeile beginnt das QSO – RigVibe ruft die Station an und sendet danach von selbst die jeweils passende Nachricht, immer im Gegen-Zeitschlitz der Station: Anruf mit Locator → Rapport → R-Rapport → RR73 → 73. Klickst du eine Nachricht an dich an (z. B. einen Rapport), steigt RigVibe an der passenden Stelle ein. Wiederholt die Gegenstation ihre Nachricht, wiederholt RigVibe seine.
+- **CQ rufen:** RigVibe ruft CQ und antwortet dem ersten (bei mehreren dem stärksten) Anrufer; nach dem QSO geht der CQ-Ruf weiter.
+- **Tx1–Tx6:** die sechs Nachrichten des QSO; ein Klick legt fest, welche als nächste rausgeht. Der Rapport ist der gemessene Störabstand der Gegenstation.
+- **Loggen:** nach RR73 bzw. 73 landet das QSO mit Rapporten und Locator im Logbuch (**automatisch loggen**; ohne Haken nur im QSO-Bereich zum Prüfen).
+- **Stopp** beendet den Ablauf (auch **RX Stopp**). Antwortet die Station zwölfmal nicht, hört RigVibe von selbst auf. Der Empfang muss laufen – die nächste Nachricht richtet sich nach dem, was ankommt. Rufzeichen und Locator stehen in den Optionen.
+- Gesendet wird auf der Tonhöhe der roten Marke im Wasserfall. Kommt die Antwort spät an, beginnt der Durchgang auch noch bis zu 1,5 s nach dem Zeitschlitz – das dekodiert die Gegenstation noch.
 
 ### JS8 (JS8Call)
 

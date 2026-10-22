@@ -720,7 +720,19 @@ Choose mode **FT8** or **FT4** (group FT8/FT4) in digital modes, then **Receive*
 
 - **Transmit:** type the text (e.g. `CQ <MYCALL> <MYLOC>`, `N1CALL <MYCALL> -12`, `N1CALL <MYCALL> RR73`) and **TX Send** – RigVibe transmits in the **next** time slot, 0.5 s after it starts, on the audio frequency of the red marker in the waterfall (click the waterfall to set it). Under **Time slot** you can fix **even** (:00/:30) or **odd** (:15/:45). A six-character locator is shortened to four. Text FT8 cannot encode is rejected with a hint.
 - **Which devices:** any radio via the sound card (audio like WSJT-X), SDRs that can transmit, and the Quansheng UV-K1/K5 over USB-C: with the RigVibe firmware version 8 or later in USB directly as carrier keying, otherwise as a tone sequence. Receiving also works via receivers and WebSDR.
-- An automatic QSO sequence like in WSJT-X is not built in – WSJT-X can still be used via the interface for that.
+
+#### QSO with one click
+
+![FT8 QSO with automatic sequence](bilder/59-ft8qso-en.png)
+
+With FT8 or FT4 the **FT8/FT4** window opens (otherwise via **View**). It lists every time slot: CQ calls green, messages to you red, the station of your current QSO highlighted yellow, your own transmissions grey.
+
+- **Click a station:** a click on a line starts the QSO – RigVibe calls the station and then sends the matching next message by itself, always in the station's opposite time slot: call with locator → report → R-report → RR73 → 73. If you click a message addressed to you (e.g. a report), RigVibe joins at the right step. If the other station repeats its message, RigVibe repeats its own.
+- **Call CQ:** RigVibe calls CQ and answers the first caller (the strongest if there are several); after the QSO it keeps calling CQ.
+- **Tx1–Tx6:** the six messages of the QSO; a click chooses which one goes out next. The report is the measured signal-to-noise ratio of the other station.
+- **Logging:** after RR73 or 73 the QSO goes into the logbook with reports and locator (**log automatically**; unticked it is only filled into the QSO area for checking).
+- **Stop** ends the sequence (so does **RX stop**). If the station does not answer twelve times, RigVibe stops by itself. Receive must be running – the next message depends on what comes in. Callsign and locator are set in the options.
+- Transmission uses the audio frequency of the red marker in the waterfall. If the reply arrives late, the transmission still starts up to 1.5 s into the time slot – the other station still decodes that.
 
 ### JS8 (JS8Call)
 
