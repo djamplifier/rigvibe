@@ -4,15 +4,15 @@
 
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 
-## Download (Version 1.4.8)
+## Download (Version 1.4.9)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.4.8-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.4.8-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.4.8-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.4.8-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.4.8_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/rigvibe_1.4.8_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.4.8-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.4.8/RigVibe-1.4.8-Linux-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.4.9-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.4.9/RigVibe-1.4.9-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.4.9-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.9/RigVibe-1.4.9-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.4.9-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.4.9/RigVibe-1.4.9-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.4.9-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.4.9/RigVibe-1.4.9-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.4.9_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.4.9/rigvibe_1.4.9_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.4.9-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.4.9/RigVibe-1.4.9-Linux-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
