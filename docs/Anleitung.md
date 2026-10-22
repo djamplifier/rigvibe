@@ -25,6 +25,7 @@ RigVibe ist ein Programm für die Funkstation: Funkgerät steuern, Logbuch führ
 18. [Zugang, API und KI-Assistenten](#18-zugang-api-und-ki-assistenten)
 19. [Fehlerbericht und Aktualisierung](#19-fehlerbericht-und-aktualisierung)
 20. [Probleme lösen](#20-probleme-lösen)
+21. [Notfunk](#21-notfunk)
 
 ---
 
@@ -1020,3 +1021,141 @@ Was neu ist oder behoben wurde, zeigt das Fortschrittsfenster schon während des
 | Etwas funktioniert nicht wie erwartet | **Hilfe → Fehlerprotokoll** ansehen; **Herunterladen** speichert es als Textdatei zum Weitergeben. |
 
 Die Statuszeile unten zeigt jederzeit Funkgerät, Cluster, WSJT-X und Rotor – ein Rechtsklick darauf öffnet die passenden Einstellungen.
+
+---
+
+## 21. Notfunk
+
+Der Reiter **Notfunk** ist ein eigenes Meldungssystem für den Amateurfunk-Notfunk. Stationen tauschen Meldungen, Statusangaben, Bilder und Dateien über die Wege aus, die gerade funktionieren: Netzwerk (HAMNET, LAN, VPN), Meshtastic, Packet-Funk, KG-STV/SSTV-Bilder, Funkruf oder notfalls einen USB-Stick. RigVibe merkt sich, welche Gegenstation über welchen Weg wirklich erreichbar ist, wählt den passenden Weg, wiederholt bei Bedarf und setzt Dateien beim Empfänger geprüft wieder zusammen.
+
+> **Wichtig:** RigVibe Notfunk ergänzt die Kommunikation im Amateurfunk-Notfunk. Es ersetzt **keine** BOS-Kommunikation. Es gelten die Regeln des Amateurfunkdienstes: Rufzeichen nennen, keine Verschlüsselung, nur zulässige Inhalte und Frequenzen. Offene Funkwege sind nicht vertraulich.
+
+![Notfunk – Leitstand und Meldungen](bilder/61-notfunk-leitstand.png)
+
+### Rollen: Leuchtturm und Leitstelle
+
+- **Leuchtturm:** nimmt vor Ort Meldungen auf, vergibt Meldungsnummern und gibt sie an die zuständige Leitstelle weiter. Ist der bevorzugte Weg weg, bleibt die Meldung gespeichert und geht über einen anderen Weg oder später raus.
+- **Leitstelle:** sammelt die Meldungen mehrerer Leuchttürme, sieht deren Zustand, bestätigt Eingänge, stellt Rückfragen und verteilt Meldungen an Stationen oder **Verteiler** (z. B. „ALLE-LT“).
+
+Beide Rollen nutzen dasselbe Meldungsformat und dieselben Wege. Die Rolle ändert die Fensteranordnung (die Leitstelle sieht zuerst den Eingang, sortiert nach Priorität) und die Vorgaben für die Weiterleitung.
+
+### Einrichten in fünf Schritten
+
+1. **Konfiguration:** Stationskennung (eindeutig, z. B. `DM5MN-LT1`), Rufzeichen, Rolle, Region und die zuständige Leitstelle eintragen. Bei der Leitstelle Verteiler anlegen (eine Zeile je Verteiler: `ALLE-LT: DM5MN-LT1, DL1ABC-LT2`).
+2. **Funkwege:** die vorhandenen Wege einschalten und für jeden festlegen, wie gesendet werden darf: **aus** (nur empfangen), **von Hand** (jede Aussendung braucht deine Freigabe) oder **automatisch**. Über Funk steht die Vorgabe auf „von Hand“.
+3. **Netzwerk:** Gegenstellen mit Stationskennung, Adresse (z. B. `http://44.1.2.3:8088`) und deren API-Schlüssel eintragen – auf beiden Seiten. Auf der Gegenstelle unter **Zugang & API** den Netzzugang freigeben.
+4. **Funkmodems:** für Packet, KG-STV und SSTV im Reiter **Funkwege** „Dieses Fenster stellt die Funkmodems bereit“ anhaken und den Empfang im Digitalbetrieb starten (Soundkarte, SDR oder Quansheng über USB).
+5. **Heartbeat senden:** mit „Heartbeat jetzt senden“ melden sich die Stationen gegenseitig an. Danach stehen sie in der Stationsliste.
+
+![Notfunk – Funkwege](bilder/65-notfunk-funkwege.png)
+
+### Meldungen
+
+**Neue Meldung** fragt nach Ziel (Station, Verteiler oder `*` für alle), Priorität (Routine, Wichtig, Dringend, Notfall), Kategorie, Art (Text, Alarm/Kurzmeldung, Status, Rückfrage, Bild, Datei), Betreff, Text, Anhängen und Gültigkeit. Vor dem Senden zeigt RigVibe den **vorgesehenen Weg** – und ob eine Freigabe nötig ist. Ohne Weg bleibt die Meldung gespeichert in der Warteschlange.
+
+![Notfunk – neue Meldung mit Wegevorschau](bilder/60-notfunk-meldung.png)
+
+Jede Meldung bekommt eine Nummer aus Stationskennung und laufender Zahl (z. B. `DM5MN-LT1-00042`). Damit erkennt jede Station Duplikate – auch wenn dieselbe Meldung über zwei Wege ankommt. Die Zustände:
+
+| Zustand | Bedeutung |
+|---|---|
+| wartet | gespeichert, wartet auf einen bereiten Weg oder den nächsten Versuch |
+| Freigabe nötig | geht erst nach deiner Freigabe raus |
+| wird gesendet / ausgesendet | an den Weg übergeben bzw. tatsächlich ausgesendet – **noch keine Zustellung** |
+| weitergeleitet | eine Zwischenstation hat sie zur Weiterleitung übernommen |
+| zugestellt | die Zielstation hat den Empfang quittiert |
+| bestätigt | der Bediener am Ziel hat sie bestätigt |
+| fehlgeschlagen / abgelaufen | keine Quittung nach allen Versuchen bzw. Gültigkeit vorbei – „Erneut senden“ reiht wieder ein |
+
+Eingegangene Meldungen bestätigst du mit **Bestätigen** – die Quittung geht an die Quellstation. **Antworten** schreibt eine Rückfrage mit Bezug, **Weiterleiten** gibt die Meldung (Leitstelle) an andere Stationen oder Verteiler weiter. **Export**/**Import** speichert Meldungen mit Anhängen als `.rvnf`-Datei für den Weg per USB-Stick.
+
+![Notfunk – Meldungen mit Verlauf](bilder/62-notfunk-meldungen.png)
+
+### Bilder und Dateien
+
+Unter **Bilder und Dateien** übernimmst du Bilder und Dateien (bis 32 MB). Jede Datei bekommt eine Kennung aus ihrer SHA-256-Prüfsumme und wird in nummerierte Fragmente zu 160 Byte zerlegt; Bilder erhalten automatisch eine kleine Vorschau. Beim Empfänger zeigt die Karte den Fortschritt, fehlende Fragmente und Prüfsummenfehler. Fehlt nach einer Pause etwas, fordert RigVibe die fehlenden Fragmente gezielt nach – auch nach einem Neustart.
+
+- **Redundant:** dieselbe Datei über mehrere Wege – die erste vollständige, geprüfte Kopie genügt.
+- **Gebündelt:** Fragmente derselben Datei dürfen über verschiedene Wege ankommen; zusammengesetzt wird nur, wenn Kennung, Fragmentierung und Prüfsumme passen.
+- **Zu groß für den Weg:** große Dateien warten auf einen schnellen Weg; die Vorschau geht vorab über langsame Wege (z. B. Meshtastic).
+
+![Notfunk – Bilder und Dateien](bilder/63-notfunk-dateien.png)
+
+**Funkbilder:** Über KG-STV oder SSTV gesendete Bilder sind verlustbehaftet. Sie werden beim Empfänger nur als **nicht verifizierte Funkbilder** abgelegt – mit der Kennung „NF <Meldung> <Objekt>“ (KG-STV) oder ohne (SSTV) – und nie als Datei-Fragmente verwendet.
+
+### Stationen und Erreichbarkeit
+
+Die Stationsliste zeigt Rolle, Rufzeichen, Alter des letzten Heartbeats, Wege und Fähigkeiten jeder Station. **Erreichbar** heißt: über einen Weg in beiden Richtungen bestätigt und aktuell. **Eingeschränkt** heißt: nur gehört (Rückrichtung unbestätigt) oder nur über eine Zwischenstation bekannt. Ein alter Heartbeat macht eine Station nie „erreichbar“ – die Angaben veralten je Weg (Netzwerk 10 min, Meshtastic und Packet 1 h).
+
+![Notfunk – Stationen](bilder/64-notfunk-stationen.png)
+
+Der **Heartbeat** enthält Stationskennung, Rufzeichen, Rolle, Folgenummer, Zeit (UTC), Gesamtzustand, die eingeschalteten Wege mit Zustand und Fähigkeiten, die unterstützten Datenarten, die Länge der Warteschlange und die frisch gehörten Nachbarstationen. Keine Einstellungen, Passwörter oder IP-Adressen. Über Funk gehen Heartbeats nur automatisch raus, wenn der Weg auf „automatisch“ steht; das Intervall ist je Weg einstellbar (Vorgabe Netzwerk 2 min, Meshtastic und Packet 30 min).
+
+### Wegewahl, Weiterleitung und Freigaben
+
+RigVibe wählt für jede Aussendung den besten bereiten Weg: bestätigte Verbindung vor gehörter, gehörte vor dem Umweg über eine Zwischenstation, zuletzt ein nur lokal bereiter Weg (für den Erstkontakt). Berücksichtigt werden Inhaltsart, Größe, Datenrate, Warteschlange und Fehlerquote. Kurze Alarme gehen über den schnellsten Weg, große Dateien nur über Wege, die sie tragen.
+
+- **Store-and-forward:** eine Station leitet Meldungen für andere weiter, wenn sie das Ziel hört (aus dem Heartbeat des Nachbarn). Sie quittiert die Übernahme („weitergeleitet“), speichert bei Bedarf und sendet weiter. Schleifen werden erkannt, die Zahl der Weiterleitungen ist begrenzt (Vorgabe 4).
+- **Wiederholung:** ohne Quittung wiederholt RigVibe mit wachsender Wartezeit (Vorgabe 3 Versuche) und nimmt dabei, wenn möglich, einen anderen Weg.
+- **Weg von Hand:** im Meldungsfenster „Weg wählen …“ (Weg und optional Zwischenstation).
+- **Freigaben:** alles, was eine Freigabe braucht, steht unter **Weiterleitung** – einzeln oder „Alle freigeben“. Personenbezogene Daten brauchen über Funk immer eine Freigabe.
+
+![Notfunk – Weiterleitung](bilder/66-notfunk-weiterleitung.png)
+
+### Die Wege im Einzelnen
+
+| Weg | Stand | Hinweise |
+|---|---|---|
+| Netzwerk (HAMNET/LAN/VPN) | fertig | RigVibe ↔ RigVibe per HTTP, schnell, auch große Dateien; Gegenstellen auf beiden Seiten eintragen |
+| Meshtastic | fertig, nicht mit echter Hardware getestet | Datenpakete (Port 256) über den im Reiter Meshtastic verbundenen Knoten; höchstens 233 Byte je Paket, Abstand 3,5 s; Meldungen und Vorschaubilder |
+| Packet 1200 Bd (AX.25-UI) | fertig, über nachgebildete Tonstrecke geprüft | eigenes Packet-Modem über Soundkarte, SDR oder Quansheng-USB; UI-Rahmen an „RVNF“, Absender ist dein Rufzeichen; etwa 70 Byte/s |
+| Quansheng-Datenfunk (FSK 1200 Bd) | fertig, mit einem K1 über Funk geprüft (Aussendung aufgenommen und dem K1 wieder vorgespielt: 32 von 32 Blöcken, bitgleich) | zwei Quansheng mit RigVibe-Firmware ab Stand 10 tauschen Daten direkt über den Funkchip aus – ohne Soundkarte und ohne offenes Fenster; gepackt, mit Fehlerkorrektur; etwa 95 Byte/s, durch das Packen bei Meldungen effektiv rund 160 Byte/s |
+| Bild über KG-STV | fertig, über nachgebildete Tonstrecke geprüft | sendet ein Bild (Vorschau) mit Kennung; Empfang nur als nicht verifiziertes Funkbild |
+| Bild über SSTV | fertig, über nachgebildete Tonstrecke geprüft | Modus einstellbar (Vorgabe Robot 36); Empfang als nicht verifiziertes Funkbild |
+| Funkruf (DAPNET) | fertig | nur Alarmierung, höchstens 80 Zeichen, Einweg – nie als zugestellt bestätigt; automatisch ab einstellbarer Priorität |
+| Datenträger | fertig | Export/Import von `.rvnf`-Dateien |
+| ARDOP, VARA, Packet über Direwolf (verbunden) | **noch nicht umgesetzt** | stehen als „nicht verfügbar“ in der Liste |
+| Digitalbetrieb-Text (PSK, Olivia, MFSK …) | **noch nicht umgesetzt** | diese Betriebsarten übertragen nur ungesicherten Text und werden ausdrücklich nicht als Datenweg angeboten |
+
+**Quansheng-Datenfunk:** Mit RigVibe-Firmware ab Stand 10 hat das UV-K1/K5 einen eigenen Datenweg: Der Funkchip sendet und empfängt 2-FSK mit 1200 Bd selbst. Weg einschalten, unter **Funkwege** eine gemeinsame Frequenz eintragen (z. B. 433,500 MHz) und auf allen Stationen dieselbe wählen. RigVibe stellt das Gerät auf FM und lässt den Empfang laufen; verstellst du die Frequenz von Hand, steht der Weg auf „eingeschränkt“, bis wieder gesendet wird.
+
+- **Packen:** Alles, was in einer Aussendung zusammen rausgeht (Meldungen, Quittungen, Datei-Fragmente), packt RigVibe gemeinsam mit einem eingebauten Notfunk-Wörterbuch. Eine typische Lagemeldung schrumpft von 329 auf 168 Byte, eine Lagemeldung mit 2,3 kB Textdatei von 2,6 kB auf 1,2 kB. Bereits gepackte Dateien (JPEG, ZIP) werden nicht kleiner – sie gehen dann ungepackt raus. Das Packen gilt nur für diesen Weg; Meldungen und Prüfsummen bleiben unverändert.
+- **Fehlerschutz:** Daten gehen in Blöcken zu 64 Byte. Jeder Block trägt eine Prüfsumme und Reed-Solomon-Korrektur (bis zu 4 falsche Bytes je Block werden berichtigt). Nach je 8 Blöcken folgt ein Paritätsblock – fehlt ein Block ganz, wird er daraus ersetzt. Was trotzdem fehlt, fordert der Notfunk wie gewohnt nach.
+- **Grenzen:** nur zwischen Geräten mit RigVibe-Firmware ab Stand 10; eine Aussendung höchstens rund 14 s (2 kB), größere Mengen gehen in mehreren Aussendungen. Senden über Funk wie bei allen Funkwegen nur mit Rufzeichen und nach Freigabe (oder „automatisch“, wenn du das bewusst einschaltest).
+
+**Quansheng UV-K1/K5:** Außer dem Quansheng-Datenfunk trägt das Funkgerät Packet, KG-STV und SSTV. RigVibe zeigt unter **Funkwege → Geräte** nur, was das Gerät tatsächlich meldet: mit RigVibe-Firmware ab Stand 6 Senden und Empfang über USB ohne Soundkarte; ohne RigVibe-Firmware nur über die Soundkarte. Ein angeschlossenes Gerät allein schaltet keinen Weg frei.
+
+**Meshtastic:** Knoten im Reiter **Meshtastic** verbinden, im Notfunk den Weg einschalten und den Kanal wählen (alle Stationen im selben Kanal). Meshtastic läuft in Europa meist im lizenzfreien 868-MHz-Bereich – dort gelten die Regeln für Funkanlagen geringer Leistung, nicht die des Amateurfunks.
+
+**SSTV/KG-STV:** Bild unter **Bilder und Dateien** öffnen und „oder als Funkbild“ wählen. Die Aussendung ist eine bewusste Bedienhandlung mit Rufzeichen im Bild bzw. im Rufzeichenrahmen.
+
+### Pager (Funkruf an Pager im Umkreis)
+
+Die Ansicht **Pager** führt ein Verzeichnis von Funkrufempfängern (POCSAG): Rufzeichen, RIC (Pager-Adresse), Name und Standort.
+
+- **Füllen:** **DAPNET-Verzeichnis laden** holt alle Rufzeichen mit registrierten Pagern aus dem DAPNET (eigener DAPNET-Zugang unter Optionen → Funkruf). Dazu **CSV einlesen** (je Zeile `Rufzeichen;RIC;Name`) oder **Pager eintragen**. Das Verzeichnis bleibt gespeichert – es steht also auch zur Verfügung, wenn das Internet ausfällt.
+- **Umkreis:** RigVibe schätzt den Standort aus der BNetzA-Rufzeichenliste (Postleitzahl der veröffentlichten Anschrift, Mittelpunkt nach GeoNames) oder nimmt einen von Hand eingetragenen Locator. Mit **Umkreis … km** und **alle angezeigten wählen** gehen Rufe an alle Pager in der Nähe; einzelne wählst du per Klick. Ohne Standort erscheint ein Pager nie im Umkreis.
+- **Senden über das eigene Funkgerät:** POCSAG 1200 Bd auf der Funkruf-Frequenz aus den Optionen, mehrere Pager in einem Durchgang. Das Quansheng UV-K1/K5 sendet das ab RigVibe-Firmware Stand 9 direkt über den Funkchip (gemessen: 19 von 20 Rufen ohne einen Bitfehler); andere Geräte über ein sendefähiges SDR oder die Soundkarte. Dein Rufzeichen steht vorn im Text. Die Aussendung löst du selbst aus – vor dem Senden zeigt RigVibe Frequenz, Anzahl und Text.
+- **Senden über DAPNET:** an die Rufzeichen der gewählten Pager über die gewählten **Sendergruppen** (Liste mit Häkchen; mit DAPNET-Zugang kommt die echte Liste aus dem DAPNET, sonst Vorschläge wie `dl-all` und die Ländergruppen – ungeprüft). Je kleiner die Gruppe, desto weniger Sender werden belegt.
+- Pager sind **Einweg**: eine Zustellung wird nie bestätigt. Höchstens 80 Zeichen; Umlaute werden umschrieben.
+
+![Notfunk – Pager im Umkreis](bilder/69-notfunk-pager.png)
+
+### Protokoll, Speicher und Fehlerdiagnose
+
+Das **Protokoll** zeigt jede Aussendung, jeden Empfang, Heartbeats, Quittungen, Weiterleitungen, Freigaben und Fehler mit UTC-Zeit, Station, Meldung und Weg (Filter, CSV-Export). Alles liegt in einer eigenen Datenbank im RigVibe-Datenordner (`notfunk/`); Dateien werden nur einmal gespeichert. Abgeschlossene Meldungen und Protokolle werden nach 30 Tagen gelöscht, Dateien bleiben bis zur Speichergrenze (Vorgabe 500 MB). Nach einem Absturz oder Neustart kommt die Warteschlange vollständig zurück; Aussendungen, die gerade liefen, werden erneut eingereiht.
+
+![Notfunk – Protokoll](bilder/67-notfunk-protokoll.png)
+
+Häufige Ursachen, wenn nichts rausgeht:
+
+- **„kein geeigneter, bereiter Weg“:** Weg ausgeschaltet, Gerät oder Knoten nicht verbunden, kein Modem-Fenster offen oder die Datei ist zu groß für die bereiten Wege.
+- **„Freigabe nötig“:** Weg steht auf „von Hand“, personenbezogene Daten oder Weiterleitung über Funk.
+- **„Rufzeichen fehlt“:** über Funk wird ohne Rufzeichen nie gesendet.
+- **Netzwerk „keine Gegenstelle antwortet“:** Adresse, Netzzugang der Gegenstelle (Zugang & API) und API-Schlüssel prüfen; die Gegenstelle muss sich mit der eingetragenen Stationskennung melden.
+
+### Tests
+
+Die automatischen Tests liegen im Quelltext (`tests/test_notfunk.py`, `tests/notfunk_integration.py`). Für Funkwege ohne Hardware verwenden sie ausdrücklich gekennzeichnete **Simulationen**; in RigVibe selbst erscheinen simulierte Wege nur im Testbetrieb (`WW_NF_MOCK=1`) und mit Hinweis „SIMULATION“. Der Netzwerkweg wird mit drei echten RigVibe-Diensten geprüft, Packet, KG-STV und SSTV über eine nachgebildete Tonstrecke zwischen zwei Fenstern.
+
+![Notfunk – Konfiguration](bilder/68-notfunk-konfiguration.png)

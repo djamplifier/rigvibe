@@ -29,6 +29,7 @@ RigVibe is a program for the radio station: radio control, logbook, digital mode
 18. [Access, API and AI assistants](#18-access-api-and-ai-assistants)
 19. [Error reports and updates](#19-error-reports-and-updates)
 20. [Troubleshooting](#20-troubleshooting)
+21. [Emergency communication](#21-emergency-communication)
 
 The screenshots show the German interface; the English one is laid out identically.
 
@@ -1024,3 +1025,141 @@ What is new or fixed is shown in the progress window while downloading, and once
 | Something does not work as expected | Look at **Help → Error log**; **Download** saves it as a text file to pass on. |
 
 The status bar at the bottom always shows radio, cluster, WSJT-X and rotator – a right-click on it opens the matching settings.
+
+---
+
+## 21. Emergency communication
+
+The **Emergency** tab is a message system for amateur radio emergency communication. Stations exchange messages, status reports, images and files over whatever works at the moment: network (HAMNET, LAN, VPN), Meshtastic, packet radio, KG-STV/SSTV images, paging or, if all else fails, a USB stick. RigVibe keeps track of which remote station is really reachable over which transport, picks a suitable route, retries when needed and reassembles files at the receiver with a checksum check.
+
+> **Important:** RigVibe Emergency supports amateur radio emergency communication. It does **not** replace public safety (BOS) communication. The rules of the amateur service apply: give your call sign, no encryption, only permitted content and frequencies. Open radio links are not confidential.
+
+![Emergency – control panel and messages](bilder/61-notfunk-leitstand-en.png)
+
+### Roles: lighthouse and control station
+
+- **Lighthouse:** takes messages on site, numbers them and passes them to the responsible control station. If the preferred transport is down, the message stays stored and goes out over another transport or later.
+- **Control station:** collects the messages of several lighthouses, sees their state, acknowledges incoming messages, asks back and distributes messages to stations or **distribution lists** (e.g. “ALLE-LT”).
+
+Both roles use the same message format and the same transports. The role changes the window layout (the control station sees its inbox first, sorted by priority) and the forwarding defaults.
+
+### Setting up in five steps
+
+1. **Configuration:** enter a station ID (unique, e.g. `DM5MN-LT1`), call sign, role, region and the responsible control station. At the control station create distribution lists (one line each: `ALLE-LT: DM5MN-LT1, DL1ABC-LT2`).
+2. **Transports:** enable the transports you have and decide for each how it may transmit: **off** (receive only), **manual** (every transmission needs your approval) or **automatic**. Radio transports default to manual.
+3. **Network:** enter remote stations with station ID, address (e.g. `http://44.1.2.3:8088`) and their API key – on both sides. On the remote side allow network access under **Access & API**.
+4. **Radio modems:** for packet, KG-STV and SSTV tick “This window provides the radio modems” under **Transports** and start digital modes receive (sound card, SDR or Quansheng over USB).
+5. **Send a heartbeat:** with “Send heartbeat now” the stations announce themselves to each other. They then appear in the station list.
+
+![Emergency – transports](bilder/65-notfunk-funkwege-en.png)
+
+### Messages
+
+**New message** asks for destination (station, distribution list or `*` for all), priority (routine, important, urgent, emergency), category, type (text, alert/short message, status, query, image, file), subject, text, attachments and validity. Before sending, RigVibe shows the **planned route** – and whether approval is needed. Without a route the message stays stored in the queue.
+
+![Emergency – new message with route preview](bilder/60-notfunk-meldung-en.png)
+
+Every message gets a number made of station ID and a running count (e.g. `DM5MN-LT1-00042`). That lets every station detect duplicates – even if the same message arrives over two transports. The states:
+
+| State | Meaning |
+|---|---|
+| queued | stored, waiting for a ready transport or the next attempt |
+| approval needed | only goes out after your approval |
+| transmitting / sent | handed to the transport or actually transmitted – **not yet delivered** |
+| forwarded | a relay station has taken it over for forwarding |
+| delivered | the destination station acknowledged reception |
+| acknowledged | the operator at the destination confirmed it |
+| failed / expired | no receipt after all attempts or validity over – “Send again” queues it again |
+
+Acknowledge incoming messages with **Acknowledge** – the receipt goes to the originating station. **Reply** writes a query with reference, **Forward** passes the message on (control station) to other stations or distribution lists. **Export**/**Import** saves messages with attachments as an `.rvnf` file for the USB-stick route.
+
+![Emergency – messages with history](bilder/62-notfunk-meldungen-en.png)
+
+### Images and files
+
+Under **Images and files** you add images and files (up to 32 MB). Each file gets an ID derived from its SHA-256 checksum and is split into numbered fragments of 160 bytes; images automatically get a small preview. At the receiver the card shows progress, missing fragments and checksum errors. If something is missing after a pause, RigVibe re-requests exactly the missing fragments – also after a restart.
+
+- **Redundant:** the same file over several transports – the first complete, verified copy is enough.
+- **Bundled:** fragments of the same file may arrive over different transports; they are only combined if ID, fragmentation and checksum match.
+- **Too large for the transport:** large files wait for a fast transport; the preview goes ahead over slow transports (e.g. Meshtastic).
+
+![Emergency – images and files](bilder/63-notfunk-dateien-en.png)
+
+**Radio images:** images sent via KG-STV or SSTV are lossy. The receiver only stores them as **unverified radio images** – with the tag “NF <message> <object>” (KG-STV) or without (SSTV) – and never uses them as file fragments.
+
+### Stations and reachability
+
+The station list shows role, call sign, age of the last heartbeat, transports and capabilities of every station. **Reachable** means: confirmed in both directions over a transport and current. **Limited** means: only heard (return direction unconfirmed) or only known via a relay station. An old heartbeat never makes a station “reachable” – the information ages per transport (network 10 min, Meshtastic and packet 1 h).
+
+![Emergency – stations](bilder/64-notfunk-stationen-en.png)
+
+The **heartbeat** contains station ID, call sign, role, sequence number, time (UTC), overall state, the enabled transports with state and capabilities, the supported data types, the queue length and the freshly heard neighbour stations. No settings, passwords or IP addresses. Over radio, heartbeats only go out automatically if the transport is set to “automatic”; the interval is set per transport (default network 2 min, Meshtastic and packet 30 min).
+
+### Routing, forwarding and approvals
+
+For every transmission RigVibe picks the best ready transport: a confirmed link before a heard one, a heard one before a detour via a relay station, last a transport that is only locally ready (for first contact). Content type, size, data rate, queue and error rate are taken into account. Short alerts go over the fastest transport, large files only over transports that can carry them.
+
+- **Store-and-forward:** a station forwards messages for others if it hears the destination (from the neighbour's heartbeat). It confirms the takeover (“forwarded”), stores if needed and sends on. Loops are detected, the number of forwards is limited (default 4).
+- **Retries:** without a receipt RigVibe retries with growing waiting times (default 3 attempts), using another transport where possible.
+- **Manual route:** “Choose route …” in the message window (transport and optional relay station).
+- **Approvals:** everything that needs approval is listed under **Forwarding** – one by one or “Approve all”. Personal data over radio always needs approval.
+
+![Emergency – forwarding](bilder/66-notfunk-weiterleitung-en.png)
+
+### The transports in detail
+
+| Transport | Status | Notes |
+|---|---|---|
+| Network (HAMNET/LAN/VPN) | done | RigVibe ↔ RigVibe over HTTP, fast, also large files; enter remote stations on both sides |
+| Meshtastic | done, not tested with real hardware | data packets (port 256) via the node connected in the Meshtastic tab; at most 233 bytes per packet, 3.5 s gap; messages and preview images |
+| Packet 1200 Bd (AX.25 UI) | done, tested over a simulated audio path | own packet modem via sound card, SDR or Quansheng USB; UI frames to “RVNF”, sender is your call sign; about 70 bytes/s |
+| Quansheng data link (FSK 1200 Bd) | done, tested over the air with one K1 (transmission recorded and played back to the K1: 32 of 32 blocks, bit-identical) | two Quansheng radios with RigVibe firmware stage 10 or later exchange data directly through the radio chip – no sound card and no open window; compressed, with error correction; about 95 bytes/s, effectively around 160 bytes/s for messages thanks to compression |
+| Image via KG-STV | done, tested over a simulated audio path | sends an image (preview) with tag; received only as an unverified radio image |
+| Image via SSTV | done, tested over a simulated audio path | mode adjustable (default Robot 36); received as an unverified radio image |
+| Pager (DAPNET) | done | alerting only, at most 80 characters, one-way – never confirmed as delivered; automatic from an adjustable priority |
+| Storage medium | done | export/import of `.rvnf` files |
+| ARDOP, VARA, packet via Direwolf (connected) | **not implemented yet** | listed as “unavailable” |
+| Digital modes text (PSK, Olivia, MFSK …) | **not implemented yet** | these modes only carry unprotected text and are explicitly not offered as a data transport |
+
+**Quansheng data link:** with RigVibe firmware stage 10 or later the UV-K1/K5 has a data transport of its own: the radio chip itself sends and receives 2-FSK at 1200 Bd. Enable the transport, enter a common frequency under **Transports** (e.g. 433.500 MHz) and use the same one on all stations. RigVibe sets the radio to FM and keeps reception running; if you tune away by hand, the transport shows “degraded” until the next transmission.
+
+- **Compression:** everything that goes out together in one transmission (messages, acknowledgements, file fragments) is compressed together using a built-in emergency dictionary. A typical situation report shrinks from 329 to 168 bytes, a report with a 2.3 kB text file from 2.6 kB to 1.2 kB. Files that are already compressed (JPEG, ZIP) do not get smaller – they are sent uncompressed. Compression applies to this transport only; messages and checksums stay unchanged.
+- **Error protection:** data goes out in 64-byte blocks. Each block carries a checksum and Reed-Solomon correction (up to 4 wrong bytes per block are corrected). Every 8 blocks are followed by a parity block – if one block is lost entirely, it is rebuilt from it. Whatever is still missing is requested again by the emergency system as usual.
+- **Limits:** only between radios with RigVibe firmware stage 10 or later; one transmission is at most about 14 s (2 kB), larger amounts go out in several transmissions. As with every radio transport, sending only with a call sign and after approval (or “automatic” if you deliberately enable it).
+
+**Quansheng UV-K1/K5:** besides the Quansheng data link the radio carries packet, KG-STV and SSTV. Under **Transports → Devices** RigVibe only shows what the radio actually reports: with RigVibe firmware stage 6 or later, transmit and receive over USB without a sound card; without RigVibe firmware only via the sound card. A connected radio alone does not enable any transport.
+
+**Meshtastic:** connect the node in the **Meshtastic** tab, enable the transport in Emergency and choose the channel (all stations on the same channel). In Europe Meshtastic usually runs in the licence-free 868 MHz band – the rules for short-range devices apply there, not those of amateur radio.
+
+**SSTV/KG-STV:** open an image under **Images and files** and choose “or as radio image”. Transmitting is a deliberate operator action with the call sign in the picture or the call-sign frame.
+
+### Pagers (paging pagers nearby)
+
+The **Pagers** view keeps a directory of paging receivers (POCSAG): call sign, RIC (pager address), name and location.
+
+- **Filling it:** **Load DAPNET directory** fetches all call signs with registered pagers from DAPNET (your own DAPNET account under Options → Paging). In addition **Read CSV** (one line per pager: `callsign;RIC;name`) or **Add pager**. The directory is stored – so it is still there when the Internet fails.
+- **Radius:** RigVibe estimates the location from the BNetzA call sign list (postcode of the published address, centre point from GeoNames) or uses a locator entered by hand. With **Radius … km** and **select all shown** pages go to all pagers nearby; click to pick single ones. A pager without location never appears within a radius.
+- **Sending via your own radio:** POCSAG 1200 Bd on the paging frequency from the options, several pagers in one transmission. The Quansheng UV-K1/K5 does this directly through its radio chip from RigVibe firmware stage 9 (measured: 19 of 20 pages without a single bit error); other radios via a transmit-capable SDR or the sound card. Your call sign is put in front of the text. You trigger the transmission yourself – RigVibe shows frequency, number and text first.
+- **Sending via DAPNET:** to the call signs of the selected pagers via the selected **transmitter groups** (tick list; with a DAPNET account the real list comes from DAPNET, otherwise suggestions such as `dl-all` and the state groups – unverified). The smaller the group, the fewer transmitters are used.
+- Pagers are **one-way**: delivery is never confirmed. At most 80 characters; umlauts are transcribed.
+
+![Emergency – pagers nearby](bilder/69-notfunk-pager-en.png)
+
+### Log, storage and troubleshooting
+
+The **Log** shows every transmission, reception, heartbeat, receipt, forwarding, approval and error with UTC time, station, message and transport (filters, CSV export). Everything lives in its own database in the RigVibe data folder (`notfunk/`); files are stored only once. Finished messages and logs are deleted after 30 days, files are kept up to the storage limit (default 500 MB). After a crash or restart the queue comes back completely; transmissions that were running are queued again.
+
+![Emergency – log](bilder/67-notfunk-protokoll-en.png)
+
+Common reasons when nothing goes out:
+
+- **“no suitable transport ready”:** transport disabled, radio or node not connected, no modem window open, or the file is too large for the ready transports.
+- **“approval needed”:** transport set to manual, personal data or forwarding over radio.
+- **“call sign missing”:** RigVibe never transmits over radio without a call sign.
+- **Network “no remote station answers”:** check address, network access of the remote station (Access & API) and API key; the remote station must report the station ID you entered.
+
+### Tests
+
+The automated tests are part of the source (`tests/test_notfunk.py`, `tests/notfunk_integration.py`). For radio transports without hardware they use explicitly marked **simulations**; inside RigVibe simulated transports only appear in test mode (`WW_NF_MOCK=1`) and are labelled “SIMULATION”. The network transport is tested with three real RigVibe services, packet, KG-STV and SSTV over a simulated audio path between two windows.
+
+![Emergency – configuration](bilder/68-notfunk-konfiguration-en.png)
