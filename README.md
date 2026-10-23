@@ -3,16 +3,17 @@
 *(bis Version 1.4.3 „Wellenwerk“ – Einstellungen, Logbuch und Anordnung übernimmt RigVibe beim ersten Start automatisch)*
 
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
+Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.5.0)
+## Download (Version 1.6.0)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.5.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.5.0/RigVibe-1.5.0-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.5.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.5.0/RigVibe-1.5.0-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.5.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.5.0/RigVibe-1.5.0-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.5.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.5.0/RigVibe-1.5.0-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.5.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.5.0/rigvibe_1.5.0_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.5.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.5.0/RigVibe-1.5.0-Linux-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.6.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.6.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.6.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.6.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.6.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/rigvibe_1.6.0_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.6.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Linux-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -30,12 +31,14 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
   POTA/SOTA/WWFF mit Stationsprofilen, Filter-Bedingungen und gespeicherte Ansichten, QSO-Austausch mit N1MM, VarAC, JTAlert, GridTracker
 - **Digitalbetrieb**: Wasserfall, FT8 und FT4 (QSO per Klick mit automatischem Ablauf), JS8 (kompatibel zu JS8Call), PSK/QPSK, RTTY, CW, MFSK, DominoEX, THOR, Olivia, Contestia, Throb, MT63, Hellschreiben,
   SSTV (18 Bildmodi mit Vorlagen und Galerie), KG-STV, Digitalfunk (DMR, D-STAR, YSF, M17 aus dem Soundkarten-Ton), FreeDV (RADE V1/V2, 700D/700E/1600, mit FreeDV Reporter), Makros, RigVibe Sweeper (bis 16 Signale gleichzeitig),
-  Chat (Tastatur-QSO) über ARDOP, VARA, Packet und Telnet
+  Chat (Tastatur-QSO) über ARDOP, VARA, Packet und Telnet; Ton auch aus einem geöffneten websdr.org-Empfänger
+- **Notfunk**: Meldungen, Bilder und Dateien zwischen Leuchttürmen und Leitstelle mit Quittung und Weiterleitung – über Netzwerk, Meshtastic, Packet, ARDOP, VARA, gesicherten Text (PSK/RTTY/MFSK/Olivia), SSTV/KG-STV, Quansheng-Datenfunk, Funkruf oder Datenträger
 - **Signalerkennung per Klick**: Klick auf ein Signal im Wasserfall zeigt die Betriebsart (z. B. RTTY mit Baud/Shift, FT8, PSK31,
   SSTV mit Bildmodus, FreeDV RADE/700D/700E/1600, CW mit Tempo, Olivia, Sprache, AM) – SSTV und FreeDV schon nach 4 Sekunden – und öffnet auf Wunsch gleich den passenden Dekoder
 - **Empfänger ohne Funkgerät**: KiwiSDR, OpenWebRX, öffentliche Empfängerlisten, Wasserfall 2D/3D mit DX-Cluster- und POTA/SOTA/WWFF-Spots (Rufzeichen mit Flagge, Klick stimmt ab)
-- **Eigene SDRs**: RTL-SDR (auch V4), HackRF One und ADALM-Pluto direkt (Pluto auch im Netzwerk, mit automatischer Suche), Hermes Lite 2 im Netz; **Senden** mit HackRF, Pluto und Hermes Lite 2
-- **Handfunkgeräte Quansheng UV-K1 / UV-K5 V3** über USB-C: mit der mitgelieferten RigVibe-Firmware (Aufspielen per Assistent, ohne Zusatzprogramm) steuert RigVibe das Gerät komplett – Frequenz, Betriebsart, Leistung, Senden über USB, Rauschsperre, Bandübersicht, fester Tonpegel für die Soundkarte; Ton und Daten über das USB-C-Kabel ohne Soundkarte (APRS, Packet, SSTV, KG-STV, PSK, RTTY …), FT8/FT4/JS8 und echtes CW direkt mit dem Sender, Firmware-Updates über USB
+- **Eigene SDRs**: RTL-SDR (auch V4), HackRF One und ADALM-Pluto direkt (Pluto auch im Netzwerk, mit automatischer Suche), Hermes Lite 2 im Netz; **Senden** mit HackRF, Pluto und Hermes Lite 2; **UKW-Rundfunk mit RDS** (Sendername, Radiotext), **Schiffe (AIS)** und **Wettersonden (RS41)** selbst dekodiert, mit Weltkarte
+- **Handfunkgeräte Quansheng UV-K1 / UV-K5 V3** über USB-C: mit der mitgelieferten RigVibe-Firmware (Aufspielen per Assistent, ohne Zusatzprogramm) steuert RigVibe das Gerät komplett – Frequenz, Betriebsart, Leistung, Senden über USB, Rauschsperre, Bandübersicht, fester Tonpegel für die Soundkarte; Ton und Daten über das USB-C-Kabel ohne Soundkarte (APRS, Packet, SSTV, KG-STV, PSK, RTTY …), FT8/FT4/JS8 und echtes CW direkt mit dem Sender, **Packet 9600 Bd, D-STAR, DMR, YSF und M17** über USB-C, **AIS und Wettersonden**, Firmware-Updates über USB
+- **Relais & Suchlauf**: Relais im Umkreis mit Betriebsarten (Klick stimmt ab), schneller Bandscan mit dem Quansheng, Suchlauf über Relais oder eigene Frequenzen, der auf belegten Kanälen anhält – auch ohne Wasserfall
 - **QO-100**: Pluto mit LNB im Vollduplex, Uplink automatisch, LNB-Drift über die Bake ausgeglichen, Transponder-Bandplan, Satelliten-QSO im Logbuch (nur in den Amateurfunkbändern)
 - **Handy-Ansicht** (/m, als App installierbar): Gerät mit PTT, Wasserfall, Meshtastic, Winlink, APRS, Logbuch – von unterwegs über **Tailscale**
 - **APRS und Packet Radio** mit eigenem Modem: APRS-Karte im Umkreis (auch APRS-IS), Nachrichten mit Quittung, Bake mit eigenem Text, DOK und QRV-Frequenz, Packet-Chat (AX.25)
@@ -58,7 +61,13 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
 - **Erweiterungen** (Plugins), Oberfläche Deutsch/Englisch, automatische Aktualisierung, Rückmeldung an die Entwickler aus dem Programm
 - Andockbare Fenster (lösen, auf zweiten Bildschirm, Layouts speichern), Rechtsklick-Menüs überall
 
-**[➜ Ausführliche Anleitung mit Bildern](docs/Anleitung.md)** · **[English manual](docs/Manual.md)**
+## Aufbau
+- `wellenwerk/`: Dienst (Python/FastAPI), startet Hamlib `rigctld`/`rotctld`
+- `static/`: Oberfläche (HTML/JS), Signalverarbeitung der Digitalmodi in `static/js/dsp*.js`, `sstv.js`
+- `desktop/`: Desktop-Programm (Electron), startet den Dienst und zeigt die Oberfläche
+- `packaging/`: Paketbau des Dienstes (PyInstaller); `.github/workflows/build.yml` baut die Installationsprogramme
+
+**[➜ Ausführliche Anleitung mit Bildern](docs/Anleitung.md)**
 
 ## Installation (eigenes Programm, kein Browser)
 RigVibe ist ein Desktop-Programm mit eigenem Fenster; der Dienst und Hamlib (Funkgeräte-/Rotorsteuerung) sind eingebaut.
@@ -68,11 +77,10 @@ RigVibe ist ein Desktop-Programm mit eigenem Fenster; der Dienst und Hamlib (Fun
 
 Danach: Gerätesteuerung → Verbinden → Hersteller/Modell, COM-Port, Baudrate (oder „Baudrate suchen“), bei Icom die CI-V-Adresse.
 Daten liegen im Benutzerordner (Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`).
+Ohne Installation (Entwicklung): `pip install -r requirements.txt` und `python -m wellenwerk` (öffnet den Browser).
 
-
-## Fehler melden und Wünsche
-
-Fehler, Fragen und Ideen bitte als [Issue](https://github.com/djamplifier/rigvibe/issues) – RigVibe kann Programmfehler auf Wunsch auch selbst melden (Hilfe → Fehlerprotokoll).
+Pakete bauen: `python packaging/build.py` (Dienst, Ordner `dist/RigVibe`), dann in `desktop/` `npm install && npx electron-builder`.
+Für Windows, macOS (Apple Silicon und Intel) und Linux automatisch über `.github/workflows/build.yml` (GitHub Actions, Hamlib jeweils eingebaut).
 
 ## Lizenz
 
@@ -81,5 +89,3 @@ Für die Steuerung von Sendern und Rotoren und die Einhaltung der Amateurfunk-Vo
 Mitgelieferte Fremdkomponenten (u. a. Hamlib, LGPL 2.1) und ihre Lizenzen: [LIZENZEN.md](LIZENZEN.md).
 RigVibe ist ein eigenständiges Programm und steht in keiner Verbindung zu Herstellern anderer Funk-Software oder von Funkgeräten.
 
-
-Der Quelltext der bis Version 1.4.5 unter der GPL 3 veröffentlichten Fassungen liegt unter [Releases → GPL-Quelltexte](https://github.com/djamplifier/rigvibe/releases/tag/gpl-quelltexte).

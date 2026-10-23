@@ -144,7 +144,7 @@ The radio connects to the computer with its USB-C cable. **File → Connect → 
 
 RigVibe ships the matching firmware and installs it itself – no extra program, no port selection. Open the assistant via **Radio → Install Quansheng firmware …**, via the button when setting up (type “Quansheng”), or it opens by itself when a Quansheng without the current RigVibe firmware is connected.
 
-1. **Choose the firmware:** **RigVibe firmware (recommended)** – this is F4HWN Fusion 6.2.0 with all its features plus control by RigVibe. Installing F4HWN first is not necessary. **Original F4HWN Fusion firmware** goes back to the regular Fusion. **Next**.
+1. **Choose the firmware:** **RigVibe firmware (recommended)** – this is F4HWN Fusion 6.3.0 with all its features plus control by RigVibe. Installing F4HWN first is not necessary. **Original F4HWN Fusion firmware** goes back to the regular Fusion. **Next**.
 2. **Put the radio into update mode:** switch it off, **hold the transmit key (PTT) and switch it on** (the display stays blank), release the key, connect the USB-C cable.
 3. RigVibe detects the radio and writes the firmware (about 30 seconds, progress bar). The radio then restarts; a radio set up in RigVibe reconnects by itself.
 
@@ -165,11 +165,15 @@ RigVibe and the radio work as one device: the radio's own operating logic rests,
 With the RigVibe firmware version 6 or later, digital modes with the UV-K1 / UV-K5 V3 need no sound card, no APRS cable and no isolation transformers – just the USB-C cable:
 
 - **Receive:** the radio samples its receive audio itself (9.6 kHz) and sends it to RigVibe over USB-C. Digital modes take it automatically as input (“receiver”); APRS, packet, SSTV, RTTY and the other decoders work with it. Hum and clicks from ground loops cannot happen on this path.
-- **Transmit:** RigVibe turns the transmit audio into a sequence of tones that the radio's tone generator produces with exact timing; the service keys PTT and holds it exactly until the last tone. This works for **APRS and packet 1200 Bd, SSTV, KG-STV, RTTY, CW, DTMF, FT8, FT4, MFSK, DominoEX, THOR, Hellschreiber, PSK31/63/125, QPSK31/63/125, Olivia and Contestia**. For PSK, QPSK, Olivia and Contestia RigVibe generates a special form made of pure tones (constant level; for PSK the phase turns in the middle of the symbol via a briefly higher tone) – every other station decodes it as usual, fldigi included. With other radios and via a sound card RigVibe keeps sending the normal form. **MT63** (many simultaneous tones), **Throb** and voice still need a sound card – RigVibe says so. 9600 Bd packet does not work over USB.
+- **Transmit:** RigVibe turns the transmit audio into a sequence of tones that the radio's tone generator produces with exact timing; the service keys PTT and holds it exactly until the last tone. This works for **APRS and packet 1200 Bd, SSTV, KG-STV, RTTY, CW, DTMF, FT8, FT4, MFSK, DominoEX, THOR, Hellschreiber, PSK31/63/125, QPSK31/63/125, Olivia and Contestia**. For PSK, QPSK, Olivia and Contestia RigVibe generates a special form made of pure tones (constant level; for PSK the phase turns in the middle of the symbol via a briefly higher tone) – every other station decodes it as usual, fldigi included. With other radios and via a sound card RigVibe keeps sending the normal form. **MT63** (many simultaneous tones), **Throb** and voice still need a sound card – RigVibe says so. Transmitting 9600 Bd packet is not possible with the Quansheng (see below); receiving is, from version 12.
 - **Clock:** the UV-K1 has no crystal for its clock; it can be off by about 1 % (measured: 0.6 % slow). RigVibe keeps measuring the clock on the receive audio and corrects it for receiving and transmitting – otherwise SSTV pictures, for example, come out slanted. After connecting, the correction needs about 15 seconds of receive audio. From **version 7** the firmware also keeps tone changes on a fixed schedule and has twice the buffer – SSTV over USB then works cleanly in all modes; the assistant offers the update.
 - **Carrier keying (version 8 or later):** instead of a tone the firmware can retune the transmitter itself (10 Hz steps) and key the power amplifier. The Quansheng then sends **FT8, FT4 and JS8 Fast and Turbo in USB** like an SSB radio (tones are placed to within 10 Hz; FT8's error correction absorbs that – measured: clean decode, +11 dB) and **real CW** (carrier on/off instead of a tone in FM; in USB the carrier sits higher by the CW pitch, profile parameter `cw_pitch`, speed `wpm`). With the radio in FM, FT8/FT4 go out as a tone sequence in FM. POCSAG this way is not reliable yet (the synthesizer settles too slowly after each retune) – keep using a sound card or another device for it.
 - **Packet/APRS:** with the Quansheng, RigVibe selects normal FM at full bandwidth – the unfiltered data demodulator and the narrow bandwidth clearly worsen reception over USB (measured).
 - **Firmware updates over USB:** once version 6 is installed, the assistant installs new firmware over USB – no update mode, no key press: RigVibe writes it into a free firmware slot in the radio's memory, the radio checks the checksum, installs it and restarts (a few seconds). Settings, memory channels and calibration are kept. As a way back the firmware keeps a protected backup “Main”: hold **MENU** while switching on and choose “Main”.
+- **Version 11 (based on F4HWN Fusion 6.3.0):** the same RigVibe features on the latest F4HWN release; the wizard offers the update.
+- **Dropouts while transmitting:** RF picked up by the USB cable during transmission can reset the USB connection (F4HWN points this out too). Remedy: a short cable, antenna away from the cable and the computer, and if needed a clip-on ferrite suitable for 2 m/70 cm at the radio end.
+- **Receiving packet 9600 Bd (version 12 or later):** switch on **Packet 9600** in Radio control. RigVibe switches the radio chip to the unfiltered discriminator (like F4HWN's AIS app: high/low-pass, de-emphasis and AFC off, widest IF filter), the radio samples at 38.4 kHz and RigVibe decodes G3RUH/AX.25 itself – with an equaliser against the board's high- and low-pass, which defeats e.g. Direwolf. The packets show up as usual in the packet monitor, in APRS and in emergency communication. Measured: 20 of 20 packets over the air (HackRF as transmitter). When switched off, RigVibe restores the registers.
+- **Transmitting packet 9600 Bd:** not possible with the Quansheng. Measured: the radio chip's FSK unit clocks exactly at its tone generator, which reaches about 6,350 Hz at most (1,200, 4,800 and 6,000 bit/s confirmed); the tone sequence only produces tones, not baseband, and retuning the carrier takes 20–40 ms per change. To transmit 9600 Bd use a radio with a 9600 data jack or an SDR.
 
 #### With the regular F4HWN firmware
 
@@ -217,7 +221,7 @@ When a receiver is the current radio, the display only shows the bands it can re
 
 **Own address and parameters:** enter a receiver directly at the bottom of the tab. Parameters separated by `;`, e.g. `password=…; span=200; freq=7074; mode=USB; user=Name` (KiwiSDR) or `profile=40m; smeter_offset=-30` (OpenWebRX).
 
-**Digital modes:** choose **Receiver (WebSDR/KiwiSDR)** as input – PSK, RTTY, SSTV etc. then decode the receiver's audio.
+**Digital modes:** choose **Receiver (OpenWebRX/KiwiSDR/SDR)** as input – PSK, RTTY, FT8, SSTV, APRS etc. then decode the receiver's audio.
 
 **Your own SDR hardware** (bottom of the tab, “enter receiver directly”):
 - **RTL-SDR stick directly on USB:** choose the type **“RTL-SDR (USB direct)”**. RigVibe finds the stick and enters its serial number; leave the address empty. No extra program is needed; the driver library (RTL-SDR Blog version) is included in the desktop program. The **RTL-SDR Blog V4** receives shortwave from 500 kHz this way. Older sticks without a built-in converter need `direct=2` for shortwave. Further parameters: `gain=auto` or dB, `ppm=…`, `bias=1` (supply voltage for active antennas).
@@ -235,7 +239,7 @@ When a receiver is the current radio, the display only shows the bands it can re
 
 RigVibe computes spectrum, waterfall and audio (USB, LSB, CW, AM, FM) itself; the S-meter is not calibrated (`smeter_offset=…`).
 
-**WebSDR.org receivers** (University of Twente and others) have no open interface: **in the browser** opens their page on the current frequency.
+**WebSDR.org receivers** (University of Twente and others) have no open interface: **in the browser** opens their page on the current frequency – in the desktop program as a RigVibe window of its own. **Decoding:** in digital modes choose the input **WebSDR window / browser tab (take over audio)**. The desktop program then takes the audio of the WebSDR window; in the browser (Chrome/Edge) it asks which tab to share – pick the WebSDR tab and tick **Share tab audio**. Tested: APRS via the 2 m WebSDR Maasbree (36 frames in 5 minutes, Direwolf on the same audio 35), FT8 via Twente.
 
 Some OpenWebRX servers only admit listeners with a name. RigVibe logs in there automatically with your callsign from the program options (or the parameter `user=…`).
 
@@ -349,6 +353,20 @@ Below the frequency scale the waterfall shows what to expect where – a click o
 
 **Repeaters: no guessing.** A click on a repeater – or anywhere in its channel – takes the data from the database: for **DMR, D-STAR, YSF** RigVibe switches on the matching decoder of the OpenWebRX directly, for **FM repeaters** it also sets **offset and CTCSS tone** on a real radio. **TETRA repeaters** (marked “Tetra” next to the place in the DARC list, a continuous 25 kHz wide carrier in the waterfall) are only shown – RigVibe cannot make TETRA audible and leaves the radio unchanged. The card shows callsign, offset, tone or colour code, place, distance and source. Only frequencies that are in no list are determined by signal identification. The three kinds can be switched on and off under **F8 → Waterfall**. The lists are cached in the data folder and fetched again at most once a week.
 
+### Repeaters nearby, band scan and scanner
+
+**View → Repeaters & scan** (or the **Repeaters & scan** button in the toolbar) – mainly for handhelds without a waterfall such as the Quansheng.
+
+![Repeaters nearby](bilder/71-relais-suchlauf-en.png)
+
+- **Repeaters:** all repeaters nearby (DARC list, BrandMeister, hearham) with callsign, output frequency, mode (FM, DMR, D-STAR, YSF, M17 …), CTCSS or colour code, offset, place and distance – filterable by band, type, radius and search text. **A click tunes:** on a real radio with offset and CTCSS; for DMR, D-STAR, YSF and M17 RigVibe decodes the digital voice right away (callsign and talkgroup in **Data reception** and on the display). **Measure levels** shows with the Quansheng (RigVibe firmware) within about one second which repeaters are active right now.
+- **Band scan:** measures a range (2 m, 70 cm, only the repeater outputs or a custom range) using the Quansheng's band sweep – the whole 70 cm repeater band in about 2 seconds – and lists the signals found with their level above the noise; known repeaters are named. A click tunes, **continuous** keeps measuring.
+- **Scan** like a scanner radio: channels from the repeater list (with the filters of the Repeaters tab), favourites, quick memory or a band range. The scan **stops where there is activity**, stays as long as someone is talking and continues after the set quiet time. **Next** skips a channel for 30 seconds, **Lock out** leaves it out for this scan. Every activity is listed below with time, channel, level and duration; digital voice is decoded.
+
+![Scan](bilder/72-suchlauf-en.png)
+
+**Threshold above the noise:** RigVibe learns the noise floor of every channel and only stops when the signal is that many dB above it – the noise differs a lot between bands (measured on the K1: 2 m about 20 dB louder than 70 cm), and constant interference carriers do not stop the scan. **Quansheng with RigVibe firmware:** measured with the radio chip's band sweep without retuning (about 7 ms per channel, so 100 repeaters in less than a second). **Other radios:** the scan tunes channel by channel and reads the S-meter (slower); measuring levels and band scan need a band sweep.
+
 ### Signal identification by click
 
 **CW:** a click on a CW signal (mode CW, also automatically in the CW segment of the band plan) tunes and opens the **CW decoder**: it finds the tone of the signal and shows the text live with speed (WPM) until you close the window or retune. For SSB speech the identification no longer reports AM just because a speech peak or a neighbouring signal looks like a carrier – AM requires a narrow, steady carrier.
@@ -371,6 +389,7 @@ Where RigVibe can decode by itself, it decodes on trial to confirm; readable tex
 
 **Exact tuning:** a click is rarely spot on. After identification RigVibe therefore retunes by itself (note in the card, e.g. “tuned to signal centre (−240 Hz)”):
 - **Data signals and CW** (RTTY, PSK, Olivia, CW …): the measured signal centre is put exactly at 1500 Hz audio.
+- **SSTV:** the sync tone is put at 1200 Hz (where every SSTV receiver expects it). A click on the visible centre of an SSTV signal is otherwise about 250 Hz off; SSTV is recognised up to about ±550 Hz offset.
 - **SSB voice:** with USB/LSB the tuning point is not the centre of the signal but the suppressed carrier at the edge of the sideband. RigVibe measures where the voice starts in the audio (about 300 Hz above the carrier when tuned correctly) and tunes to the carrier. If the voice is in the wrong sideband, it switches to the right sideband and looks for the carrier at the upper edge. If the position cannot be determined reliably (radio filters cut off differently), the tuning is left unchanged.
 - **AM:** to the carrier. With an SDR waterfall RigVibe also recognises AM from the RF spectrum (carrier with two equally strong sidebands), even when the receiver is set to USB.
 
@@ -403,6 +422,16 @@ Also read by RigVibe itself:
 **Listening to voice:** see [Voice module (AMBE, optional)](#voice-module-ambe-optional).
 
 **Wireless sensors with your own SDRs:** RTL-SDR, HackRF and Pluto decode wireless sensors themselves – weather stations, thermometers, tyre pressure, smoke detectors, door and window contacts, remotes and Wireless M-Bus meters (water, heat, electricity). RigVibe ships **rtl_433** for this, which knows more than 250 device types. Tune to the frequency (433.92 MHz, 868.3 or 868.95 MHz for M-Bus meters, 315 or 915 MHz) and choose the **Wireless sensors** decoder in the **Data reception** window – or click a sensor signal in the waterfall. In the 868 MHz band RigVibe uses the higher sample rate M-Bus needs. Many meters encrypt their readings; RigVibe then shows manufacturer, device number and type but no reading.
+
+**Ships (AIS) and radiosondes with your own receivers:** RigVibe decodes AIS (ship positions, names, destinations on 161.975/162.025 MHz) and the **Vaisala RS41** radiosonde used by the German weather service (400–406 MHz, serial number, position, altitude, climb/descent rate) itself – with RTL-SDR, HackRF and Pluto (a wide channel straight from the IQ stream) and with the **Quansheng UV-K1/K5** from RigVibe firmware stage 12 via USB (wideband path with equalizer). In the **Data reception** window choose the receiver and the **AIS** or **Radiosondes RS41** decoder; on the Quansheng RigVibe sets frequency and mode itself and restores them when switched off. Messages appear in the list and on the **world map** (layer "Ships, sondes & APRS", sondes with their flight track). Good reception needs a clear view: ships are heard near coasts and rivers, sondes are launched twice a day (more often at some sites) and can then be heard within 200–300 km.
+
+![Data reception – ships (AIS) and RS41 radiosonde](bilder/73-ais-sonden-en.png)
+
+![World map – ships and radiosonde](bilder/74-karte-schiffe-sonden-en.png)
+
+**FM broadcast with RDS (your own SDRs):** RTL-SDR, HackRF and Pluto receive FM broadcast (87.5–108 MHz) in **WFM** mode – with their own wide channel, full-bandwidth audio (48 kHz, mono) and **RDS**: station name, programme type and radio text appear below the frequency, and the **Data reception** window also lists the programme identification (PI) and the time sent by the station. Choose WFM with the mode button or pick the **Broadcast (LW, MW, SW, FM)** band plan below the band buttons and press **UKW**. The Quansheng cannot do this: its FM radio chip has no RDS and its audio does not go over USB.
+
+![FM broadcast with RDS](bilder/75-ukw-rds-en.png)
 
 **More receiver decoders:** if an OpenWebRX+ offers them, the *Data reception* window and the card also provide **FT8, FT4, WSPR, JT65, JT9, FST4, Q65, MSK144, JS8Call** (with the name for the callsign), **PSK31/63, RTTY** (also the weather service's 50 Bd/450 Hz), **CW, NAVTEX, SITOR-B, DSC, AIS** (ships), **ADS-B/Mode S** (aircraft with ID, altitude, speed, position), **LoRa APRS, Meshtastic, MeshCom, MeshCore** and **FANET**. A click on 162 MHz (AIS), 1090 MHz (ADS-B), 433.775 MHz (LoRa APRS), 433.175 MHz (MeshCom), 869.5 MHz (Meshtastic), 156.525 MHz or the HF DSC frequencies and 490/518 kHz (NAVTEX) switches on the matching decoder directly; for detected FT8 etc. the card offers “Let the receiver decode”. Deliberately not offered: pagers outside the amateur bands (DAPNET paging see section “Paging”), selective calling/ZVEI, airline company data (ACARS, VDL2, HFDL), utility meters and LoRaWAN – receiving them is not permitted in Germany (§ 5 TDDDG). Marine radar (9 GHz) is outside the receivers' range. All messages are collected in **View → Data reception**; a decoder can also be chosen there by hand. A receiver reports which decoders it offers. Note: you hear digital voice only if the server outputs it; RigVibe shows the IDs and texts.
 
@@ -760,7 +789,7 @@ Choose **JS8 Normal**, **JS8 Fast**, **JS8 Turbo** or **JS8 Slow** (group JS8) �
 Mode **Digital voice** (group Digital voice) in digital modes, then **Receive**: RigVibe itself detects whether DMR, D-STAR, C4FM/YSF or M17 is being sent in the sound card audio (P25 and NXDN are only detected) and decodes callsign, destination or talkgroup, repeater and short text. The lines appear in the receive window and, as with the receivers, as **digital voice in the display**; with the optional voice module the speech can be heard too. Transmitting is not possible in this mode.
 
 - **Which audio:** ideally the unaltered demodulator (data jack "9600"/discriminator) – then all modes work. The speaker or headphone output lacks the low frequencies; D-STAR (two levels) copes well with that, DMR, YSF and M17 (four levels) mostly do not.
-- **Quansheng UV-K1/K5 with RigVibe firmware:** for the time of reception RigVibe switches to the raw demodulator at full bandwidth and back afterwards. Measured at the audio output with a USB sound card: **D-STAR 119 of 120** headers, DMR practically not. Without a sound card RigVibe uses the audio over USB-C – that is rarely enough for digital voice.
+- **Quansheng UV-K1/K5 with RigVibe firmware:** for the time of reception RigVibe switches to the raw demodulator at full bandwidth and back afterwards. Measured at the audio output with a USB sound card: **D-STAR 119 of 120** headers, DMR practically not. **Without a sound card (input = radio/receiver) digital voice works over USB-C from firmware stage 12 – better than via the sound card:** RigVibe then bypasses the audio filters of the radio chip, samples at 38.4 kHz and compensates the coupling on the board. Measured over the air, once the mode has been detected (the first transmission is used for detection): **D-STAR, DMR, YSF and M17 every transmission** with callsign or ID (previously over USB: DMR, YSF and M17 not detected at all).
 - **Reliable for all modes:** a receiver (SDR such as RTL-SDR/HackRF, KiwiSDR, OpenWebRX) – there RigVibe decodes from the unaltered demodulator (window **Receiver**, click the signal or use signal identification).
 
 ### FreeDV (digital voice)
@@ -813,6 +842,7 @@ With a transmit-capable SDR (ADALM-Pluto, HackRF One, Hermes Lite 2, parameter `
 
 - Switch on **Receive**. The mode is detected automatically at the start of the picture (VIS code); slant from inaccurate sound cards is corrected.
 - **Joining mid-picture:** if a picture is already running when you switch on or tune in, RigVibe detects the mode from the line timing after a few lines (Martin M1 after about 3 seconds) and decodes from there. The picture is marked **partial** and ends as soon as only noise remains. A weak VIS code that could not be read no longer matters either. Manual start still works: choose the mode and **Start now**.
+- **Off frequency?** If the sync tone is not exactly at 1200 Hz (click beside the centre, radio without CAT), the receiver compensates offsets up to about ±550 Hz by itself and follows the frequency during the picture.
 - Received pictures are saved automatically in **SSTV pictures** (gallery).
 - 18 modes: Martin M1/M2, Scottie S1/S2/DX, Robot 36/72, PD 50/90/120/160/180/240/290, Wraase SC2-180, Pasokon P3/P5/P7.
 
@@ -1118,14 +1148,27 @@ For every transmission RigVibe picks the best ready transport: a confirmed link 
 | Image via SSTV | done, tested over a simulated audio path | mode adjustable (default Robot 36); received as an unverified radio image |
 | Pager (DAPNET) | done | alerting only, at most 80 characters, one-way – never confirmed as delivered; automatic from an adjustable priority |
 | Storage medium | done | export/import of `.rvnf` files |
-| ARDOP, VARA, packet via Direwolf (connected) | **not implemented yet** | listed as “unavailable” |
-| Digital modes text (PSK, Olivia, MFSK …) | **not implemented yet** | these modes only carry unprotected text and are explicitly not offered as a data transport |
+| ARDOP (ARQ, HF) | done, tested with two real ardopcf modems | connected mode: RigVibe calls the other station, accepts calls and disconnects after an idle time; ARDOP acknowledges and repeats by itself; about 20–200 bytes/s |
+| VARA HF/FM (ARQ) | done, tested with two real VARA HF modems (4.9.0, unregistered) | like ARDOP, via the TCP interface of the VARA program (which you provide yourself) |
+| Packet via Direwolf (AGW, connected) | done, tested with two real Direwolf modems | AX.25 connected mode via Direwolf, QtSoundModem or AGWPE; every frame is acknowledged; no open window needed; about 50–80 bytes/s |
+| Digital modes text (PSK, RTTY, MFSK, Olivia …) | done, tested through the RigVibe modems with noise | every message as a protected text line “NFQ …” (Base32 with checksum); broken lines are dropped and resent via the acknowledgements; slow (1–15 characters/s) |
 
 **Quansheng data link:** with RigVibe firmware stage 10 or later the UV-K1/K5 has a data transport of its own: the radio chip itself sends and receives 2-FSK at 1200 Bd. Enable the transport, enter a common frequency under **Transports** (e.g. 433.500 MHz) and use the same one on all stations. RigVibe sets the radio to FM and keeps reception running; if you tune away by hand, the transport shows “degraded” until the next transmission.
 
 - **Compression:** everything that goes out together in one transmission (messages, acknowledgements, file fragments) is compressed together using a built-in emergency dictionary. A typical situation report shrinks from 329 to 168 bytes, a report with a 2.3 kB text file from 2.6 kB to 1.2 kB. Files that are already compressed (JPEG, ZIP) do not get smaller – they are sent uncompressed. Compression applies to this transport only; messages and checksums stay unchanged.
 - **Error protection:** data goes out in 64-byte blocks. Each block carries a checksum and Reed-Solomon correction (up to 4 wrong bytes per block are corrected). Every 8 blocks are followed by a parity block – if one block is lost entirely, it is rebuilt from it. Whatever is still missing is requested again by the emergency system as usual.
 - **Limits:** only between radios with RigVibe firmware stage 10 or later; one transmission is at most about 14 s (2 kB), larger amounts go out in several transmissions. As with every radio transport, sending only with a call sign and after approval (or “automatic” if you deliberately enable it).
+
+**ARDOP, VARA and packet (connected):** these transports use a modem program through its TCP interface – the same settings as Winlink (Program options → Winlink) or an address of its own on the transport. Under **Transports** enable the transport and enter the **peer stations**: station ID and callsign (if the ID is a callsign itself, that is enough). Before sending, RigVibe calls the peer; if a connection to it already exists, the data goes over it. The peer's acknowledgement comes back over the same connection. After the idle time (default 30 s) the calling side disconnects.
+
+- **Accept calls:** with “Accept calls” on (default) and sending not switched off, the transport waits for calls to your callsign. The modem acknowledges by itself – that is a transmission.
+- **Delivered** is only reported once the modem reports all data as acknowledged by the peer.
+- **One modem, one part of the program:** if you start Winlink or the chat on the same modem, the emergency transport stops accepting calls and takes over again afterwards. While an emergency connection is running, Winlink/chat waits until it has ended.
+- **Frequency:** optionally enter a frequency in kHz on the transport; RigVibe tunes the radio to it before calling and accepting.
+
+![Emergency – ARDOP transport with peer station](bilder/70-notfunk-arq-en.png)
+
+**Digital modes text:** for stations without an ARQ modem. Under **Transports** set the mode (e.g. PSK63, MFSK32, Olivia 8/500, Contestia) and the audio frequency – the same on all stations – and start reception in Digital modes (an open RigVibe window is needed). Every emergency frame goes out as a line `NFQ <data>` with a checksum; the lines are readable in other programs' receive windows too, but only RigVibe reassembles them. Measured through the RigVibe modems with noise: at 0 dB signal-to-noise ratio (2.5 kHz) the lines arrived in all offered modes; only with DominoEX 11 one line was lost in one of two runs. Expect 1–2 minutes for a short message in PSK31, about 30 seconds in MFSK32.
 
 **Quansheng UV-K1/K5:** besides the Quansheng data link the radio carries packet, KG-STV and SSTV. Under **Transports → Devices** RigVibe only shows what the radio actually reports: with RigVibe firmware stage 6 or later, transmit and receive over USB without a sound card; without RigVibe firmware only via the sound card. A connected radio alone does not enable any transport.
 
