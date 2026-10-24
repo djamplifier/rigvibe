@@ -175,8 +175,8 @@ def setup(ww):
         return
     ww.add_mode("meine-art", {
         "name": "Meine Betriebsart",
-        "senden": ["basisband"],            # Sendeformen, die die Erweiterung liefern kann: basisband, bitstrom, iq
-        "empfangen": ["diskriminator"],     # Empfangsformen, die sie braucht: diskriminator, iq
+        "senden": ["basisband"],            # Sendeformen, die die Erweiterung liefern kann: basisband, bitstrom, iq, symbole
+        "empfangen": ["diskriminator"],     # Empfangsformen, die sie braucht: diskriminator, iq, symbole
         "bandbreite_hz": 12500,             # belegte Kanalbreite (Bandprüfung, Kanalfilter des Empfangs)
         "hub_hz": 3000,                     # Nennhub: ±1,0 im Basisband = ±hub_hz
         "felder": [                         # Eingabefelder für die Aussendung (Typen wie bei "settings")
@@ -301,7 +301,7 @@ Für Aussendungen von Erweiterungen gilt dasselbe wie für RigVibes eigene Betri
 
 ### 10. Versionierung und Schnittstellen
 
-`ww.api_version` (jetzt `2`) und `ww.caps` (Menge der vorhandenen Funktionen, z. B. `tx.basisband`, `tx.iq`, `rx.iq`, `tx.trockenlauf`, `heard`, `audio`) – in der Oberfläche `ctx.apiVersion` und `ctx.caps`. Eine Erweiterung prüft damit, was die laufende RigVibe-Version kann, und meldet sauber, was fehlt.
+`ww.api_version` (jetzt `3`) und `ww.caps` (Menge der vorhandenen Funktionen, z. B. `tx.basisband`, `tx.iq`, `rx.iq`, `tx.trockenlauf`, `heard`, `audio`) – in der Oberfläche `ctx.apiVersion` und `ctx.caps`. Eine Erweiterung prüft damit, was die laufende RigVibe-Version kann, und meldet sauber, was fehlt.
 
 | Server `ww.…` | Oberfläche `ctx.…` | Bedeutung |
 |---|---|---|
@@ -315,6 +315,83 @@ Für Aussendungen von Erweiterungen gilt dasselbe wie für RigVibes eigene Betri
 HTTP (für Fremdprogramme, `/api/docs`): `GET /api/extmodes`, `GET /api/extmodes/wege`, `POST /api/extmodes/select`, `POST /api/extmodes/tx`, `POST /api/extmodes/tx/stop`, `POST /api/extmodes/notaus`, `POST /api/extmodes/kalibrieren`, `PUT /api/extmodes/<id>/felder|optionen`, `PUT /api/extmodes/geraet/<gerät>`, `GET /api/pluginlog/<id>`.
 
 **Grenzen:** Basisband über USB gibt es beim Quansheng nicht (siehe 3). Betriebsarten mit Mikrofon und Soundkarten-Wege brauchen ein offenes RigVibe-Fenster (Browser oder Programm); die Handy-Ansicht wählt und tastet, liefert aber kein Mikrofon für Erweiterungen. Eigene SDRs und der Bitstrom des Quansheng brauchen kein Fenster als Tonausgang.
+
+### 11. Sende- und Empfangsform „Symbole“ (ab api_version 3)
+
+Für Verfahren mit **fester Symbolrate und 2 oder 4 Frequenzstufen** muss eine Erweiterung keinen eigenen Modulator und Demodulator bauen. Sie liefert nur **Symbole** und bekommt beim Empfang **Symbole** zurück; ihr Teil bleibt reiner Inhalt (Kodierung, Rahmen, Prüfsummen). Impulsformung, Abtastrate, Kalibrierung, Vorentzerrung, Takt, Sync-Suche, Pegel und Polarität erledigt RigVibe an einer Stelle. `ww.caps` enthält dann `tx.symbole` und `rx.symbole`.
+
+Vollständiges Beispiel: **F8 → Erweiterungen → „Eigene Betriebsart: Symbole (4FSK-Text)“** (`beispiele/plugins/symbol-text/`).
+
+#### Senden
+
+```python
+ww.add_mode("meine-art", {
+    "senden": ["symbole"],
+    "symbole": {
+        "rate": 4800,                                   # Symbole je Sekunde, konstant
+        "stufen": 4,                                    # 2 oder 4
+        "form": {"art": "wurzelkosinus", "alpha": 0.2}, # oder {"art": "gauss", "bt": 0.5} oder {"art": "keine"}
+        "hub_hz": 1944,                                 # Abstand des äußersten Symbols zur Mitte (Hz)
+        "aussen": 3,                                    # Wert des äußersten Symbols (nur bei 4 Stufen)
+    },
+    "sender": lambda info: MeinSender(info),
+    ...
+})
+```
+
+| Stufen | Symbolwerte | Frequenzabweichung |
+|---|---|---|
+| 2 | `0`, `1` | `0` → −`hub_hz`, `1` → +`hub_hz` |
+| 4 | `+3`, `+1`, `−1`, `−3` | `wert / aussen × hub_hz` |
+
+**Positiv = höhere Sendefrequenz**; die Polarität des Geräts gleicht RigVibe aus (`weg["polaritaet"]`). Die Methoden `start()`, `fuellen(n)`, `stop()`, `abbruch()` bleiben, liefern aber **Symbole** (Liste oder `numpy`-Array ganzer Zahlen, `int8` genügt); `n` zählt Symbole; `None` aus `fuellen` beendet die Aussendung.
+
+RigVibe übernimmt:
+1. **Impulsformung** phasenlinear und auf Gleichanteil 1 normiert (eine Folge gleicher Symbole ergibt genau ihren Hub); Spanne 12 Symbole bei Wurzelkosinus, 6 bei Gauss.
+2. **Auslauf:** Das Ausschwingen des Filters geht noch hinaus, bevor die PTT fällt; `tx_ende.dauer` enthält es.
+3. **Abtastrate:** Der Impuls wird zu jedem Abtastzeitpunkt des Sendewegs ausgewertet – die Symbolrate stimmt genau, auch wenn sie kein ganzzahliger Teiler der Abtastrate ist.
+4. **Kalibrierung** (Hub, Polarität, Pegel je Gerät) und **Vorentzerrung** des Sendewegs (`vorentzerrer_fir`) wie beim Basisband.
+5. **FSK-Einheit:** Bei 2 Stufen mit `gauss` und passender Bitrate gibt RigVibe die Symbole als **Bitstrom** an eine FSK-Einheit (Quansheng ab Firmware 14), die die Formung selbst übernimmt. Die Erweiterung liefert in beiden Fällen dieselben Symbole.
+
+`weg["symbole"]` sagt, was das Gerät annimmt und welchen Weg RigVibe nimmt: `{"raten": [...], "stufen": [...], "formen": [...], "ueber": "basisband" | "bitstrom" | ""}`. Kann das Gerät die verlangte Kombination nicht, meldet RigVibe das **schon beim Wählen der Betriebsart** („Gerät nimmt 9600 Symbole/s mit 4 Stufen nicht an“). In `info["symbole"]` steht der gewählte Weg.
+
+#### Empfangen
+
+```python
+"empfangen": ["symbole"],
+"symbole_rx": {
+    "rate": 4800, "stufen": 4,
+    "form": {"art": "wurzelkosinus", "alpha": 0.2},             # Sendeform, für die der Optimalfilter gebaut wird
+    "syncs":   {"kopf": [3, 3, 1, -1, ...], "daten": [...]},     # Muster in Symbolwerten (wie oben)
+    "fenster": {"kopf": [0, 700], "daten": [72, 1944]},          # [Symbole vor Sync-Beginn, Symbole ab Sync-Beginn]
+    "schwelle": 0.8,                                             # optional, Sync-Schwelle (normierte Korrelation)
+    "pause_s": 0.8,                                              # optional, ab dieser Pause beginnt eine neue Aussendung
+},
+"empfaenger": lambda info: MeinEmpfaenger(info),
+```
+
+```python
+def rahmen(self, name, symbole, t):
+    # name: gefundener Sync; symbole: numpy float64, Länge vor + nach, Index `vor` = erstes Symbol des Syncs
+    # t: Unix-Zeit des Sync-Beginns
+```
+
+`symbole` sind **weiche Werte**, auf die Symbolwerte normiert (4 Stufen um ±3/±1; 2 Stufen um 0 und 1, `> 0,5` gilt als Eins). RigVibe übernimmt:
+1. **Ausgleich des Empfangswegs**, wo er bekannt ist (Quansheng roh: Hochpass der Platine, wie bei den eigenen Digitalfunk-Dekodern; `weg["hochpass_ausgleich"]`).
+2. **Optimalfilter** zur angemeldeten Form, Abtastung zum richtigen Zeitpunkt, **Symboltakt nachführen** (auch wenn der Takt des Geräts noch nicht gemessen ist; getestet bis ±0,7 %).
+3. **Sync-Suche** mit normierter Korrelation über alle Muster und alle Taktlagen; je Fundstelle **ein** Aufruf. Schwelle und Pausenzeit lassen sich auch in den Optionen der Betriebsart einstellen (Fenster der Betriebsart → **Test …**).
+4. **Pegel und Gleichanteil** aus dem gefundenen Sync (Ablage, Hubfehler des Senders) – die Symbole kommen normiert an.
+5. **Polarität je Aussendung:** Passt ein Muster nur gespiegelt, dreht RigVibe die Symbole um. Die Polarität gilt ab dem ersten sicheren Treffer bis zum Ende der Aussendung (Pause länger als `pause_s` plus Fensterlänge), damit gespiegelte Muster eines anderen Syncs nicht als Treffer zählen.
+6. **Reihenfolge und Fenster:** Aufrufe in der Reihenfolge der Fensterenden, Fenster dürfen sich überlappen; am Ende des Empfangs wird das letzte angefangene Fenster mit Rauschen aufgefüllt, damit der Abschluss einer Aussendung nicht verloren geht. Danach `ende()`.
+7. **Lücken:** Offene Fenster, die eine Lücke betreffen, werden nicht ausgeliefert; stattdessen kommt `luecke(t, dauer)`.
+
+Die Form `diskriminator` bleibt daneben bestehen; eine Erweiterung kann beide anmelden.
+
+#### Testen ohne Funkgerät
+
+**Trockenlauf mit Zurückspielen** führt die Symbole durch Impulsformung und Empfang. Im Fenster der Betriebsart unter **Test …** lassen sich Störungen einstellen: Rauschabstand, Pegelfehler (negativ = Polarität gedreht), Gleichanteil, Taktfehler in ppm und der Frequenzgang des Sendewegs. Bei Trockenlauf und Mitschnitt speichert RigVibe die Symbole, wie die Erweiterung sie lieferte, als `symbole-<betriebsart>-<zeit>.npy` neben dem Basisband (`tx_ende.symbole`).
+
+Über Funk geprüft (4FSK, 4 800 Symbole/s, Beispiel): Quansheng UV-K1 über USB-Soundkarte am Mikrofon (Vorentzerrer automatisch) → HackRF, und HackRF → UV-K1 über den rohen Diskriminator; eine Aufnahme des UV-K1 dekodiert auch mit um ±0,7 % falsch angenommenem Gerätetakt.
 
 ## Sicherheit
 

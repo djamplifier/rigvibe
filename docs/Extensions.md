@@ -179,8 +179,8 @@ def setup(ww):
         return
     ww.add_mode("my-mode", {
         "name": "My mode",
-        "senden": ["basisband"],            # transmit forms the extension can deliver: basisband, bitstrom, iq
-        "empfangen": ["diskriminator"],     # receive forms it needs: diskriminator, iq
+        "senden": ["basisband"],            # transmit forms the extension can deliver: basisband, bitstrom, iq, symbole
+        "empfangen": ["diskriminator"],     # receive forms it needs: diskriminator, iq, symbole
         "bandbreite_hz": 12500,             # occupied channel width (band check, receive channel filter)
         "hub_hz": 3000,                     # nominal deviation: ±1.0 baseband = ±hub_hz
         "felder": [                         # input fields for a transmission (types as in "settings")
@@ -305,7 +305,7 @@ Transmissions of extensions follow the same rules as RigVibe's own modes: own ca
 
 ### 10. Versioning and interfaces
 
-`ww.api_version` (now `2`) and `ww.caps` (set of available functions, e.g. `tx.basisband`, `tx.iq`, `rx.iq`, `tx.trockenlauf`, `heard`, `audio`) – in the interface `ctx.apiVersion` and `ctx.caps`. An extension checks with them what the running RigVibe version can do and reports cleanly what is missing.
+`ww.api_version` (now `3`) and `ww.caps` (set of available functions, e.g. `tx.basisband`, `tx.iq`, `rx.iq`, `tx.trockenlauf`, `heard`, `audio`) – in the interface `ctx.apiVersion` and `ctx.caps`. An extension checks with them what the running RigVibe version can do and reports cleanly what is missing.
 
 | Server `ww.…` | Interface `ctx.…` | Meaning |
 |---|---|---|
@@ -319,6 +319,83 @@ Transmissions of extensions follow the same rules as RigVibe's own modes: own ca
 HTTP (for other programs, `/api/docs`): `GET /api/extmodes`, `GET /api/extmodes/wege`, `POST /api/extmodes/select`, `POST /api/extmodes/tx`, `POST /api/extmodes/tx/stop`, `POST /api/extmodes/notaus`, `POST /api/extmodes/kalibrieren`, `PUT /api/extmodes/<id>/felder|optionen`, `PUT /api/extmodes/geraet/<radio>`, `GET /api/pluginlog/<id>`.
 
 **Limits:** baseband over USB does not exist on the Quansheng (see 3). Modes with microphone and sound card paths need an open RigVibe window (browser or program); the phone view selects and keys, but does not supply a microphone for extensions. Own SDRs and the Quansheng's bit stream need no window as audio output.
+
+### 11. Transmit and receive form “symbols” (`symbole`, api_version 3 or later)
+
+For schemes with a **fixed symbol rate and 2 or 4 frequency levels** an extension does not need its own modulator and demodulator. It only delivers **symbols** and gets **symbols** back when receiving; its part stays pure content (coding, framing, checksums). Pulse shaping, sample rate, calibration, pre-equalization, clock, sync search, level and polarity are handled by RigVibe in one place. `ww.caps` then contains `tx.symbole` and `rx.symbole`.
+
+Complete example: **F8 → Extensions → “Eigene Betriebsart: Symbole (4FSK-Text)”** (`beispiele/plugins/symbol-text/`).
+
+#### Transmitting
+
+```python
+ww.add_mode("my-mode", {
+    "senden": ["symbole"],
+    "symbole": {
+        "rate": 4800,                                   # symbols per second, constant
+        "stufen": 4,                                    # levels: 2 or 4
+        "form": {"art": "wurzelkosinus", "alpha": 0.2}, # root raised cosine, or {"art": "gauss", "bt": 0.5} or {"art": "keine"}
+        "hub_hz": 1944,                                 # distance of the outermost symbol from the centre (Hz)
+        "aussen": 3,                                    # value of the outermost symbol (4 levels only)
+    },
+    "sender": lambda info: MySender(info),
+    ...
+})
+```
+
+| Levels | Symbol values | Frequency deviation |
+|---|---|---|
+| 2 | `0`, `1` | `0` → −`hub_hz`, `1` → +`hub_hz` |
+| 4 | `+3`, `+1`, `−1`, `−3` | `value / aussen × hub_hz` |
+
+**Positive = higher transmit frequency**; RigVibe compensates the radio's polarity (`weg["polaritaet"]`). The methods `start()`, `fuellen(n)`, `stop()`, `abbruch()` stay, but return **symbols** (list or `numpy` array of integers, `int8` is enough); `n` counts symbols; `None` from `fuellen` ends the transmission.
+
+RigVibe takes care of:
+1. **Pulse shaping**, linear phase and normalized to DC gain 1 (a run of equal symbols gives exactly their deviation); span 12 symbols for root raised cosine, 6 for Gauss.
+2. **Tail:** the filter's ring-out is still transmitted before PTT is released; `tx_ende.dauer` includes it.
+3. **Sample rate:** the pulse is evaluated at every sample time of the transmit path – the symbol rate is exact even when it does not divide the sample rate.
+4. **Calibration** (deviation, polarity, level per radio) and **pre-equalization** of the transmit path (`vorentzerrer_fir`) as for baseband.
+5. **FSK unit:** with 2 levels, `gauss` and a matching bit rate RigVibe passes the symbols as a **bit stream** to an FSK unit (Quansheng from firmware 14), which does the shaping itself. The extension delivers the same symbols in both cases.
+
+`weg["symbole"]` tells what the radio accepts and which path RigVibe takes: `{"raten": [...], "stufen": [...], "formen": [...], "ueber": "basisband" | "bitstrom" | ""}`. If the radio cannot do the requested combination, RigVibe reports it **already when the mode is selected** (“Gerät nimmt 9600 Symbole/s mit 4 Stufen nicht an”). `info["symbole"]` contains the chosen path.
+
+#### Receiving
+
+```python
+"empfangen": ["symbole"],
+"symbole_rx": {
+    "rate": 4800, "stufen": 4,
+    "form": {"art": "wurzelkosinus", "alpha": 0.2},             # transmit shape the matched filter is built for
+    "syncs":   {"kopf": [3, 3, 1, -1, ...], "daten": [...]},     # patterns in symbol values (as above)
+    "fenster": {"kopf": [0, 700], "daten": [72, 1944]},          # window: [symbols before sync start, symbols from sync start]
+    "schwelle": 0.8,                                             # optional sync threshold (normalized correlation)
+    "pause_s": 0.8,                                              # optional: after this pause a new transmission begins
+},
+"empfaenger": lambda info: MyReceiver(info),
+```
+
+```python
+def rahmen(self, name, symbole, t):
+    # name: sync found; symbole: numpy float64, length before + after, index `before` = first symbol of the sync
+    # t: Unix time of the sync start
+```
+
+`symbole` are **soft values** normalized to the symbol values (4 levels around ±3/±1; 2 levels around 0 and 1, `> 0.5` counts as one). RigVibe takes care of:
+1. **Compensating the receive path** where it is known (Quansheng raw: the board's high-pass, as for the built-in digital voice decoders; `weg["hochpass_ausgleich"]`).
+2. **Matched filter** for the registered shape, sampling at the right time, **symbol clock tracking** (also before the radio's clock has been measured; tested up to ±0.7 %).
+3. **Sync search** with normalized correlation over all patterns and all clock phases; **one** call per occurrence. Threshold and pause can also be set in the mode's options (mode window → **Test …**).
+4. **Level and DC** estimated from the sync found (offset, deviation error of the transmitter) – the symbols arrive normalized.
+5. **Polarity per transmission:** if a pattern only matches inverted, RigVibe inverts the symbols. The polarity holds from the first sure hit to the end of the transmission (pause longer than `pause_s` plus window length), so that mirrored patterns of another sync do not count as hits.
+6. **Order and windows:** calls in the order of the window ends, windows may overlap; at the end of reception the last open window is padded with noise so that the end of a transmission is not lost. Then `ende()`.
+7. **Gaps:** open windows affected by a gap are not delivered; `luecke(t, dauer)` is called instead.
+
+The form `diskriminator` remains available; an extension can register both.
+
+#### Testing without a radio
+
+A **dry run with play back** passes the symbols through pulse shaping and reception. In the mode window under **Test …** impairments can be set: signal-to-noise ratio, level error (negative = polarity inverted), DC offset, clock error in ppm and the frequency response of the transmit path. For dry runs and recordings RigVibe saves the symbols as delivered by the extension as `symbole-<mode>-<time>.npy` next to the baseband (`tx_ende.symbole`).
+
+Verified over the air (4FSK, 4800 symbols/s, example): Quansheng UV-K1 via a USB sound card into the microphone input (pre-equalization automatic) → HackRF, and HackRF → UV-K1 via the raw discriminator; a UV-K1 recording also decodes with the radio clock assumed ±0.7 % wrong.
 
 ## Security
 
