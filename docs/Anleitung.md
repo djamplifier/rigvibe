@@ -165,6 +165,7 @@ Mit der RigVibe-Firmware ab Stand 6 braucht der Digitalbetrieb mit dem UV-K1 / U
 - **Packet/APRS:** RigVibe stellt beim Quansheng normale FM in voller Bandbreite ein – der ungefilterte Daten-Demodulator und die schmale Bandbreite verschlechtern über USB den Empfang deutlich (gemessen).
 - **Firmware-Updates über USB:** Ist Stand 6 einmal drauf, spielt der Assistent neue Firmware über USB ein – ohne Update-Modus und ohne Tastendruck: RigVibe schreibt sie in ein freies Firmware-Fach im Speicher des Funkgeräts, das Funkgerät prüft die Prüfsumme, spielt sie ein und startet neu (wenige Sekunden). Einstellungen, Speicherkanäle und Abgleich bleiben. Als Rückweg hält die Firmware eine geschützte Sicherung „Main“: **MENU** beim Einschalten halten, „Main“ wählen.
 - **Stand 11 (Basis F4HWN Fusion 6.3.0):** gleiche RigVibe-Funktionen auf der neuesten F4HWN-Fassung; der Assistent bietet das Update an.
+- **Stand 13 und 14 (für Erweiterungs-Betriebsarten):** flacher Sende-Tonweg über die Mikrofonbuchse (Chip-Filter, Preemphasis, Kompander und Mikrofon-Regelung während der Aussendung aus) und **fortlaufender Bitstrom über die FSK-Einheit** – 1 200 bis 6 000 bit/s ohne Längengrenze, ohne Soundkarte. Beides nutzen Erweiterungen mit eigener Betriebsart (siehe Kapitel „Zugang, API und KI-Assistenten“ → Eigene Betriebsarten).
 - **Aussetzer beim Senden:** HF, die beim Senden auf das USB-Kabel gelangt, kann die USB-Verbindung zurücksetzen (auch F4HWN weist darauf hin). Abhilfe: kurzes Kabel, Antenne vom Kabel und vom Rechner weg, bei Bedarf einen für 2 m/70 cm geeigneten Klappferrit am Funkgerät-Ende.
 - **Packet 9600 Bd empfangen (ab Stand 12):** In der Gerätesteuerung **Packet 9600** einschalten. RigVibe schaltet den Funkchip auf den ungefilterten Diskriminator (wie die AIS-App von F4HWN: Hoch-/Tiefpass, Deemphasis und AFC aus, breitestes ZF-Filter), das Funkgerät tastet mit 38,4 kHz ab, und RigVibe dekodiert G3RUH/AX.25 selbst – mit einem Entzerrer gegen den Hoch- und Tiefpass auf der Platine, an dem z. B. Direwolf scheitert. Die Pakete erscheinen wie gewohnt im Packet-Monitor, bei APRS und im Notfunk. Gemessen: 20 von 20 Paketen über Funk (HackRF als Sender). Beim Ausschalten stellt RigVibe die Register wieder her.
 - **Packet 9600 Bd senden:** geht mit dem Quansheng nicht. Gemessen: Die FSK-Einheit des Funkchips taktet genau mit ihrem Tongenerator, der höchstens etwa 6 350 Hz erreicht (1 200, 4 800 und 6 000 bit/s bestätigt); die Tonfolge erzeugt nur Töne, kein Basisband, und das Umstimmen des Trägers dauert 20–40 ms je Wechsel. Für 9600 Bd senden: ein Funkgerät mit 9600-Daten-Buchse oder ein SDR.
@@ -757,11 +758,18 @@ Betriebsart **JS8 Normal**, **JS8 Fast**, **JS8 Turbo** oder **JS8 Slow** (Grupp
 
 ![Digitalfunk im Digitalbetrieb (Beispiel D-STAR)](bilder/56-digitalfunk.png)
 
-Betriebsart **Digitalfunk** (Gruppe Digitalfunk) im Digitalbetrieb, dann **Empfang**: RigVibe erkennt im Ton der Soundkarte selbst, ob DMR, D-STAR, C4FM/YSF oder M17 gesendet wird (P25 und NXDN werden nur erkannt), und dekodiert Rufzeichen, Ziel bzw. Sprechgruppe, Relais und Kurztext. Die Zeilen erscheinen im Empfangsfenster und wie bei den Empfängern als **Digitalfunk im Display**; Senden geht in dieser Betriebsart nicht.
+Betriebsart **Digitalfunk** (Gruppe Digitalfunk) im Digitalbetrieb, dann **Empfang**: RigVibe erkennt im Ton der Soundkarte selbst, ob DMR, D-STAR, C4FM/YSF oder M17 gesendet wird (P25 und NXDN werden nur erkannt), und dekodiert Rufzeichen, Ziel bzw. Sprechgruppe, Relais und Kurztext. Die Zeilen erscheinen im Empfangsfenster und wie bei den Empfängern als **Digitalfunk im Display**. Senden geht in dieser Betriebsart mit **M17** (siehe unten).
 
 - **Welcher Ton:** am besten der unverfälschte Demodulator (Datenbuchse „9600“/Diskriminator) – dann klappen alle Verfahren. Am Lautsprecher- bzw. Kopfhörerausgang fehlen die tiefen Töne; das verkraftet D-STAR (zwei Stufen) gut, DMR, YSF und M17 (vier Stufen) meist nicht.
 - **Quansheng UV-K1/K5 mit RigVibe-Firmware:** RigVibe schaltet für die Dauer des Empfangs auf den Roh-Demodulator in voller Bandbreite und danach zurück. Gemessen am Tonausgang mit USB-Soundkarte: **D-STAR 119 von 120** Funkköpfen, DMR praktisch nicht. **Ohne Soundkarte (Eingang = Funkgerät/Empfänger) geht Digitalfunk ab Firmware Stand 12 über USB-C – besser als über die Soundkarte:** RigVibe umgeht dann die Tonfilter des Funkchips, tastet mit 38,4 kHz ab und gleicht die Kopplung auf der Platine aus. Über Funk gemessen, sobald das Verfahren erkannt ist (der erste Durchgang dient der Erkennung): **D-STAR, DMR, YSF und M17 jeder Durchgang** mit Rufzeichen bzw. ID (vorher über USB: DMR, YSF und M17 gar nicht erkannt).
 - **Sicher für alle Verfahren:** ein Empfänger (SDR wie RTL-SDR/HackRF, KiwiSDR, OpenWebRX) – dort dekodiert RigVibe aus dem unverfälschten Demodulator (Fenster **Empfänger**, Signal anklicken bzw. Signal-Erkennung).
+
+**M17 senden** (Sprache mit Codec2, frei): In der Betriebsart Digitalfunk steht in der Sendeleiste **🎙 M17**. Drücken: RigVibe schaltet die PTT und sendet, während du ins Mikrofon sprichst – in Echtzeit mit etwa einer Viertelsekunde Verzögerung (Absender = dein Rufzeichen, **Ziel** z. B. `@ALL`, ein Rufzeichen oder Reflektor-Modul). Das Signal geht über den **Ausgang** (Soundkarte) in den Mikrofoneingang des FM-Funkgeräts. Noch einmal drücken beendet den Durchgang; nach 5 Minuten endet er von selbst.
+
+- **Pegel:** Der Sendepegel bestimmt den Hub. Voller M17-Hub (2,4 kHz) beim Quansheng UV-K1 mit USB-Soundkarte: etwa **17 %**. Zu viel Pegel begrenzt das Funkgerät und das Signal wird unlesbar.
+- **Tonweg:** Der Mikrofonweg eines Handfunkgeräts ist für Sprache gebaut (Tiefen gedämpft, Überhöhung um 125 Hz, Abfall über 3 kHz). **Quansheng** gleicht den am UV-K1 gemessenen Frequenzgang vor dem Senden aus; **flach** sendet ohne Ausgleich (für Geräte mit Datenbuchse „9600“).
+- **Frequenz:** Der Quansheng sendete im Versuch etwa 2,9 kHz neben der eingestellten Frequenz; M17-Empfänger gleichen das meist aus.
+- Gemessen über Funk (UV-K1 → HackRF): mit Ausgleich kommen Rufzeichen und Ton durch, ohne Ausgleich ist etwa jedes fünfte Symbol falsch.
 
 ### FreeDV (digitale Sprache)
 
@@ -987,193 +995,8 @@ Einstellungen unter **F8 → Zugang & API**.
 
 **Erweiterungen:** Unter **F8 → Erweiterungen** lassen sich Erweiterungen (Plugins) installieren (ZIP), ein- und ausschalten und einstellen. Ein Beispiel liegt bei. Wie man selbst welche schreibt, steht in der [Anleitung für Entwickler](Erweiterungen.md) (im Programm: Link im selben Reiter). Erweiterungen bekommen die Stationsdaten und alle Ereignisse automatisch mit. Schnittstellen für Erweiterungen: **Oberfläche** (eigene Fenster, Register, Menüpunkte), **Server** (eigene API-Funktionen, Ereignisse, Funkgerät, Logbuch), **Empfänger-Arten** (eigene Empfänger anbinden) und die **Rahmen-Schnittstelle** (Nutzrahmen von DMR, D-STAR, YSF und M17 aus dem eigenen Dekodieren entgegennehmen und Ton zurückgeben).
 
-> **Senden** (PTT, CW, Winlink über Funk) dürfen Assistenten nur, wenn **„KI-Assistenten dürfen senden“** eingeschaltet ist. Für alles, was ausgesendet wird, bleibt die Funkamateurin bzw. der Funkamateur verantwortlich.
+**Eigene Betriebsarten aus Erweiterungen:** Eine Erweiterung kann eine komplette Betriebsart mitbringen (Kodierung, Modulation, Dekodierung) – RigVibe stellt Gerät, PTT, Mikrofon, Ton und Anzeige. Sie wird wie eine eigene Betriebsart behandelt: Sie steht in jeder Betriebsartenwahl (Mode-Taste am Funkgerät, Bänder & Betriebsarten, Digitalbetrieb, Handy), lässt sich in Favoriten und Speicherkanälen ablegen, und die Signalerkennung (Klick in den Wasserfall, Suchlauf) erkennt bzw. probiert sie mit und schaltet in ihren Weg. Bedient wird sie im Fenster **Erweiterungs-Betriebsart** (Gerätesteuerung bzw. Digitalbetrieb → Ansicht). Solange sie gewählt ist, gehen **alle** PTT-Wege dieses Geräts (Sendetaste, Leertaste, MIDI, Handy, Sprachspeicher) über die Erweiterung, mit denselben Sperren wie sonst: Rufzeichen, Amateurfunkband, Höchstdauer, Sendesperre, **Not-Aus**. Während gesendet wird, steht oben **„sendet (Erweiterung …)“** – ein Klick oder `Esc` beendet.
 
-## 19. Fehlerbericht und Aktualisierung
+![Erweiterungs-Betriebsart – Beispiel FSK-Text im Trockenlauf](bilder/76-erweiterungs-betriebsart.png)
 
-**RigVibe ist eine experimentelle Alpha-Version** – nicht alles funktioniert schon fehlerfrei. Darauf weist ein Hinweis beim Öffnen hin (abschaltbar bis zur nächsten Version, wieder aufrufbar unter **Hilfe → Hinweis zur Alpha-Version**). Jeder Nutzer hilft, das Programm zu verbessern, indem er es testet und Probleme meldet.
-
-**Feedback / Problem melden** (Menü **Hilfe** oder das orange **Alpha**-Zeichen unten rechts): Art wählen, das Problem mit eigenen Worten beschreiben, auf Wunsch Fehlerprotokoll und Systemdaten anhängen (keine Passwörter). **Abschicken** sendet die Meldung per E-Mail an die unter *Fehler & Updates* eingetragene Adresse; **Auf GitHub melden** öffnet eine vorausgefüllte Meldung im öffentlichen Projekt (GitHub-Konto nötig).
-
-**F8 → Fehler & Updates.**
-
-**Anonyme Nutzerzählung:** Ein laufendes RigVibe meldet sich alle 10 Minuten bei der Annahmestelle der Entwickler. Daraus entsteht die Anzeige „RigVibe online“ (Zahl der Nutzer und Länder) auf der Seite des Entwicklers. Übertragen werden nur eine zufällige Programm-Nummer (Datei `instanz-id` im Datenordner) und die Versionsnummer. Das Land ermittelt der Empfangsdienst (Cloudflare) aus der Verbindung. Gespeichert werden weder IP-Adresse noch Rufzeichen oder Standort; nach 25 Minuten ohne Meldung verschwindet der Eintrag, beim Beenden sofort. Abschalten: Haken *Anonym als „online“ mitzählen lassen* entfernen.
-
-**Fehlerbericht per E-Mail:** RigVibe sammelt Programmfehler aus Dienst, Oberfläche und Desktop-Programm im **Fehlerprotokoll** (**Hilfe → Fehlerprotokoll**). Mit *Fehler automatisch per E-Mail melden* geht etwa eine Minute nach einem Fehler eine Nachricht an die eingetragene Adresse – höchstens eine je eingestelltem Zeitraum (Vorgabe 30 Minuten) und höchstens 20 am Tag. Gleiche Fehler werden zusammengefasst, Passwörter und Schlüssel unkenntlich gemacht. Für den Versand ein E-Mail-Konto eintragen (SMTP-Server, Port, Benutzername, Passwort – z. B. bei freenet `mx.freenet.de`, Port 587, STARTTLS). Ohne Konto versucht RigVibe, die Nachricht direkt zuzustellen; das lehnen viele Anbieter ab. **Testnachricht senden** prüft die Einstellungen.
-
-**Aktualisierung:** Bei jedem Start sieht RigVibe nach, ob es auf GitHub eine neuere Version gibt.
-
-| Einstellung | Verhalten |
-|---|---|
-| beim Start automatisch installieren (Vorgabe) | Desktop-Programm: lädt das passende Paket (mit Prüfsumme), installiert es und startet neu – ein kleines Fenster zeigt den Fortschritt, **Überspringen** startet die bisherige Version. Server (Linux, aus dem Quellcode): tauscht die Programmdateien aus, installiert geänderte Python-Pakete und startet neu; der alte Stand liegt als Sicherung in `data/update/`. |
-| nur melden | Hinweis in der Oberfläche; installieren über **Hilfe → Nach Updates suchen**. |
-| nicht prüfen | keine Abfrage |
-
-Was neu ist oder behoben wurde, zeigt das Fortschrittsfenster schon während des Ladens; beim ersten Start der neuen Version erscheint es noch einmal als Hinweis (jederzeit wieder: **Hilfe → Neuerungen dieser Version**). Ein Server, der dauerhaft läuft, prüft zusätzlich einmal am Tag. Während gesendet wird, installiert RigVibe nicht. Unter macOS braucht das Programm Schreibrecht im Programme-Ordner; sonst öffnet RigVibe das neue Installationsabbild zum Hineinziehen. Unter Linux wird ein .deb-Paket mit `pkexec` (Passwortabfrage) installiert, ein AppImage einfach ersetzt.
-
-## 20. Probleme lösen
-
-| Problem | Lösung |
-|---|---|
-| „Funkgerät antwortet nicht“ | COM-Port und Baudrate prüfen (**Baudrate suchen**), bei Icom die CI-V-Adresse. Kein anderes Programm darf denselben COM-Port belegen – andere Programme stattdessen über „Für andere Programme“ (Hamlib NET rigctl) anbinden. |
-| Kein COM-Port in der Liste | USB-Treiber des Funkgeräts installieren, Kabel neu stecken, Dialog neu öffnen. Linux: Gruppe `dialout`. |
-| Kein Ton im Digitalbetrieb | Richtigen **Eingang** wählen; macOS: Mikrofonzugriff für RigVibe erlauben (*Systemeinstellungen → Datenschutz → Mikrofon*). |
-| Sendesignal verzerrt | **Pegel** verringern, Funkgerät-ALC beobachten, Sprachprozessor aus. |
-| PTT schaltet nicht | Im Verbinden-Dialog **PTT über** prüfen (CAT, DTR oder RTS). |
-| Panadapter bleibt leer | Icom: Scope im Gerät einschalten, „CI-V USB Port“ auf Unlinked, 115200 Baud, Haken „Panadapter“ im Verbinden-Dialog. IQ: richtigen Stereo-Eingang wählen. |
-| WSJT-X-QSOs kommen nicht an | In WSJT-X UDP-Server `127.0.0.1`, Port 2237; die Statuszeile unten zeigt „WSJT-X“ grün, sobald Daten ankommen. |
-| Cluster verbindet nicht | Rufzeichen in den Optionen eintragen; anderen Server probieren. |
-| Etwas funktioniert nicht wie erwartet | **Hilfe → Fehlerprotokoll** ansehen; **Herunterladen** speichert es als Textdatei zum Weitergeben. |
-
-Die Statuszeile unten zeigt jederzeit Funkgerät, Cluster, WSJT-X und Rotor – ein Rechtsklick darauf öffnet die passenden Einstellungen.
-
----
-
-## 21. Notfunk
-
-Der Reiter **Notfunk** ist ein eigenes Meldungssystem für den Amateurfunk-Notfunk. Stationen tauschen Meldungen, Statusangaben, Bilder und Dateien über die Wege aus, die gerade funktionieren: Netzwerk (HAMNET, LAN, VPN), Meshtastic, Packet-Funk, KG-STV/SSTV-Bilder, Funkruf oder notfalls einen USB-Stick. RigVibe merkt sich, welche Gegenstation über welchen Weg wirklich erreichbar ist, wählt den passenden Weg, wiederholt bei Bedarf und setzt Dateien beim Empfänger geprüft wieder zusammen.
-
-> **Wichtig:** RigVibe Notfunk ergänzt die Kommunikation im Amateurfunk-Notfunk. Es ersetzt **keine** BOS-Kommunikation. Es gelten die Regeln des Amateurfunkdienstes: Rufzeichen nennen, keine Verschlüsselung, nur zulässige Inhalte und Frequenzen. Offene Funkwege sind nicht vertraulich.
-
-![Notfunk – Leitstand und Meldungen](bilder/61-notfunk-leitstand.png)
-
-### Rollen: Leuchtturm und Leitstelle
-
-- **Leuchtturm:** nimmt vor Ort Meldungen auf, vergibt Meldungsnummern und gibt sie an die zuständige Leitstelle weiter. Ist der bevorzugte Weg weg, bleibt die Meldung gespeichert und geht über einen anderen Weg oder später raus.
-- **Leitstelle:** sammelt die Meldungen mehrerer Leuchttürme, sieht deren Zustand, bestätigt Eingänge, stellt Rückfragen und verteilt Meldungen an Stationen oder **Verteiler** (z. B. „ALLE-LT“).
-
-Beide Rollen nutzen dasselbe Meldungsformat und dieselben Wege. Die Rolle ändert die Fensteranordnung (die Leitstelle sieht zuerst den Eingang, sortiert nach Priorität) und die Vorgaben für die Weiterleitung.
-
-### Einrichten in fünf Schritten
-
-1. **Konfiguration:** Stationskennung (eindeutig, z. B. `DM5MN-LT1`), Rufzeichen, Rolle, Region und die zuständige Leitstelle eintragen. Bei der Leitstelle Verteiler anlegen (eine Zeile je Verteiler: `ALLE-LT: DM5MN-LT1, DL1ABC-LT2`).
-2. **Funkwege:** die vorhandenen Wege einschalten und für jeden festlegen, wie gesendet werden darf: **aus** (nur empfangen), **von Hand** (jede Aussendung braucht deine Freigabe) oder **automatisch**. Über Funk steht die Vorgabe auf „von Hand“.
-3. **Netzwerk:** Gegenstellen mit Stationskennung, Adresse (z. B. `http://44.1.2.3:8088`) und deren API-Schlüssel eintragen – auf beiden Seiten. Auf der Gegenstelle unter **Zugang & API** den Netzzugang freigeben.
-4. **Funkmodems:** für Packet, KG-STV und SSTV im Reiter **Funkwege** „Dieses Fenster stellt die Funkmodems bereit“ anhaken und den Empfang im Digitalbetrieb starten (Soundkarte, SDR oder Quansheng über USB).
-5. **Heartbeat senden:** mit „Heartbeat jetzt senden“ melden sich die Stationen gegenseitig an. Danach stehen sie in der Stationsliste.
-
-![Notfunk – Funkwege](bilder/65-notfunk-funkwege.png)
-
-### Meldungen
-
-**Neue Meldung** fragt nach Ziel (Station, Verteiler oder `*` für alle), Priorität (Routine, Wichtig, Dringend, Notfall), Kategorie, Art (Text, Alarm/Kurzmeldung, Status, Rückfrage, Bild, Datei), Betreff, Text, Anhängen und Gültigkeit. Vor dem Senden zeigt RigVibe den **vorgesehenen Weg** – und ob eine Freigabe nötig ist. Ohne Weg bleibt die Meldung gespeichert in der Warteschlange.
-
-![Notfunk – neue Meldung mit Wegevorschau](bilder/60-notfunk-meldung.png)
-
-Jede Meldung bekommt eine Nummer aus Stationskennung und laufender Zahl (z. B. `DM5MN-LT1-00042`). Damit erkennt jede Station Duplikate – auch wenn dieselbe Meldung über zwei Wege ankommt. Die Zustände:
-
-| Zustand | Bedeutung |
-|---|---|
-| wartet | gespeichert, wartet auf einen bereiten Weg oder den nächsten Versuch |
-| Freigabe nötig | geht erst nach deiner Freigabe raus |
-| wird gesendet / ausgesendet | an den Weg übergeben bzw. tatsächlich ausgesendet – **noch keine Zustellung** |
-| weitergeleitet | eine Zwischenstation hat sie zur Weiterleitung übernommen |
-| zugestellt | die Zielstation hat den Empfang quittiert |
-| bestätigt | der Bediener am Ziel hat sie bestätigt |
-| fehlgeschlagen / abgelaufen | keine Quittung nach allen Versuchen bzw. Gültigkeit vorbei – „Erneut senden“ reiht wieder ein |
-
-Eingegangene Meldungen bestätigst du mit **Bestätigen** – die Quittung geht an die Quellstation. **Antworten** schreibt eine Rückfrage mit Bezug, **Weiterleiten** gibt die Meldung (Leitstelle) an andere Stationen oder Verteiler weiter. **Export**/**Import** speichert Meldungen mit Anhängen als `.rvnf`-Datei für den Weg per USB-Stick.
-
-![Notfunk – Meldungen mit Verlauf](bilder/62-notfunk-meldungen.png)
-
-### Bilder und Dateien
-
-Unter **Bilder und Dateien** übernimmst du Bilder und Dateien (bis 32 MB). Jede Datei bekommt eine Kennung aus ihrer SHA-256-Prüfsumme und wird in nummerierte Fragmente zu 160 Byte zerlegt; Bilder erhalten automatisch eine kleine Vorschau. Beim Empfänger zeigt die Karte den Fortschritt, fehlende Fragmente und Prüfsummenfehler. Fehlt nach einer Pause etwas, fordert RigVibe die fehlenden Fragmente gezielt nach – auch nach einem Neustart.
-
-- **Redundant:** dieselbe Datei über mehrere Wege – die erste vollständige, geprüfte Kopie genügt.
-- **Gebündelt:** Fragmente derselben Datei dürfen über verschiedene Wege ankommen; zusammengesetzt wird nur, wenn Kennung, Fragmentierung und Prüfsumme passen.
-- **Zu groß für den Weg:** große Dateien warten auf einen schnellen Weg; die Vorschau geht vorab über langsame Wege (z. B. Meshtastic).
-
-![Notfunk – Bilder und Dateien](bilder/63-notfunk-dateien.png)
-
-**Funkbilder:** Über KG-STV oder SSTV gesendete Bilder sind verlustbehaftet. Sie werden beim Empfänger nur als **nicht verifizierte Funkbilder** abgelegt – mit der Kennung „NF <Meldung> <Objekt>“ (KG-STV) oder ohne (SSTV) – und nie als Datei-Fragmente verwendet.
-
-### Stationen und Erreichbarkeit
-
-Die Stationsliste zeigt Rolle, Rufzeichen, Alter des letzten Heartbeats, Wege und Fähigkeiten jeder Station. **Erreichbar** heißt: über einen Weg in beiden Richtungen bestätigt und aktuell. **Eingeschränkt** heißt: nur gehört (Rückrichtung unbestätigt) oder nur über eine Zwischenstation bekannt. Ein alter Heartbeat macht eine Station nie „erreichbar“ – die Angaben veralten je Weg (Netzwerk 10 min, Meshtastic und Packet 1 h).
-
-![Notfunk – Stationen](bilder/64-notfunk-stationen.png)
-
-Der **Heartbeat** enthält Stationskennung, Rufzeichen, Rolle, Folgenummer, Zeit (UTC), Gesamtzustand, die eingeschalteten Wege mit Zustand und Fähigkeiten, die unterstützten Datenarten, die Länge der Warteschlange und die frisch gehörten Nachbarstationen. Keine Einstellungen, Passwörter oder IP-Adressen. Über Funk gehen Heartbeats nur automatisch raus, wenn der Weg auf „automatisch“ steht; das Intervall ist je Weg einstellbar (Vorgabe Netzwerk 2 min, Meshtastic und Packet 30 min).
-
-### Wegewahl, Weiterleitung und Freigaben
-
-RigVibe wählt für jede Aussendung den besten bereiten Weg: bestätigte Verbindung vor gehörter, gehörte vor dem Umweg über eine Zwischenstation, zuletzt ein nur lokal bereiter Weg (für den Erstkontakt). Berücksichtigt werden Inhaltsart, Größe, Datenrate, Warteschlange und Fehlerquote. Kurze Alarme gehen über den schnellsten Weg, große Dateien nur über Wege, die sie tragen.
-
-- **Store-and-forward:** eine Station leitet Meldungen für andere weiter, wenn sie das Ziel hört (aus dem Heartbeat des Nachbarn). Sie quittiert die Übernahme („weitergeleitet“), speichert bei Bedarf und sendet weiter. Schleifen werden erkannt, die Zahl der Weiterleitungen ist begrenzt (Vorgabe 4).
-- **Wiederholung:** ohne Quittung wiederholt RigVibe mit wachsender Wartezeit (Vorgabe 3 Versuche) und nimmt dabei, wenn möglich, einen anderen Weg.
-- **Weg von Hand:** im Meldungsfenster „Weg wählen …“ (Weg und optional Zwischenstation).
-- **Freigaben:** alles, was eine Freigabe braucht, steht unter **Weiterleitung** – einzeln oder „Alle freigeben“. Personenbezogene Daten brauchen über Funk immer eine Freigabe.
-
-![Notfunk – Weiterleitung](bilder/66-notfunk-weiterleitung.png)
-
-### Die Wege im Einzelnen
-
-| Weg | Stand | Hinweise |
-|---|---|---|
-| Netzwerk (HAMNET/LAN/VPN) | fertig | RigVibe ↔ RigVibe per HTTP, schnell, auch große Dateien; Gegenstellen auf beiden Seiten eintragen |
-| Meshtastic | fertig, nicht mit echter Hardware getestet | Datenpakete (Port 256) über den im Reiter Meshtastic verbundenen Knoten; höchstens 233 Byte je Paket, Abstand 3,5 s; Meldungen und Vorschaubilder |
-| Packet 1200 Bd (AX.25-UI) | fertig, über nachgebildete Tonstrecke geprüft | eigenes Packet-Modem über Soundkarte, SDR oder Quansheng-USB; UI-Rahmen an „RVNF“, Absender ist dein Rufzeichen; etwa 70 Byte/s |
-| Quansheng-Datenfunk (FSK 1200 Bd) | fertig, mit einem K1 über Funk geprüft (Aussendung aufgenommen und dem K1 wieder vorgespielt: 32 von 32 Blöcken, bitgleich) | zwei Quansheng mit RigVibe-Firmware ab Stand 10 tauschen Daten direkt über den Funkchip aus – ohne Soundkarte und ohne offenes Fenster; gepackt, mit Fehlerkorrektur; etwa 95 Byte/s, durch das Packen bei Meldungen effektiv rund 160 Byte/s |
-| Bild über KG-STV | fertig, über nachgebildete Tonstrecke geprüft | sendet ein Bild (Vorschau) mit Kennung; Empfang nur als nicht verifiziertes Funkbild |
-| Bild über SSTV | fertig, über nachgebildete Tonstrecke geprüft | Modus einstellbar (Vorgabe Robot 36); Empfang als nicht verifiziertes Funkbild |
-| Funkruf (DAPNET) | fertig | nur Alarmierung, höchstens 80 Zeichen, Einweg – nie als zugestellt bestätigt; automatisch ab einstellbarer Priorität |
-| Datenträger | fertig | Export/Import von `.rvnf`-Dateien |
-| ARDOP (ARQ, Kurzwelle) | fertig, mit zwei echten ardopcf-Modems geprüft | Verbindungsbetrieb: RigVibe ruft die Gegenstation an, nimmt Anrufe an und baut nach einer Ruhezeit ab; ARDOP quittiert und wiederholt selbst; etwa 20–200 Byte/s |
-| VARA HF/FM (ARQ) | fertig, mit zwei echten VARA-HF-Modems (4.9.0, unregistriert) geprüft | wie ARDOP über die TCP-Schnittstelle des VARA-Programms (das du selbst stellst) |
-| Packet über Direwolf (AGW, verbunden) | fertig, mit zwei echten Direwolf-Modems geprüft | AX.25-Verbindungsbetrieb über Direwolf, QtSoundModem oder AGWPE; jeder Rahmen wird quittiert; kein offenes Fenster nötig; etwa 50–80 Byte/s |
-| Digitalbetrieb Text (PSK, RTTY, MFSK, Olivia …) | fertig, über die RigVibe-Modems mit Rauschen geprüft | jede Meldung als gesicherte Textzeile „NFQ …“ (Base32 mit Prüfsumme); kaputte Zeilen werden verworfen und über die Quittungen neu gesendet; langsam (1–15 Zeichen/s) |
-
-**Quansheng-Datenfunk:** Mit RigVibe-Firmware ab Stand 10 hat das UV-K1/K5 einen eigenen Datenweg: Der Funkchip sendet und empfängt 2-FSK mit 1200 Bd selbst. Weg einschalten, unter **Funkwege** eine gemeinsame Frequenz eintragen (z. B. 433,500 MHz) und auf allen Stationen dieselbe wählen. RigVibe stellt das Gerät auf FM und lässt den Empfang laufen; verstellst du die Frequenz von Hand, steht der Weg auf „eingeschränkt“, bis wieder gesendet wird.
-
-- **Packen:** Alles, was in einer Aussendung zusammen rausgeht (Meldungen, Quittungen, Datei-Fragmente), packt RigVibe gemeinsam mit einem eingebauten Notfunk-Wörterbuch. Eine typische Lagemeldung schrumpft von 329 auf 168 Byte, eine Lagemeldung mit 2,3 kB Textdatei von 2,6 kB auf 1,2 kB. Bereits gepackte Dateien (JPEG, ZIP) werden nicht kleiner – sie gehen dann ungepackt raus. Das Packen gilt nur für diesen Weg; Meldungen und Prüfsummen bleiben unverändert.
-- **Fehlerschutz:** Daten gehen in Blöcken zu 64 Byte. Jeder Block trägt eine Prüfsumme und Reed-Solomon-Korrektur (bis zu 4 falsche Bytes je Block werden berichtigt). Nach je 8 Blöcken folgt ein Paritätsblock – fehlt ein Block ganz, wird er daraus ersetzt. Was trotzdem fehlt, fordert der Notfunk wie gewohnt nach.
-- **Grenzen:** nur zwischen Geräten mit RigVibe-Firmware ab Stand 10; eine Aussendung höchstens rund 14 s (2 kB), größere Mengen gehen in mehreren Aussendungen. Senden über Funk wie bei allen Funkwegen nur mit Rufzeichen und nach Freigabe (oder „automatisch“, wenn du das bewusst einschaltest).
-
-**ARDOP, VARA und Packet (verbunden):** Diese Wege nutzen ein Modem-Programm an seiner TCP-Schnittstelle – dieselben Einstellungen wie bei Winlink (Programmoptionen → Winlink) oder eine eigene Adresse beim Weg. Unter **Funkwege** den Weg einschalten und die **Gegenstationen** eintragen: Stationskennung und Rufzeichen (ist die Kennung selbst ein Rufzeichen, genügt sie). Vor dem Senden ruft RigVibe die Gegenstation an; besteht schon eine Verbindung zu ihr, gehen die Daten darüber. Die Quittung der Gegenstation läuft über dieselbe Verbindung zurück. Nach der eingestellten Ruhezeit (Vorgabe 30 s) trennt die anrufende Seite.
-
-- **Anrufe annehmen:** Ist „Anrufe annehmen“ an (Vorgabe) und Senden nicht ausgeschaltet, wartet der Weg auf Anrufe an dein Rufzeichen. Das Modem quittiert dabei selbst – das ist eine Aussendung.
-- **Zugestellt** meldet der Weg erst, wenn das Modem alle Daten als von der Gegenstation quittiert meldet.
-- **Ein Modem, ein Programmteil:** Startest du Winlink oder den Chat über dasselbe Modem, hört der Notfunk-Weg auf, Anrufe anzunehmen, und übernimmt danach wieder. Läuft gerade eine Notfunk-Verbindung, wartet Winlink/Chat, bis sie beendet ist.
-- **Frequenz:** Optional trägst du beim Weg eine Frequenz in kHz ein; RigVibe stellt das Funkgerät vor Anruf und Annahme darauf.
-
-![Notfunk – ARDOP-Weg mit Gegenstation](bilder/70-notfunk-arq.png)
-
-**Digitalbetrieb Text:** Für Stationen ohne ARQ-Modem. Unter **Funkwege** Betriebsart (z. B. PSK63, MFSK32, Olivia 8/500, Contestia) und Tonfrequenz einstellen – auf allen Stationen gleich – und im Digitalbetrieb den Empfang starten (offenes RigVibe-Fenster nötig). Jeder Notfunk-Rahmen geht als Zeile `NFQ <Daten>` mit Prüfsumme raus, die Zeilen sind auch im Empfangsfenster anderer Programme lesbar, aber nur RigVibe setzt sie zusammen. Gemessen über die RigVibe-Modems mit Rauschen: bei 0 dB Rauschabstand (2,5 kHz) kamen in allen angebotenen Betriebsarten die Zeilen an, nur bei DominoEX 11 ging in einem von zwei Durchläufen eine Zeile verloren. Rechne mit 1–2 Minuten für eine kurze Meldung bei PSK31, etwa 30 Sekunden bei MFSK32.
-
-**Quansheng UV-K1/K5:** Außer dem Quansheng-Datenfunk trägt das Funkgerät Packet, KG-STV und SSTV. RigVibe zeigt unter **Funkwege → Geräte** nur, was das Gerät tatsächlich meldet: mit RigVibe-Firmware ab Stand 6 Senden und Empfang über USB ohne Soundkarte; ohne RigVibe-Firmware nur über die Soundkarte. Ein angeschlossenes Gerät allein schaltet keinen Weg frei.
-
-**Meshtastic:** Knoten im Reiter **Meshtastic** verbinden, im Notfunk den Weg einschalten und den Kanal wählen (alle Stationen im selben Kanal). Meshtastic läuft in Europa meist im lizenzfreien 868-MHz-Bereich – dort gelten die Regeln für Funkanlagen geringer Leistung, nicht die des Amateurfunks.
-
-**SSTV/KG-STV:** Bild unter **Bilder und Dateien** öffnen und „oder als Funkbild“ wählen. Die Aussendung ist eine bewusste Bedienhandlung mit Rufzeichen im Bild bzw. im Rufzeichenrahmen.
-
-### Pager (Funkruf an Pager im Umkreis)
-
-Die Ansicht **Pager** führt ein Verzeichnis von Funkrufempfängern (POCSAG): Rufzeichen, RIC (Pager-Adresse), Name und Standort.
-
-- **Füllen:** **DAPNET-Verzeichnis laden** holt alle Rufzeichen mit registrierten Pagern aus dem DAPNET (eigener DAPNET-Zugang unter Optionen → Funkruf). Dazu **CSV einlesen** (je Zeile `Rufzeichen;RIC;Name`) oder **Pager eintragen**. Das Verzeichnis bleibt gespeichert – es steht also auch zur Verfügung, wenn das Internet ausfällt.
-- **Umkreis:** RigVibe schätzt den Standort aus der BNetzA-Rufzeichenliste (Postleitzahl der veröffentlichten Anschrift, Mittelpunkt nach GeoNames) oder nimmt einen von Hand eingetragenen Locator. Mit **Umkreis … km** und **alle angezeigten wählen** gehen Rufe an alle Pager in der Nähe; einzelne wählst du per Klick. Ohne Standort erscheint ein Pager nie im Umkreis.
-- **Senden über das eigene Funkgerät:** POCSAG 1200 Bd auf der Funkruf-Frequenz aus den Optionen, mehrere Pager in einem Durchgang. Das Quansheng UV-K1/K5 sendet das ab RigVibe-Firmware Stand 9 direkt über den Funkchip (gemessen: 19 von 20 Rufen ohne einen Bitfehler); andere Geräte über ein sendefähiges SDR oder die Soundkarte. Dein Rufzeichen steht vorn im Text. Die Aussendung löst du selbst aus – vor dem Senden zeigt RigVibe Frequenz, Anzahl und Text.
-- **Senden über DAPNET:** an die Rufzeichen der gewählten Pager über die gewählten **Sendergruppen** (Liste mit Häkchen; mit DAPNET-Zugang kommt die echte Liste aus dem DAPNET, sonst Vorschläge wie `dl-all` und die Ländergruppen – ungeprüft). Je kleiner die Gruppe, desto weniger Sender werden belegt.
-- Pager sind **Einweg**: eine Zustellung wird nie bestätigt. Höchstens 80 Zeichen; Umlaute werden umschrieben.
-
-![Notfunk – Pager im Umkreis](bilder/69-notfunk-pager.png)
-
-### Protokoll, Speicher und Fehlerdiagnose
-
-Das **Protokoll** zeigt jede Aussendung, jeden Empfang, Heartbeats, Quittungen, Weiterleitungen, Freigaben und Fehler mit UTC-Zeit, Station, Meldung und Weg (Filter, CSV-Export). Alles liegt in einer eigenen Datenbank im RigVibe-Datenordner (`notfunk/`); Dateien werden nur einmal gespeichert. Abgeschlossene Meldungen und Protokolle werden nach 30 Tagen gelöscht, Dateien bleiben bis zur Speichergrenze (Vorgabe 500 MB). Nach einem Absturz oder Neustart kommt die Warteschlange vollständig zurück; Aussendungen, die gerade liefen, werden erneut eingereiht.
-
-![Notfunk – Protokoll](bilder/67-notfunk-protokoll.png)
-
-Häufige Ursachen, wenn nichts rausgeht:
-
-- **„kein geeigneter, bereiter Weg“:** Weg ausgeschaltet, Gerät oder Knoten nicht verbunden, kein Modem-Fenster offen oder die Datei ist zu groß für die bereiten Wege.
-- **„Freigabe nötig“:** Weg steht auf „von Hand“, personenbezogene Daten oder Weiterleitung über Funk.
-- **„Rufzeichen fehlt“:** über Funk wird ohne Rufzeichen nie gesendet.
-- **Netzwerk „keine Gegenstelle antwortet“:** Adresse, Netzzugang der Gegenstelle (Zugang & API) und API-Schlüssel prüfen; die Gegenstelle muss sich mit der eingetragenen Stationskennung melden.
-
-### Tests
-
-Die automatischen Tests liegen im Quelltext (`tests/test_notfunk.py`, `tests/notfunk_integration.py`). Für Funkwege ohne Hardware verwenden sie ausdrücklich gekennzeichnete **Simulationen**; in RigVibe selbst erscheinen simulierte Wege nur im Testbetrieb (`WW_NF_MOCK=1`) und mit Hinweis „SIMULATION“. Der Netzwerkweg wird mit drei echten RigVibe-Diensten geprüft, Packet, KG-STV und SSTV über eine nachgebildete Tonstrecke zwischen zwei Fenstern.
-
-![Notfunk – Konfiguration](bilder/68-notfunk-konfiguration.png)
+Im Fenster: Eingabefelder der Betriebsart (Werte werden gemerkt, mit „je Kanal“ je Frequenz), **Senden**, **Not-Aus**, Tonquelle (Mikrofon, ohne Ton, Sprachspeicher), „Aufbereitung“ (Mikrofon mit RigVibes Sendeton-Kette), **Trockenlauf** (ohne PTT, Signal in eine Datei, mit „zurückspielen“ in den eigenen Empfänger), **Mitschnitt**, Höchstdauer und Lautstärke des Tons. Darunter Sende- und Empfangsweg des Geräts, die letzte Aussendung und die empfangenen Stationen (sie erscheinen auch unter der Frequenz und in „zuletzt gehört“). **Gerät …** stellt Vorlaufzeit (PTT → erster Wert), Vorrat, Polarität, Sendesperre ein und **misst den Hub ein**: 2 s Prüfton, gemessen mit einem eigenen SDR auf derselben Frequenz (danach den Sendepegel nicht mehr ändern). **Protokoll** zeigt Unterläufe, Lücken und Fehler der Erweiterung. Funkgeräte an der Soundkarte brauchen ein offenes RigVibe-Fenster: Dort läuft der Ton unbearbeitet zur Soundkarte, und der Empfang kommt aus dem Eingang des Digitalbetriebs. Zum Ausprobieren: **F8 → Erweiterungen → Beispiel „Eigene Betriebsart: FSK-Text“**.

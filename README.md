@@ -5,15 +5,15 @@
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.6.1)
+## Download (Version 1.6.2)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.6.1-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.6.1-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.6.1-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.6.1-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.6.1_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/rigvibe_1.6.1_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.6.1-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Linux-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.6.2-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.6.2/RigVibe-1.6.2-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.6.2-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.2/RigVibe-1.6.2-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.6.2-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.2/RigVibe-1.6.2-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.6.2-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.6.2/RigVibe-1.6.2-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.6.2_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.6.2/rigvibe_1.6.2_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.6.2-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.6.2/RigVibe-1.6.2-Linux-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -30,7 +30,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
   QSL (Papier, LoTW, eQSL), Uploads zu QRZ.com/eQSL/LoTW/Club Log, Diplome, Etiketten, Cabrillo, ADIF,
   POTA/SOTA/WWFF mit Stationsprofilen, Filter-Bedingungen und gespeicherte Ansichten, QSO-Austausch mit N1MM, VarAC, JTAlert, GridTracker
 - **Digitalbetrieb**: Wasserfall, FT8 und FT4 (QSO per Klick mit automatischem Ablauf), JS8 (kompatibel zu JS8Call), PSK/QPSK, RTTY, CW, MFSK, DominoEX, THOR, Olivia, Contestia, Throb, MT63, Hellschreiben,
-  SSTV (18 Bildmodi mit Vorlagen und Galerie), KG-STV, Digitalfunk (DMR, D-STAR, YSF, M17 aus dem Soundkarten-Ton), FreeDV (RADE V1/V2, 700D/700E/1600, mit FreeDV Reporter), Makros, RigVibe Sweeper (bis 16 Signale gleichzeitig),
+  SSTV (18 Bildmodi mit Vorlagen und Galerie), KG-STV, Digitalfunk (DMR, D-STAR, YSF, M17 aus dem Soundkarten-Ton; M17 auch senden), FreeDV (RADE V1/V2, 700D/700E/1600, mit FreeDV Reporter), Makros, RigVibe Sweeper (bis 16 Signale gleichzeitig),
   Chat (Tastatur-QSO) über ARDOP, VARA, Packet und Telnet; Ton auch aus einem geöffneten websdr.org-Empfänger
 - **Notfunk**: Meldungen, Bilder und Dateien zwischen Leuchttürmen und Leitstelle mit Quittung und Weiterleitung – über Netzwerk, Meshtastic, Packet, ARDOP, VARA, gesicherten Text (PSK/RTTY/MFSK/Olivia), SSTV/KG-STV, Quansheng-Datenfunk, Funkruf oder Datenträger
 - **Signalerkennung per Klick**: Klick auf ein Signal im Wasserfall zeigt die Betriebsart (z. B. RTTY mit Baud/Shift, FT8, PSK31,
