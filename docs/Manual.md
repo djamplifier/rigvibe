@@ -415,11 +415,9 @@ Also read by RigVibe itself:
 
 - **D-STAR:** the header with your own callsign (MY), the other station (UR, usually CQCQCQ) and the repeater fields (RPT1/RPT2), checked with Viterbi and CRC. If you join in the middle of a transmission, the header comes from the “slow data”. The 20-character text message is voted across the repetitions and gets cleaner with every pass.
 - **YSF (C4FM):** source, destination and down-/uplink, even when joining late (every frame carries one field), checked with Golay, Viterbi and CRC.
-- **M17:** source, destination (also a reflector like “#M17-XLX” or “@ALL”), CAN, meta text and encryption. Read from the link setup frame or, when joining late, from the six LICH parts of the stream frames, with CRC.
+- **M17:** source, destination (also a reflector like “#M17-XLX” or “@ALL”), CAN, meta text and encryption. Read from the link setup frame or, when joining late, from the six LICH parts of the stream frames, with CRC. RigVibe plays the audio itself (Codec2, **🔈 Audio** button in the live card) – also with the Quansheng over USB-C; encrypted transmissions stay silent.
 
 ![M17 from your own receiver, decoded by RigVibe itself](bilder/28-eigene-dekoder.png)
-
-**Listening to voice:** see [Voice module (AMBE, optional)](#voice-module-ambe-optional).
 
 **Wireless sensors with your own SDRs:** RTL-SDR, HackRF and Pluto decode wireless sensors themselves – weather stations, thermometers, tyre pressure, smoke detectors, door and window contacts, remotes and Wireless M-Bus meters (water, heat, electricity). RigVibe ships **rtl_433** for this, which knows more than 250 device types. Tune to the frequency (433.92 MHz, 868.3 or 868.95 MHz for M-Bus meters, 315 or 915 MHz) and choose the **Wireless sensors** decoder in the **Data reception** window – or click a sensor signal in the waterfall. In the 868 MHz band RigVibe uses the higher sample rate M-Bus needs. Many meters encrypt their readings; RigVibe then shows manufacturer, device number and type but no reading.
 
@@ -436,28 +434,6 @@ Also read by RigVibe itself:
 **More receiver decoders:** if an OpenWebRX+ offers them, the *Data reception* window and the card also provide **FT8, FT4, WSPR, JT65, JT9, FST4, Q65, MSK144, JS8Call** (with the name for the callsign), **PSK31/63, RTTY** (also the weather service's 50 Bd/450 Hz), **CW, NAVTEX, SITOR-B, DSC, AIS** (ships), **ADS-B/Mode S** (aircraft with ID, altitude, speed, position), **LoRa APRS, Meshtastic, MeshCom, MeshCore** and **FANET**. A click on 162 MHz (AIS), 1090 MHz (ADS-B), 433.775 MHz (LoRa APRS), 433.175 MHz (MeshCom), 869.5 MHz (Meshtastic), 156.525 MHz or the HF DSC frequencies and 490/518 kHz (NAVTEX) switches on the matching decoder directly; for detected FT8 etc. the card offers “Let the receiver decode”. Deliberately not offered: pagers outside the amateur bands (DAPNET paging see section “Paging”), selective calling/ZVEI, airline company data (ACARS, VDL2, HFDL), utility meters and LoRaWAN – receiving them is not permitted in Germany (§ 5 TDDDG). Marine radar (9 GHz) is outside the receivers' range. All messages are collected in **View → Data reception**; a decoder can also be chosen there by hand. A receiver reports which decoders it offers. Note: you hear digital voice only if the server outputs it; RigVibe shows the IDs and texts.
 
 **Alt+click** only tunes, without identification. In AM, FM and CW a click tunes directly as before. Switch on/off and set the maximum duration under **F8 → Waterfall**. The identification is a well-founded estimate, not proof: with very weak or overlapping signals it prefers to report “unknown signal” with guesses.
-
-### Voice module (AMBE, optional)
-
-DMR, D-STAR and YSF transmit voice with the patented AMBE method. RigVibe contains **no code for it and does not download any**. If you want to hear the voice, get the free source code *mbelib* (ISC licence) yourself, compile it and put the finished library into the folder **`module`** in RigVibe's data folder. Whether you may use it where you live is for you to check – **use at your own risk**.
-
-By default the data folder is `~/Library/Application Support/RigVibe` (Mac), `%APPDATA%\RigVibe` (Windows) or `~/.local/share/rigvibe` (Linux). The **Voice** button in the live card shows the exact folder as long as no module has been found. RigVibe looks there for `libmbe.dylib` (Mac), `libmbe.so` (Linux) or `mbe.dll` (Windows); a system-wide installed mbelib is found as well.
-
-**Mac** (once “xcode-select --install” for the C compiler):
-
-```
-git clone https://github.com/szechyjs/mbelib.git
-cd mbelib
-cc -O2 -shared -fPIC -o libmbe.dylib ambe3600x2400.c ambe3600x2450.c ecc.c imbe7100x4400.c imbe7200x4400.c mbelib.c -lm
-```
-
-**Linux** (package “build-essential”): as above, just with `-o libmbe.so`.
-
-**Windows** (e.g. with w64devkit or MSYS2/gcc): as above, with `gcc` instead of `cc`, without `-fPIC` and `-lm`, output `-o mbe.dll`.
-
-Move the resulting file into the folder `module` (create it if needed). No restart is needed. The **Voice** button then switches the output on: instead of the digital noise you hear the decoded voice, delayed by about 1–2 seconds. With DMR RigVibe follows the time slot that speaks first; the level is adjusted automatically. M17 (Codec2) and transmitting via an MMDVM hotspot will follow.
-
-![Notice as long as no voice module has been found](bilder/29-sprachmodul.png)
 
 ### Remote audio
 
@@ -785,8 +761,7 @@ Choose **JS8 Normal**, **JS8 Fast**, **JS8 Turbo** or **JS8 Slow** (group JS8) �
 
 ![Digital voice in digital modes (D-STAR example)](bilder/56-digitalfunk.png)
 
-
-Mode **Digital voice** (group Digital voice) in digital modes, then **Receive**: RigVibe itself detects whether DMR, D-STAR, C4FM/YSF or M17 is being sent in the sound card audio (P25 and NXDN are only detected) and decodes callsign, destination or talkgroup, repeater and short text. The lines appear in the receive window and, as with the receivers, as **digital voice in the display**; with the optional voice module the speech can be heard too. Transmitting is not possible in this mode.
+Mode **Digital voice** (group Digital voice) in digital modes, then **Receive**: RigVibe itself detects whether DMR, D-STAR, C4FM/YSF or M17 is being sent in the sound card audio (P25 and NXDN are only detected) and decodes callsign, destination or talkgroup, repeater and short text. The lines appear in the receive window and, as with the receivers, as **digital voice in the display**; Transmitting is not possible in this mode.
 
 - **Which audio:** ideally the unaltered demodulator (data jack "9600"/discriminator) – then all modes work. The speaker or headphone output lacks the low frequencies; D-STAR (two levels) copes well with that, DMR, YSF and M17 (four levels) mostly do not.
 - **Quansheng UV-K1/K5 with RigVibe firmware:** for the time of reception RigVibe switches to the raw demodulator at full bandwidth and back afterwards. Measured at the audio output with a USB sound card: **D-STAR 119 of 120** headers, DMR practically not. **Without a sound card (input = radio/receiver) digital voice works over USB-C from firmware stage 12 – better than via the sound card:** RigVibe then bypasses the audio filters of the radio chip, samples at 38.4 kHz and compensates the coupling on the board. Measured over the air, once the mode has been detected (the first transmission is used for detection): **D-STAR, DMR, YSF and M17 every transmission** with callsign or ID (previously over USB: DMR, YSF and M17 not detected at all).
@@ -1014,7 +989,7 @@ Settings under **F8 → Access & API**.
 
 **AI assistants (MCP):** RigVibe includes an MCP server. With it e.g. Claude Desktop or other AI programs can query and operate the station: frequency and mode, look up callsigns, search the logbook, log QSOs, DX spots, rotator, Winlink messages. The ready-made entry is shown in the **MCP entry** field – **Copy** and paste it into the AI program's configuration (Claude Desktop: *Settings → Developer → Edit config*). RigVibe must be running.
 
-**Extensions:** under **F8 → Extensions** extensions (plugins) can be installed (ZIP), switched on and off and configured. An example is included. How to write your own is described in the [developer guide](Extensions.md) (in the program: link on the same tab). Extensions automatically receive the station data, the interface language and all events.
+**Extensions:** under **F8 → Extensions** extensions (plugins) can be installed (ZIP), switched on and off and configured. An example is included. How to write your own is described in the [developer guide](Extensions.md) (in the program: link on the same tab). Extensions automatically receive the station data, the interface language and all events. Interfaces for extensions: **interface** (own windows, tabs, menu items), **server** (own API functions, events, radio, logbook), **receiver types** (connect your own receivers) and the **frame interface** (receive payload frames of DMR, D-STAR, YSF and M17 from RigVibe's own decoding and return audio).
 
 > AI assistants may only **transmit** (PTT, CW, Winlink over radio) if **“AI assistants (MCP) may transmit”** is switched on. The radio amateur remains responsible for everything that is transmitted.
 

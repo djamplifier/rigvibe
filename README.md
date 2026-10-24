@@ -5,15 +5,15 @@
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.6.0)
+## Download (Version 1.6.1)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.6.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.6.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.6.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.6.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.6.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/rigvibe_1.6.0_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.6.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.6.0/RigVibe-1.6.0-Linux-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.6.1-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.6.1-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.6.1-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.6.1-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.6.1_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/rigvibe_1.6.1_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.6.1-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.6.1/RigVibe-1.6.1-Linux-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -58,7 +58,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
 - **Rauschfilter**: Störimpulsaustaster, Rauschminderung spektral und per KI (RNNoise), Auto-Notch, Notch per Rechtsklick – für jede Tonquelle; im Digitalbetrieb schaltet RigVibe NB/NR/ANF in Funkgerät und Rauschfilter automatisch aus und bei Sprache wieder ein
 - **Winlink**: E-Mail über Funk – Postfach, Verfassen mit Anhängen, Austausch über Telnet, ARDOP, VARA (TCP-Schnittstelle) und Packet (AGW/Direwolf)
 - **Satelliten** (Doppler- und Rotor-Nachführung, Zeitplan, gemeinsame Sichtbarkeit), **Rotor** (Anschlag, Versatz, Überlauf), **Karten**
-- **Erweiterungen** (Plugins), Oberfläche Deutsch/Englisch, automatische Aktualisierung, Rückmeldung an die Entwickler aus dem Programm
+- **Erweiterungen** (Plugins: Oberfläche, Server, Empfänger-Arten, Rahmen-Schnittstelle für Digitalfunk), Oberfläche Deutsch/Englisch, automatische Aktualisierung, Rückmeldung an die Entwickler aus dem Programm
 - Andockbare Fenster (lösen, auf zweiten Bildschirm, Layouts speichern), Rechtsklick-Menüs überall
 
 ## Aufbau

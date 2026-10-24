@@ -110,9 +110,37 @@ def setup(ww):
 | `rig`, `radios` | aktuelles Funkgerät (`await ww.rig.set_freq(hz)` …) bzw. Geräteverwaltung |
 | `log_qso(rec)` | QSO eintragen (mit Land, Callbook, Weiterleitung, Uploads) |
 | `register_receiver(art, klasse, name)` | eigene Empfänger-Art (Unterklasse von `wellenwerk.sdr.base.SdrRig`) |
+| `add_frame_decoder(kanal, fabrik, name)` | Rahmen eines Digitalfunk-Kanals entgegennehmen und Ton liefern (siehe [Rahmen-Schnittstelle](#rahmen-schnittstelle)) |
 | `data_dir`, `log` | eigener Datenordner, Protokoll |
 
 Der Server-Teil wird beim Einschalten geladen und beim Ausschalten sofort abgemeldet (Ereignisse und API-Routen); eine Funktion `teardown()` im Modul wird dann aufgerufen, falls vorhanden.
+
+## Rahmen-Schnittstelle
+
+Über die Rahmen-Schnittstelle bekommt eine Erweiterung die Nutzrahmen eines Digitalfunk-Kanals, die RigVibe beim eigenen Dekodieren herausliest, und gibt Ton zurück. RigVibe gibt diesen Ton im Empfänger aus, solange der Nutzer ihn in der Live-Karte des Dekoders einschaltet.
+
+```python
+class MeinDekoder:
+    def decode(self, bits):             # ein Rahmen: Liste von 0/1 in Sendereihenfolge
+        ...
+        return werte                    # 160 Zahlen (20 ms bei 8 kHz) um -1..1, oder [] für Stille
+
+def setup(ww):
+    ww.add_frame_decoder("dmr", lambda: MeinDekoder(), "Mein Dekoder · DMR")
+```
+
+RigVibe ruft die Fabrik (`lambda: …`) für jede neue Aussendung auf – der Dekoder darf also Zustand von Rahmen zu Rahmen mitführen – und danach `decode()` für jeden Rahmen, in einem eigenen Faden. Den Pegel gleicht RigVibe an und rechnet auf seinen Tonweg um.
+
+| Kanal | Rahmen (Bits in Sendereihenfolge) | Takt |
+|---|---|---|
+| `dmr` | 72 Bit: ein Drittel der 108 Nutzdibits eines Bursts mit Sprach-Sync bzw. EMB (Dibits 0–35, 36–71, 72–107; je Dibit erst das höherwertige Bit). Die Nutzdibits sind die 54 vor und die 54 nach dem mittleren Feld. Bei mehreren Zeitschlitzen folgt RigVibe dem, der zuerst sendet. | 3 Rahmen je 60 ms |
+| `dstar` | 72 Bit: die ersten 72 Bit eines Rahmens (vor den 24 Bit Slow Data), ohne Synchronwort | 1 Rahmen je 20 ms |
+| `ysf` | 104 Bit: ein VCH-Feld im V/D-Modus 2, unverändert (verschachtelt und geweisst) | 5 Rahmen je 100 ms |
+| `m17` | 128 Bit: Nutzteil eines Stream-Rahmens (nach der Rahmennummer). RigVibe gibt diesen Kanal selbst aus (Codec2); eine Erweiterung kann ihn übernehmen. | 1 Rahmen je 40 ms |
+
+Je Kanal gilt die zuletzt geladene Erweiterung. Wirft `decode()` einen Fehler, bleibt die Aussendung stumm, der Empfang läuft weiter; der Fehler steht im Protokoll. Ein lauffähiges Beispiel liegt bei: **F8 → Erweiterungen → Beispiel „Rahmen-Schnittstelle: Testton“ installieren** – es gibt je Rahmen einen Ton aus.
+
+Bibliotheken (z. B. eine DLL) legt die Erweiterung in ihren eigenen Ordner und lädt sie selbst (`ctypes`, Pfad über `Path(__file__).parent`). Unter macOS tragen aus dem Netz geladene Dateien eine Quarantäne-Markierung; ggf. selbst entfernen (`xattr -d com.apple.quarantine <datei>`).
 
 ## Sicherheit
 

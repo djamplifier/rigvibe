@@ -112,9 +112,37 @@ def setup(ww):
 | `rig`, `radios` | current radio (`await ww.rig.set_freq(hz)` …) and radio management |
 | `log_qso(rec)` | log a QSO (with country, callbook, forwarding, uploads) |
 | `register_receiver(kind, cls, name)` | own receiver type (subclass of `wellenwerk.sdr.base.SdrRig`) |
+| `add_frame_decoder(channel, factory, name)` | receive the frames of a digital radio channel and return audio (see [Frame interface](#frame-interface)) |
 | `data_dir`, `log` | own data folder, log |
 
 The server part is loaded on switch-on and unregistered immediately on switch-off (events and API routes); a function `teardown()` in the module is then called if present.
+
+## Frame interface
+
+Through the frame interface an extension receives the payload frames of a digital radio channel that RigVibe reads out during its own decoding, and returns audio. RigVibe plays this audio in the receiver while the user switches it on in the decoder's live card.
+
+```python
+class MyDecoder:
+    def decode(self, bits):             # one frame: list of 0/1 in transmission order
+        ...
+        return values                   # 160 numbers (20 ms at 8 kHz) around -1..1, or [] for silence
+
+def setup(ww):
+    ww.add_frame_decoder("dmr", lambda: MyDecoder(), "My decoder · DMR")
+```
+
+RigVibe calls the factory (`lambda: …`) for every new transmission – so the decoder may keep state from frame to frame – and then `decode()` for every frame, in a separate thread. RigVibe adjusts the level and converts to its audio path.
+
+| Channel | Frame (bits in transmission order) | Rate |
+|---|---|---|
+| `dmr` | 72 bits: one third of the 108 payload dibits of a burst with voice sync or EMB (dibits 0–35, 36–71, 72–107; most significant bit of each dibit first). The payload dibits are the 54 before and the 54 after the centre field. With several time slots RigVibe follows the one that transmits first. | 3 frames per 60 ms |
+| `dstar` | 72 bits: the first 72 bits of a frame (before the 24 bits of slow data), without sync word | 1 frame per 20 ms |
+| `ysf` | 104 bits: one VCH field in V/D mode 2, unchanged (interleaved and whitened) | 5 frames per 100 ms |
+| `m17` | 128 bits: payload of a stream frame (after the frame number). RigVibe plays this channel itself (Codec2); an extension can take it over. | 1 frame per 40 ms |
+
+Per channel the most recently loaded extension applies. If `decode()` raises an error, that transmission stays silent and reception continues; the error is logged. A working example is included: **F8 → Extensions → install example “Rahmen-Schnittstelle: Testton”** – it outputs a tone per frame.
+
+Libraries (e.g. a DLL) go into the extension's own folder and are loaded by the extension itself (`ctypes`, path via `Path(__file__).parent`). On macOS, files downloaded from the internet carry a quarantine flag; remove it yourself if needed (`xattr -d com.apple.quarantine <file>`).
 
 ## Security
 
