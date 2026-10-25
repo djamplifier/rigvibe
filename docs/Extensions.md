@@ -207,7 +207,7 @@ For every transmission RigVibe calls `sender(info)`. `info` contains `station` (
 |---|---|---|
 | `start()` | once at the beginning, before PTT | first part of the signal (preamble, header) |
 | `mikrofon(block)` | for every microphone block in the registered format (float, mono) | signal for this period (may be empty) |
-| `fuellen(n)` (fill) | when the output buffer holds less than the reserve | up to `n` further values; **`None` = nothing more, transmission ends** |
+| `fuellen(n)` (fill) | when the output buffer holds less than the reserve | up to `n` further values (fewer is allowed, RigVibe asks again); **`None` = nothing more, transmission ends** |
 | `stop()` | PTT released or `ctx.tx.stop()` / `ww.tx_stop()` | end of the signal |
 | `abbruch(grund)` (abort) | `zeit` (maximum length), `geraet` (radio/audio output gone), `notaus` (emergency stop), `ptt` (PTT ended from outside), `fehler` (error) | – |
 | `zeit(t)` | optional, before every `fuellen()`/`mikrofon()` | – (`t` = estimated Unix time at which the next delivered value is transmitted) |
@@ -225,7 +225,7 @@ Guaranteed:
 **a) Baseband (`basisband`)** – floats, `±1.0 = ±hub_hz`, sample rate `weg["rate"]`. No transmit audio chain (equalizer, compressor, limiter, noise gate, VOX), no level control. Via a sound card the interface plays the values at the rate of its output (usually 48 kHz); own SDRs get 48 kHz, which RigVibe brings to the device rate with a linear-phase FIR and frequency-modulates without pre-emphasis and without high-pass (DC capable).
 
 **b) Bit stream (`bitstrom`)** – bits (0/1) in transmission order for radios with their own FSK unit; the mode lists its bit rates under `"bitraten"` (RigVibe takes the first one the radio supports and reports it as `weg["bitrate"]`). `fuellen(n)` then counts bits. Available on the **Quansheng UV-K1/K5 from firmware version 14** – no sound card, USB only:
-- 1200, 2400, 4800 or 6000 bit/s, continuous without length limit (measured: 48,000 bits in one go at 4800 bit/s, 13 bit errors at lowest power, no slip, no underrun); RigVibe refills according to the free space in the radio's buffer.
+- 1200, 2400, 4800 or 6000 bit/s, continuous without length limit (measured: 48,000 bits in one go at 4800 bit/s, 13 bit errors at lowest power, no slip, no underrun); RigVibe refills according to the free space in the radio's buffer and keeps at least 0.4 s in reserve for it. If a reply from the radio gets lost (rare), RigVibe checks the radio's write counter to see whether the data arrived and only then sends it again – nothing is missing and nothing goes out twice.
 - The FSK unit puts **8 bits of preamble** (10101010) in front; this cannot be switched off. The extension's **first 16 bits** serve as its sync word and go out unchanged – the stream follows bit by bit. No checksum, no whitening. `weg["bitstrom"]` describes this.
 - Ends exactly after the last bit, in steps of 8 bits (rest padded with 0).
 - Deviation from the mode's `hub_hz` (measured at 4800 bit/s roughly 450 Hz … 2.4 kHz), bit 1 = higher frequency.
@@ -251,7 +251,7 @@ With this the extension can pre-equalize itself when the path attenuates low or 
 
 ### 5. Microphone and other audio sources
 
-With `"mikrofon": {"rate", "block"}` the microphone audio of the interface arrives at `mikrofon(block)` in exactly this format (mono, float) – **unprocessed** (default) or with RigVibe's transmit audio processing (switch “Processing”). VOX does not key in this mode unless `"vox": True`. Instead of the microphone a **voice keyer slot** (`quelle="sprachspeicher:3"`) or an **audio file** (`quelle="datei:/path/call.wav"`, 16 bit) can be the source; at its end `stop()` follows automatically. `quelle="keine"` transmits without audio (data).
+With `"mikrofon": {"rate", "block"}` the microphone audio of the interface arrives at `mikrofon(block)` in exactly this format (mono, float) – **unprocessed** (default) or with RigVibe's transmit audio processing (switch “Processing”). VOX does not key in this mode unless `"vox": True`. Instead of the microphone a **voice keyer slot** (`quelle="sprachspeicher:3"`) or an **audio file** (`quelle="datei:/path/call.wav"`, 16 bit) can be the source; at its end `stop()` follows automatically. Voice keyer and audio file arrive **at the pace of the transmission** like a microphone (at most reserve + 0.15 s ahead), not all at once. `quelle="keine"` transmits without audio (data).
 
 ### 6. Receiving
 
@@ -348,7 +348,7 @@ ww.add_mode("my-mode", {
 | 2 | `0`, `1` | `0` → −`hub_hz`, `1` → +`hub_hz` |
 | 4 | `+3`, `+1`, `−1`, `−3` | `value / aussen × hub_hz` |
 
-**Positive = higher transmit frequency**; RigVibe compensates the radio's polarity (`weg["polaritaet"]`). The methods `start()`, `fuellen(n)`, `stop()`, `abbruch()` stay, but return **symbols** (list or `numpy` array of integers, `int8` is enough); `n` counts symbols; `None` from `fuellen` ends the transmission.
+**Positive = higher transmit frequency**; RigVibe compensates the radio's polarity (`weg["polaritaet"]`). The methods `start()`, `fuellen(n)`, `stop()`, `abbruch()` stay, but return **symbols** (list or `numpy` array of integers, `int8` is enough); `n` counts symbols; `None` from `fuellen` ends the transmission. `mikrofon(block)` and `zeit(t)` arrive as well; here `mikrofon()` also returns symbols (or nothing – RigVibe then fetches them via `fuellen`), and `t` is the transmit time of the **next symbol** the extension delivers (RigVibe accounts for the symbols still in the pulse shaping).
 
 RigVibe takes care of:
 1. **Pulse shaping**, linear phase and normalized to DC gain 1 (a run of equal symbols gives exactly their deviation); span 12 symbols for root raised cosine, 6 for Gauss.
@@ -370,6 +370,7 @@ RigVibe takes care of:
     "fenster": {"kopf": [0, 700], "daten": [72, 1944]},          # window: [symbols before sync start, symbols from sync start]
     "schwelle": 0.8,                                             # optional sync threshold (normalized correlation)
     "pause_s": 0.8,                                              # optional: after this pause a new transmission begins
+    "sicher": 0.9,                                               # optional: from this correlation a hit fixes the polarity
 },
 "empfaenger": lambda info: MyReceiver(info),
 ```
@@ -382,10 +383,10 @@ def rahmen(self, name, symbole, t):
 
 `symbole` are **soft values** normalized to the symbol values (4 levels around ±3/±1; 2 levels around 0 and 1, `> 0.5` counts as one). RigVibe takes care of:
 1. **Compensating the receive path** where it is known (Quansheng raw: the board's high-pass, as for the built-in digital voice decoders; `weg["hochpass_ausgleich"]`).
-2. **Matched filter** for the registered shape, sampling at the right time, **symbol clock tracking** (also before the radio's clock has been measured; tested up to ±0.7 %).
+2. **Matched filter** for the registered shape, sampling at the right time, **symbol clock tracking** (also before the radio's clock has been measured; tested up to ±0.7 %). Tracking locks quickly in the first symbols and then calms down, so long windows (e.g. 1,500 symbols) do not drift away in noise.
 3. **Sync search** with normalized correlation over all patterns and all clock phases; **one** call per occurrence. Threshold and pause can also be set in the mode's options (mode window → **Test …**).
-4. **Level and DC** estimated from the sync found (offset, deviation error of the transmitter) – the symbols arrive normalized.
-5. **Polarity per transmission:** if a pattern only matches inverted, RigVibe inverts the symbols. The polarity holds from the first sure hit to the end of the transmission (pause longer than `pause_s` plus window length), so that mirrored patterns of another sync do not count as hits.
+4. **Level and DC** estimated from the sync found (offset, deviation error of the transmitter) and then tracked per symbol, so that a wandering baseline (e.g. behind the Quansheng's board high-pass) does not spoil long windows – the symbols arrive normalized.
+5. **Polarity per transmission:** if a pattern only matches inverted, RigVibe inverts the symbols. The polarity holds from the first **sure** hit (correlation from `sicher`, default 0.9) to the end of the transmission (pause longer than `pause_s` plus window length), so that mirrored patterns of another sync do not count as hits. Weaker hits before it (e.g. chance matches in a `0101…` preamble when the pattern itself starts that way) are delivered with their own polarity but fix nothing. If two patterns are exact mirror images of each other (DMR: voice and data sync), the polarity cannot be told from the sync alone – then the first sure hit decides.
 6. **Order and windows:** calls in the order of the window ends, windows may overlap; at the end of reception the last open window is padded with noise so that the end of a transmission is not lost. Then `ende()`.
 7. **Gaps:** open windows affected by a gap are not delivered; `luecke(t, dauer)` is called instead.
 

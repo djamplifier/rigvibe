@@ -203,7 +203,7 @@ Für jede Aussendung ruft RigVibe `sender(info)` auf. `info` enthält `station` 
 |---|---|---|
 | `start()` | einmal zu Beginn, noch vor der PTT | erster Teil des Signals (Vorlauf, Kopf) |
 | `mikrofon(block)` | je Mikrofonblock im angemeldeten Format (Gleitkomma, mono) | Signal für diesen Abschnitt (darf leer sein) |
-| `fuellen(n)` | wenn der Ausgabepuffer weniger als den Vorrat enthält | bis zu `n` weitere Werte; **`None` = nichts mehr, Aussendung zu Ende** |
+| `fuellen(n)` | wenn der Ausgabepuffer weniger als den Vorrat enthält | bis zu `n` weitere Werte (weniger ist erlaubt, RigVibe fragt wieder); **`None` = nichts mehr, Aussendung zu Ende** |
 | `stop()` | Sendetaste losgelassen bzw. `ctx.tx.stop()` / `ww.tx_stop()` | Abschluss des Signals |
 | `abbruch(grund)` | `zeit` (Höchstdauer), `geraet` (Gerät/Tonausgang weg), `notaus`, `ptt` (PTT von außen beendet), `fehler` | – |
 | `zeit(t)` | optional, vor jedem `fuellen()`/`mikrofon()` | – (`t` = geschätzte Unix-Zeit, zu der der nächste gelieferte Wert gesendet wird) |
@@ -221,7 +221,7 @@ Zugesagt ist:
 **a) Basisband** – Gleitkommawerte, `±1,0 = ±hub_hz`, Abtastrate `weg["rate"]`. Keine Sendeton-Kette (Equalizer, Kompressor, Begrenzer, Rauschsperre, VOX), keine Pegelregelung. Über der Soundkarte spielt die Bedienoberfläche die Werte mit der Rate ihres Ausgangs aus (meist 48 kHz); eigene SDRs bekommen 48 kHz, die RigVibe mit einem phasenlinearen FIR auf die Geräterate bringt und ohne Preemphasis und ohne Hochpass frequenzmoduliert (gleichanteilfähig).
 
 **b) Bitstrom** – Bits (0/1) in Sendereihenfolge für Geräte mit eigener FSK-Einheit; die Betriebsart nennt ihre Bitraten unter `"bitraten"` (RigVibe nimmt die erste, die das Gerät kann, und meldet sie als `weg["bitrate"]`). `fuellen(n)` zählt dann in Bits. Vorhanden beim **Quansheng UV-K1/K5 ab Firmware-Stand 14** – ohne Soundkarte, nur über USB:
-- 1 200, 2 400, 4 800 oder 6 000 bit/s, fortlaufend ohne Längengrenze (gemessen: 48 000 Bit am Stück bei 4 800 bit/s, 13 Bitfehler bei kleinster Leistung, kein Versatz, kein Unterlauf), RigVibe lädt nach freiem Platz im Puffer des Geräts nach.
+- 1 200, 2 400, 4 800 oder 6 000 bit/s, fortlaufend ohne Längengrenze (gemessen: 48 000 Bit am Stück bei 4 800 bit/s, 13 Bitfehler bei kleinster Leistung, kein Versatz, kein Unterlauf), RigVibe lädt nach freiem Platz im Puffer des Geräts nach und hält dafür mindestens 0,4 s Vorrat. Geht eine Antwort des Geräts verloren (selten), prüft RigVibe am Schreibzähler des Geräts, ob die Daten angekommen sind, und schickt sie nur dann noch einmal – es fehlt nichts und nichts geht doppelt hinaus.
 - Die FSK-Einheit setzt **8 Bit Präambel** (10101010) davor; das lässt sich nicht abschalten. Die **ersten 16 Bit** der Erweiterung dienen ihr als Sync-Wort und gehen unverändert hinaus – danach folgt der Strom Bit für Bit. Keine Prüfsumme, keine Weißung. `weg["bitstrom"]` beschreibt das.
 - Ende genau nach dem letzten Bit, auf 8 Bit gerastert (Rest mit 0 aufgefüllt).
 - Hub aus `hub_hz` der Betriebsart (gemessen bei 4 800 bit/s etwa 450 Hz … 2,4 kHz), Bit 1 = höhere Frequenz.
@@ -247,7 +247,7 @@ Damit kann die Erweiterung selbst vorentzerren, wenn der Weg tiefe oder hohe Fre
 
 ### 5. Mikrofon und andere Tonquellen
 
-Bei `"mikrofon": {"rate", "block"}` kommt der Mikrofonton der Bedienoberfläche als Blöcke genau in diesem Format (mono, Gleitkomma) zu `mikrofon(block)` – wahlweise **unbearbeitet** (Standard) oder mit RigVibes Sendeton-Aufbereitung (Schalter „Aufbereitung“). VOX tastet in dieser Betriebsart nicht, außer `"vox": True`. Statt des Mikrofons geht als Quelle auch ein **Sprachspeicher** (`quelle="sprachspeicher:3"`) oder eine **Tondatei** (`quelle="datei:/pfad/ruf.wav"`, 16 Bit); am Ende der Quelle folgt automatisch `stop()`. `quelle="keine"` sendet ohne Ton (Daten).
+Bei `"mikrofon": {"rate", "block"}` kommt der Mikrofonton der Bedienoberfläche als Blöcke genau in diesem Format (mono, Gleitkomma) zu `mikrofon(block)` – wahlweise **unbearbeitet** (Standard) oder mit RigVibes Sendeton-Aufbereitung (Schalter „Aufbereitung“). VOX tastet in dieser Betriebsart nicht, außer `"vox": True`. Statt des Mikrofons geht als Quelle auch ein **Sprachspeicher** (`quelle="sprachspeicher:3"`) oder eine **Tondatei** (`quelle="datei:/pfad/ruf.wav"`, 16 Bit); am Ende der Quelle folgt automatisch `stop()`. Sprachspeicher und Tondatei kommen **im Takt der Aussendung** wie ein Mikrofon (höchstens Vorrat + 0,15 s voraus), nicht auf einmal. `quelle="keine"` sendet ohne Ton (Daten).
 
 ### 6. Empfangen
 
@@ -344,7 +344,7 @@ ww.add_mode("meine-art", {
 | 2 | `0`, `1` | `0` → −`hub_hz`, `1` → +`hub_hz` |
 | 4 | `+3`, `+1`, `−1`, `−3` | `wert / aussen × hub_hz` |
 
-**Positiv = höhere Sendefrequenz**; die Polarität des Geräts gleicht RigVibe aus (`weg["polaritaet"]`). Die Methoden `start()`, `fuellen(n)`, `stop()`, `abbruch()` bleiben, liefern aber **Symbole** (Liste oder `numpy`-Array ganzer Zahlen, `int8` genügt); `n` zählt Symbole; `None` aus `fuellen` beendet die Aussendung.
+**Positiv = höhere Sendefrequenz**; die Polarität des Geräts gleicht RigVibe aus (`weg["polaritaet"]`). Die Methoden `start()`, `fuellen(n)`, `stop()`, `abbruch()` bleiben, liefern aber **Symbole** (Liste oder `numpy`-Array ganzer Zahlen, `int8` genügt); `n` zählt Symbole; `None` aus `fuellen` beendet die Aussendung. Auch `mikrofon(block)` und `zeit(t)` kommen an; `mikrofon()` gibt hier ebenfalls Symbole zurück (oder nichts – dann holt RigVibe sie über `fuellen`), und `t` ist die Sendezeit des **nächsten Symbols**, das die Erweiterung liefert (RigVibe rechnet die Symbole in der Impulsformung mit ein).
 
 RigVibe übernimmt:
 1. **Impulsformung** phasenlinear und auf Gleichanteil 1 normiert (eine Folge gleicher Symbole ergibt genau ihren Hub); Spanne 12 Symbole bei Wurzelkosinus, 6 bei Gauss.
@@ -366,6 +366,7 @@ RigVibe übernimmt:
     "fenster": {"kopf": [0, 700], "daten": [72, 1944]},          # [Symbole vor Sync-Beginn, Symbole ab Sync-Beginn]
     "schwelle": 0.8,                                             # optional, Sync-Schwelle (normierte Korrelation)
     "pause_s": 0.8,                                              # optional, ab dieser Pause beginnt eine neue Aussendung
+    "sicher": 0.9,                                               # optional, ab dieser Korrelation legt ein Treffer die Polarität fest
 },
 "empfaenger": lambda info: MeinEmpfaenger(info),
 ```
@@ -378,10 +379,10 @@ def rahmen(self, name, symbole, t):
 
 `symbole` sind **weiche Werte**, auf die Symbolwerte normiert (4 Stufen um ±3/±1; 2 Stufen um 0 und 1, `> 0,5` gilt als Eins). RigVibe übernimmt:
 1. **Ausgleich des Empfangswegs**, wo er bekannt ist (Quansheng roh: Hochpass der Platine, wie bei den eigenen Digitalfunk-Dekodern; `weg["hochpass_ausgleich"]`).
-2. **Optimalfilter** zur angemeldeten Form, Abtastung zum richtigen Zeitpunkt, **Symboltakt nachführen** (auch wenn der Takt des Geräts noch nicht gemessen ist; getestet bis ±0,7 %).
+2. **Optimalfilter** zur angemeldeten Form, Abtastung zum richtigen Zeitpunkt, **Symboltakt nachführen** (auch wenn der Takt des Geräts noch nicht gemessen ist; getestet bis ±0,7 %). Die Nachführung rastet in den ersten Symbolen schnell ein und wird dann ruhig, damit lange Fenster (z. B. 1 500 Symbole) auch bei Rauschen nicht weglaufen.
 3. **Sync-Suche** mit normierter Korrelation über alle Muster und alle Taktlagen; je Fundstelle **ein** Aufruf. Schwelle und Pausenzeit lassen sich auch in den Optionen der Betriebsart einstellen (Fenster der Betriebsart → **Test …**).
-4. **Pegel und Gleichanteil** aus dem gefundenen Sync (Ablage, Hubfehler des Senders) – die Symbole kommen normiert an.
-5. **Polarität je Aussendung:** Passt ein Muster nur gespiegelt, dreht RigVibe die Symbole um. Die Polarität gilt ab dem ersten sicheren Treffer bis zum Ende der Aussendung (Pause länger als `pause_s` plus Fensterlänge), damit gespiegelte Muster eines anderen Syncs nicht als Treffer zählen.
+4. **Pegel und Gleichanteil** aus dem gefundenen Sync (Ablage, Hubfehler des Senders) und danach je Symbol nachgeführt, damit eine wandernde Nulllinie (z. B. hinter dem Platinen-Hochpass des Quansheng) lange Fenster nicht verdirbt – die Symbole kommen normiert an.
+5. **Polarität je Aussendung:** Passt ein Muster nur gespiegelt, dreht RigVibe die Symbole um. Die Polarität gilt ab dem ersten **sicheren** Treffer (Korrelation ab `sicher`, Standard 0,9) bis zum Ende der Aussendung (Pause länger als `pause_s` plus Fensterlänge), damit gespiegelte Muster eines anderen Syncs nicht als Treffer zählen. Schwächere Treffer davor (z. B. Zufall in einer `0101…`-Präambel, wenn das Muster selbst so beginnt) werden mit ihrer eigenen Polarität ausgeliefert, legen aber nichts fest. Sind zwei Muster genaue Spiegelbilder voneinander (DMR: Sprach- und Daten-Sync), lässt sich die Polarität am Sync allein nicht erkennen – dann entscheidet der erste sichere Treffer.
 6. **Reihenfolge und Fenster:** Aufrufe in der Reihenfolge der Fensterenden, Fenster dürfen sich überlappen; am Ende des Empfangs wird das letzte angefangene Fenster mit Rauschen aufgefüllt, damit der Abschluss einer Aussendung nicht verloren geht. Danach `ende()`.
 7. **Lücken:** Offene Fenster, die eine Lücke betreffen, werden nicht ausgeliefert; stattdessen kommt `luecke(t, dauer)`.
 
