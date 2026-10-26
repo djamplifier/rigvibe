@@ -6,7 +6,7 @@ Ein vollständiges Beispiel liegt bei: **F8 → Erweiterungen → Beispiel „St
 
 ## Aufbau
 
-Eine Erweiterung ist ein Ordner im Datenordner unter `plugins/<id>/` (Datenordner: Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`, Linux `~/.local/share/wellenwerk`). Zum Weitergeben den Ordner als ZIP packen; installiert wird über **F8 → Erweiterungen → ZIP installieren**.
+Eine Erweiterung ist ein Ordner im Datenordner unter `plugins/<id>/` (Datenordner: Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`, Linux `~/.local/share/wellenwerk`). Zum Weitergeben den Ordner als ZIP packen; installiert wird über **F8 → Erweiterungen → ZIP installieren**. Eine neue Version installierst du genauso: RigVibe ersetzt den Ordner, behält `daten/` und lädt einen eingeschalteten Server-Teil gleich neu. Unter Windows sperrt das System eine geladene Bibliothek (z. B. eine DLL der Erweiterung); dann liegt die neue Version bereit und wird beim nächsten Programmstart übernommen, bis dahin läuft die alte weiter.
 
 ```
 plugins/meine-erweiterung/
@@ -193,7 +193,7 @@ def setup(ww):
     })
 ```
 
-RigVibe behandelt die Betriebsart **wie eine eigene**: Sie steht in allen Betriebsartenlisten (Mode-Taste und Menü am Funkgerät, „Bänder & Betriebsarten“, Kontextmenü, Digitalbetrieb mit Auswahl und Menü *Betriebsart*, Handy-Ansicht) und heißt intern `ext:<id>` – so lässt sie sich auch in Favoriten und Speicherkanälen ablegen und über die API wählen (`POST /api/rig/mode {"mode": "ext:<id>"}`). Beim Wählen stellt RigVibe das Gerät auf FM (Diskriminator bzw. Frequenzmodulation) und schaltet in den Weg der Erweiterung; jede andere Betriebsart wählt sie wieder ab. Das Fenster **Erweiterungs-Betriebsart** zeigt Sendetaste, Eingabefelder und empfangene Stationen. Die Werte der Felder merkt sich RigVibe je Betriebsart, auf Wunsch („je Kanal“) je Frequenz, also je Speicherkanal bzw. Relais. Die Wahl je Gerät bleibt über einen Neustart erhalten.
+RigVibe behandelt die Betriebsart **wie eine eigene**: Sie steht in allen Betriebsartenlisten (Mode-Taste und Menü am Funkgerät, „Bänder & Betriebsarten“, Kontextmenü, Digitalbetrieb mit Auswahl und Menü *Betriebsart*, Handy-Ansicht) und heißt intern `ext:<id>` – so lässt sie sich auch als Favorit ablegen, samt den Werten der Eingabefelder (Favorit `felder`) und über die API wählen (`POST /api/rig/mode {"mode": "ext:<id>"}`). Beim Wählen stellt RigVibe das Gerät auf FM (Diskriminator bzw. Frequenzmodulation) und schaltet in den Weg der Erweiterung; jede andere Betriebsart wählt sie wieder ab. Das Fenster **Erweiterungs-Betriebsart** zeigt Sendetaste, Eingabefelder und empfangene Stationen. Die Werte der Felder merkt sich RigVibe je Betriebsart, auf Wunsch („je Kanal“) je Frequenz, also je Speicherkanal bzw. Relais. Die Wahl je Gerät bleibt über einen Neustart erhalten.
 
 ### 2. Senden: Ablauf
 

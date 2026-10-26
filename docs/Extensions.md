@@ -8,7 +8,7 @@ A complete example is included: **F8 → Extensions → install example “Stati
 
 ## Structure
 
-An extension is a folder in the data folder under `plugins/<id>/` (data folder: Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`, Linux `~/.local/share/wellenwerk`). To pass it on, zip the folder; it is installed via **F8 → Extensions → Install ZIP**.
+An extension is a folder in the data folder under `plugins/<id>/` (data folder: Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`, Linux `~/.local/share/wellenwerk`). To pass it on, zip the folder; it is installed via **F8 → Extensions → Install ZIP**. A new version is installed the same way: RigVibe replaces the folder, keeps `daten/` and reloads a switched-on server part right away. On Windows the system locks a loaded library (for example a DLL of the extension); the new version then waits and is applied the next time RigVibe starts, until then the old one keeps running.
 
 ```
 plugins/my-extension/
@@ -197,7 +197,7 @@ def setup(ww):
     })
 ```
 
-RigVibe treats the mode **like one of its own**: it is listed in all mode lists (mode button and menu on the radio, “Bands & modes”, context menu, Digital modes selection and menu *Mode*, phone view) and is called `ext:<id>` internally – so it can also be stored in favourites and memory channels and chosen via the API (`POST /api/rig/mode {"mode": "ext:<id>"}`). When chosen, RigVibe sets the radio to FM (discriminator or frequency modulation) and switches to the extension's path; any other mode deselects it again. The window **Extension operating mode** shows the transmit button, input fields and received stations. RigVibe remembers the field values per mode and, if wanted (“per channel”), per frequency, i.e. per memory channel or repeater. The selection per radio survives a restart.
+RigVibe treats the mode **like one of its own**: it is listed in all mode lists (mode button and menu on the radio, “Bands & modes”, context menu, Digital modes selection and menu *Mode*, phone view) and is called `ext:<id>` internally – so it can also be stored as a favourite, together with the values of the input fields (favourite `felder`) and chosen via the API (`POST /api/rig/mode {"mode": "ext:<id>"}`). When chosen, RigVibe sets the radio to FM (discriminator or frequency modulation) and switches to the extension's path; any other mode deselects it again. The window **Extension operating mode** shows the transmit button, input fields and received stations. RigVibe remembers the field values per mode and, if wanted (“per channel”), per frequency, i.e. per memory channel or repeater. The selection per radio survives a restart.
 
 ### 2. Transmitting: sequence
 
