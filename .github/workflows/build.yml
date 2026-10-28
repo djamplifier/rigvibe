@@ -185,9 +185,14 @@ jobs:
           npm i --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/ui" puppeteer-core@23.11.1
           node .github/scripts/ui-selbsttest.cjs
 
+      - name: fpm fuer .deb (ARM64: das mitgelieferte fpm ist ein x86-Programm)
+        if: runner.os == 'Linux' && runner.arch == 'ARM64'
+        run: sudo apt-get install -y -qq ruby ruby-dev build-essential >/dev/null && sudo gem install --no-document fpm >/dev/null
       - name: Desktop-Programm bauen
         working-directory: desktop
         shell: bash
+        env:
+          USE_SYSTEM_FPM: ${{ runner.arch == 'ARM64' && 'true' || '' }}
         run: |
           npm ci || npm install
           npx electron-builder --publish never
