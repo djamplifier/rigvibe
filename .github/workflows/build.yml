@@ -36,6 +36,7 @@ jobs:
           - os: macos-latest        # Apple Silicon
           - os: macos-15-intel      # Intel-Mac
           - os: ubuntu-22.04
+          - os: ubuntu-22.04-arm    # Linux ARM64 (Raspberry Pi 4/5 mit 64-Bit-System)
     runs-on: ${{ matrix.os }}
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
@@ -107,7 +108,7 @@ jobs:
         run: |
           sudo apt-get install -y libcodec2-1.0 || sudo apt-get install -y libcodec2-0.9
           mkdir -p packaging/codec2
-          cp -L $(ls /usr/lib/x86_64-linux-gnu/libcodec2.so.* | head -1) packaging/codec2/libcodec2.so
+          cp -L $(ls /usr/lib/*-linux-gnu/libcodec2.so.* | head -1) packaging/codec2/libcodec2.so
 
       - name: RADE fuer FreeDV (Windows, aus dem Linux-Cross-Bau)
         if: runner.os == 'Windows'
@@ -195,7 +196,8 @@ jobs:
         shell: bash
         run: |
           V=$(dist/RigVibe/RigVibe --version | awk '{print $2}'); echo "Version $V"; [ -n "$V" ]
-          tar -C dist -czf "desktop/dist/RigVibe-$V-Linux-Server.tar.gz" RigVibe
+          A=; [ "$RUNNER_ARCH" = ARM64 ] && A=-ARM64
+          tar -C dist -czf "desktop/dist/RigVibe-$V-Linux$A-Server.tar.gz" RigVibe
           ls -la desktop/dist/*Server*
       - uses: actions/upload-artifact@v4
         with:
@@ -205,4 +207,4 @@ jobs:
             desktop/dist/*.dmg
             desktop/dist/*.AppImage
             desktop/dist/*.deb
-            desktop/dist/*-Linux-Server.tar.gz
+            desktop/dist/*-Server.tar.gz
