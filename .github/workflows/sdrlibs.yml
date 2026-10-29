@@ -33,23 +33,17 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          pip install -q numpy psutil
-          for variante in hackrf iio libusb; do
-          echo "--- D: nur $variante vorab, dann Soapy"
-          V=$variante python -X faulthandler -c "
-          import psutil, os
-          from wellenwerk.sdr import usbsdr, soapy
-          from wellenwerk.sdr.pluto import _iio
-          v = os.environ['V']
-          if v == 'hackrf': usbsdr._hrf(usbsdr._find('hackrf'))
-          if v == 'iio': _iio(usbsdr._find('iio'))
-          if v == 'libusb': usbsdr._libusb()
-          for m in psutil.Process().memory_maps():
-              b = m.path.lower()
-              if b.endswith('.dll') and 'windows' not in b and 'hostedtoolcache' not in b: print('MOD', m.path, flush=True)
-          print(soapy.modules(), flush=True)
-          " 2>&1 | tail -14 || true
-          done
+          pip install -q numpy
+          echo "--- F: Dateien"; ls -l packaging/sdrlibs/*.dll packaging/sdrlibs/soapy/*.dll packaging/sdrlibs/soapy/modules/*.dll; sha256sum packaging/sdrlibs/libusb-1.0.dll packaging/sdrlibs/soapy/libusb-1.0.dll 2>&1
+          echo "--- G: libusb aus sdrlibs vorab, dann Schritt fuer Schritt"
+          python -X faulthandler -c "
+          import ctypes, os
+          r = os.path.abspath('packaging/sdrlibs'); s = r + '/soapy'
+          for d in (r, s, s + '/modules'): os.add_dll_directory(d)
+          for p in (r + '/libusb-1.0.dll', s + '/pthreadVC3.dll', s + '/airspy.dll', s + '/airspyhf.dll', s + '/SoapySDR.dll', s + '/modules/airspySupport.dll', s + '/modules/airspyhfSupport.dll'):
+              if not os.path.exists(p): print('fehlt', p, flush=True); continue
+              print('lade', p, flush=True); ctypes.CDLL(p); print('  ok', flush=True)
+          " 2>&1 | tail -16 || true
       - name: Laden pruefen
         shell: bash
         run: pip install -q numpy && python -c "from wellenwerk.sdr import usbsdr, soapy; print(usbsdr.selftest()); m = soapy.modules(); print('Soapy', soapy.abi(), m); assert any('airspySupport' in x['path'] and not x['error'] and 'airspy' in x['drivers'] for x in m) and any('airspyhfSupport' in x['path'] and not x['error'] and 'airspyhf' in x['drivers'] for x in m), 'Airspy-Module fehlen'"
