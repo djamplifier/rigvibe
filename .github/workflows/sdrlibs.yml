@@ -33,26 +33,23 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          pip install -q numpy
-          echo "--- C1: Soapy zuerst, dann selftest"
-          python -X faulthandler -c "
+          pip install -q numpy psutil
+          for variante in hackrf iio libusb; do
+          echo "--- D: nur $variante vorab, dann Soapy"
+          V=$variante python -X faulthandler -c "
+          import psutil, os
           from wellenwerk.sdr import usbsdr, soapy
-          print(soapy.modules(), flush=True); print(usbsdr.selftest(), flush=True)
-          " 2>&1 | tail -8 || true
-          echo "--- C2: selftest zuerst, dann Soapy; Module im Prozess"
-          python -X faulthandler -c "
-          import ctypes, ctypes.wintypes as w
-          from wellenwerk.sdr import usbsdr, soapy
-          print(usbsdr.selftest(), flush=True)
-          k = ctypes.WinDLL('kernel32'); k.K32EnumProcessModules.argtypes = [w.HANDLE, ctypes.POINTER(w.HMODULE), w.DWORD, ctypes.POINTER(w.DWORD)]
-          h = (w.HMODULE * 1024)(); n = w.DWORD(); k.GetCurrentProcess.restype = w.HANDLE
-          k.K32EnumProcessModules(k.GetCurrentProcess(), h, ctypes.sizeof(h), ctypes.byref(n))
-          buf = ctypes.create_unicode_buffer(500)
-          for i in range(n.value // ctypes.sizeof(w.HMODULE)):
-              k.GetModuleFileNameW(h[i], buf, 500); b = buf.value.lower()
-              if any(x in b for x in ('usb', 'pthread', 'airspy', 'hackrf', 'rtlsdr', 'soapy')): print('MOD', buf.value, flush=True)
+          from wellenwerk.sdr.pluto import _iio
+          v = os.environ['V']
+          if v == 'hackrf': usbsdr._hrf(usbsdr._find('hackrf'))
+          if v == 'iio': _iio(usbsdr._find('iio'))
+          if v == 'libusb': usbsdr._libusb()
+          for m in psutil.Process().memory_maps():
+              b = m.path.lower()
+              if b.endswith('.dll') and 'windows' not in b and 'hostedtoolcache' not in b: print('MOD', m.path, flush=True)
           print(soapy.modules(), flush=True)
-          " 2>&1 | tail -20 || true
+          " 2>&1 | tail -14 || true
+          done
       - name: Laden pruefen
         shell: bash
         run: pip install -q numpy && python -c "from wellenwerk.sdr import usbsdr, soapy; print(usbsdr.selftest()); m = soapy.modules(); print('Soapy', soapy.abi(), m); assert any('airspySupport' in x['path'] and not x['error'] and 'airspy' in x['drivers'] for x in m) and any('airspyhfSupport' in x['path'] and not x['error'] and 'airspyhf' in x['drivers'] for x in m), 'Airspy-Module fehlen'"
