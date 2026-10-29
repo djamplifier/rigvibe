@@ -126,6 +126,9 @@ jobs:
       - name: SDR-Bibliotheken (RTL-SDR, HackRF direkt per USB)
         shell: bash
         run: .github/scripts/sdrlibs.sh
+      - name: SoapySDR mit Airspy-Treibern
+        shell: bash
+        run: .github/scripts/soapylibs.sh
 
       - name: Add MSBuild to PATH
         if: runner.os == 'Windows'
