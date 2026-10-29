@@ -5,24 +5,24 @@
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.8.0)
+## Download (Version 1.8.1)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.8.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.8.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.8.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.8.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.8.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/rigvibe_1.8.0_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.8.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Linux-Server.tar.gz) |
-| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.8.0-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.8.0_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/rigvibe_1.8.0_arm64.deb) |
-| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.8.0-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Linux-ARM64-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.8.1-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.8.1-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.8.1-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.8.1-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.8.1_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/rigvibe_1.8.1_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.8.1-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Linux-Server.tar.gz) |
+| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.8.1-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.8.1_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/rigvibe_1.8.1_arm64.deb) |
+| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.8.1-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.1/RigVibe-1.8.1-Linux-ARM64-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
 ## Funktionen
 - **Gerätesteuerung** (Hamlib, über 300 Funkgeräte, mehrere gleichzeitig): große Frequenzanzeige, VFO A/B, Split, RIT/XIT,
   alle Regler und Schalter des Geräts, Abstimmskalen je Band mit Feinskala, Schnellspeicher, Favoriten, Speicherkanäle,
-  Scanner, Makros, Sprachspeicher, Band-Durchlauf, Panadapter (Geräte-Scope oder IQ-Soundkarte), WinKeyer,
+  Scanner, Makros, Sprachspeicher, Band-Durchlauf, **Band-Stacks** (mehrere Plätze je Band), Panadapter (Geräte-Scope oder IQ-Soundkarte), WinKeyer,
   Freigabe des Geräts für andere Programme (Hamlib NET rigctl oder CAT-Emulation Kenwood TS-2000), Schnappschüsse,
   Synchronisierung zweier Geräte, Fernbetrieb-Audio (WebRTC) mit PTT, TCI-Schnittstelle für Log-/Contest-Programme, Layout frei anpassbar
 - **Contest**: Super Check Partial, Doppel-Prüfung und neue Multiplikatoren schon beim Tippen, Wertungen (CQ WW, WPX, IARU, UKW-km, DOK, eigene), laufender Punktestand mit Rate, F-Tasten und „Enter sendet Text“, Cabrillo mit Punktzahl; **„Was fehlt mir?“** ordnet Cluster- und FT8-Stationen danach, was sie dem Log bringen; **Diagnose „Warum dekodiert nichts?“**; Speicherkanäle und Relais als **CHIRP-Datei**
@@ -40,7 +40,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
 - **Empfänger ohne Funkgerät**: KiwiSDR, OpenWebRX, öffentliche Empfängerlisten, Wasserfall 2D/3D mit DX-Cluster- und POTA/SOTA/WWFF-Spots (Rufzeichen mit Flagge, Klick stimmt ab)
 - **Eigene SDRs**: RTL-SDR (auch V4), HackRF One und ADALM-Pluto direkt (Pluto auch im Netzwerk, mit automatischer Suche), Hermes Lite 2 im Netz; **Senden** mit HackRF, Pluto und Hermes Lite 2; **UKW-Rundfunk mit RDS** (Sendername, Radiotext), **Schiffe (AIS)** und **Wettersonden (RS41)** selbst dekodiert, mit Weltkarte
 - **Skimmer** (eigene SDRs): liest bis zu 12 **CW-, PSK31- und RTTY-Signale gleichzeitig** mit, zeigt Rufzeichen, Geschwindigkeit und Text und markiert das Rufzeichen am Signal im Wasserfall
-- **Wasserfall**: 2D, 3D und **3D+2D** auf einer Frequenzachse, nur Spektrum, ziehbare Aufteilung und **ziehbarer Durchlassbereich**, FIT/CTR/MARK, zehn Farbpaletten; alle Bedienelemente einzeln ein- und ausblendbar
+- **Wasserfall**: 2D, 3D und **3D+2D** auf einer Frequenzachse, nur Spektrum, ziehbare Aufteilung und **ziehbarer Durchlassbereich**, FIT/CTR/MARK, zehn Farbpaletten, Spots aus DX-Cluster, POTA/SOTA/WWFF und (auf Wunsch) **PSK Reporter**; alle Bedienelemente einzeln ein- und ausblendbar
 - **Sprachausgabe** (aus dem Browser, abschaltbar): Frequenz, Betriebsart, SWR-Warnung und Hinweise; Hinweise auch für Screenreader (NVDA, Orca, VoiceOver)
 - **SoapySDR** (Airspy, SDRplay, LimeSDR, RX-888 …, SoapySDR muss installiert sein) und **Raspberry Pi** (Linux ARM64) als weitere Plattform
 - **Handfunkgeräte Quansheng UV-K1 / UV-K5 V3** über USB-C: mit der mitgelieferten RigVibe-Firmware (Aufspielen per Assistent, ohne Zusatzprogramm) steuert RigVibe das Gerät komplett – Frequenz, Betriebsart, Leistung, Senden über USB, Rauschsperre, Bandübersicht, fester Tonpegel für die Soundkarte; Ton und Daten über das USB-C-Kabel ohne Soundkarte (APRS, Packet, SSTV, KG-STV, PSK, RTTY …), FT8/FT4/JS8 und echtes CW direkt mit dem Sender, **Packet 9600 Bd, D-STAR, DMR, YSF und M17** über USB-C, **AIS und Wettersonden**, Firmware-Updates über USB

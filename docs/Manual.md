@@ -305,6 +305,10 @@ In the toolbar above the waterfall:
 
 **Showing and hiding controls:** Under **F8 → Waterfall → Controls** the 3D+2D button, the FIT, CTR and MARK switches, dragging the passband and the skimmer tags can each be switched on or off.
 
+**Spots from PSK Reporter:** Under **F8 → Waterfall** you can switch on that RigVibe shows, from **pskreporter.info**, who was heard in the visible section during the last 10 minutes (FT8, FT4, WSPR, PSK31, JS8 …). The callsigns appear in orange above their signals (up to 30 of the strongest); the tooltip shows mode, SNR, locator, how often and by whom they were heard, and a click tunes to the frequency. **Off by default**, because the **visible frequency range is sent to pskreporter.info** (no callsign). Consideration for the service: only sections up to 400 kHz wide, the same section at most every 5 minutes, at least 20 s between two requests, 5 to 15 minutes' pause after errors. The picture shows invented callsigns.
+
+![PSK Reporter spots in the waterfall](bilder/80-psk-reporter-en.png)
+
 **Layout and views:** A **handle** sits between the spectrum and the waterfall: dragging changes the size of both parts (double-click resets; in 3D+2D the handle sits between the landscape and the rest). The **Spec.** button shows only the spectrum without a waterfall. Both can be switched off under **F8 → Waterfall → Controls**.
 
 ![Speech output settings](bilder/78-sprachausgabe-en.png)
@@ -348,6 +352,10 @@ Any step from 10 Hz to 100 kHz can also be set by hand. A **click in the waterfa
 ### Band plan: mode and filter automatically
 
 RigVibe knows the band plan (region 1 after the IARU band plan from 160 m to 23 cm, regions 2 and 3 simplified; choose the region on the band row). The segments are coloured on the band scales: **blue** CW, **violet** narrow band/digimodes, **green** SSB, **teal** all modes, **yellow** beacons, **orange** FM and repeaters, **red** satellites. The current segment is shown as a tag below the display (e.g. “CW”, “SSB”, “Digimodes / APRS” or “FT8 · WSJT-X standard frequency”).
+
+**Band stacks (several slots per band):** The band buttons of the radio control remember up to **8 slots** per band (frequency, mode and filter; default 3). When you change the band, RigVibe remembers the current state and recalls the **most recent slot** of the new band. **If you press the button of the band you are already in once more, RigVibe steps to the next slot** – so on 20 m you jump between FT8, CW and SSB. If you tune far away from the slot (more than 3 kHz), the new state is stored as a **new slot**, otherwise the slot is just updated. The tooltip of the band button shows the slots (▶ = current), the **right-click menu** of the button jumps straight to a slot or forgets them. It also applies to the MIDI keys band up/down. **F8 → Band plan** switches band stacks off (then one frequency per band as before) and sets the number of slots.
+
+![Slots of a band in the right-click menu of the band button](bilder/81-band-stack-en.png)
 
 When you move into another segment or tune to a known digital frequency (e.g. FT8 on 7.074 MHz), RigVibe sets **mode and filter** accordingly: CW with 500 Hz, SSB with 2.4 kHz (LSB below 10 MHz, USB above), digimodes PKTUSB with 3 kHz, FM. If you change the mode by hand, it stays until you leave the segment. Band buttons with a remembered mode and signal identification are not overridden. Switch it off under **Options → Band plan**.
 
@@ -888,6 +896,18 @@ KG-STV transmits the picture digitally in blocks of 16 × 16 pixels, each with i
 - **Transmit:** **Send image …**, mode **KG-STV 4L-FSK** (faster, about 70 s for 320 × 240) or **KG-STV MSK** (more robust, about 90 s). **Picture quality** 0–15 (10 = default; lower = sharper but longer) and **error protection (FEC)** for difficult paths (takes about half as long again). Pictures are always sent as 320 × 240.
 - Radio on USB or FM as for SSTV; audio between 1200 and 1800 Hz. Slight mistuning (±60 Hz) does no harm.
 - With the **Quansheng UV-K1/K5 with RigVibe firmware** KG-STV also works without a sound card over USB-C (transmit and receive).
+
+### Weather fax (WEFAX)
+
+![Weather fax reception](bilder/79-wetterfax-en.png)
+
+Weather charts and satellite pictures that weather services send on shortwave (e.g. the German weather service) are received in the **weather fax window** (Digital modes → View → Weather fax, or click the signal in the waterfall and choose **Open weather fax reception**). The picture is an FM signal in the audio: black 1500 Hz, white 2300 Hz, centre 1900 Hz – the receiver is in **USB 1.9 kHz below the transmit frequency**.
+
+- **Sequence:** With **Receive** RigVibe waits for the **start tone** (300 Hz = IOC 576, 675 Hz = IOC 288), measures the start of the line (the black pulse) and the centre of the signal in the **phasing signal**, and then writes the picture line by line. The **stop tone** (450 Hz) ends it; the finished picture goes to the picture gallery (like SSTV) and can be saved as PNG.
+- **Settings:** **Lines/min** (60, 90, 120, 240), **IOC** (automatic from the start tone, 576 or 288), **Centre** (tracked from the phasing signal with “automatic”), **Slant** in ppm (if the picture is slanted because the sound card does not run exactly, correct it here), **Offset** (shift the picture left or right if it began without a phasing signal) and **Negative**. **Start now** writes a picture that is already running from the current timing.
+- **Tested** are the reception with **synthetic signals** (start tone, phasing, picture, stop tone; with mistuning, clock error, noise and 90 and 120 lines/min) and, in the interface, with an artificial weather chart (the picture above). **I have not tried it with a real weather fax station yet.**
+
+
 
 ## 12. Winlink (e-mail over radio)
 

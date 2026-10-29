@@ -1,6 +1,6 @@
 # RigVibe – Anleitung
 
-RigVibe ist ein Programm für die Funkstation: Funkgerät steuern, Logbuch führen, Digitalbetrieb (PSK, RTTY, Olivia, MT63, SSTV und mehr), Winlink-E-Mail über Funk, Satelliten, Rotor und Karten – alles in einem Fenster.
+RigVibe ist ein Programm für die Funkstation: Funkgerät steuern, Logbuch führen, Digitalbetrieb (PSK, RTTY, Olivia, MT63, SSTV, Wetterfax und mehr), Winlink-E-Mail über Funk, Satelliten, Rotor und Karten – alles in einem Fenster.
 
 > **Lizenz und Haftung:** RigVibe ist kostenlos nutzbar, alle Rechte vorbehalten (Lizenzbedingungen in der Datei LICENSE bzw. im Programm unter **Hilfe → Lizenzen und Fremdkomponenten**). Für die Steuerung von Sendern, Funkgeräten und Rotoren ist die bedienende Person verantwortlich. Für die Einhaltung der Amateurfunk-Vorschriften ist die bedienende Person verantwortlich. Einzelheiten und alle Fremdlizenzen: [LIZENZEN.md](../LIZENZEN.md) bzw. im Programm unter **Hilfe → Lizenzen und Fremdkomponenten**.
 
@@ -299,6 +299,10 @@ In der Leiste über dem Wasserfall:
 
 **Bedienelemente ein- und ausblenden:** Unter **F8 → Wasserfall → Bedienelemente** lassen sich die Taste 3D+2D, die Schalter FIT, CTR und MARK, das Ziehen des Durchlassbereichs und die Skimmer-Marken einzeln ein- oder ausschalten.
 
+**Spots aus PSK Reporter:** Unter **F8 → Wasserfall** lässt sich einschalten, dass RigVibe aus **pskreporter.info** zeigt, wer im sichtbaren Ausschnitt in den letzten 10 Minuten gehört wurde (FT8, FT4, WSPR, PSK31, JS8 …). Die Rufzeichen stehen in Orange über ihren Signalen (bis zu 30 der stärksten); der Hinweis zeigt Betriebsart, SNR, Ort, wie oft und von wem sie gehört wurden, und ein Klick stimmt auf die Frequenz ab. **Standardmäßig aus**, weil dabei der **sichtbare Frequenzbereich an pskreporter.info geschickt** wird (kein Rufzeichen). Rücksicht auf den Dienst: nur Ausschnitte bis 400 kHz Breite, derselbe Ausschnitt höchstens alle 5 Minuten, mindestens 20 s zwischen zwei Abfragen, bei Fehlern 5 bis 15 Minuten Pause. Das Bild zeigt erfundene Rufzeichen.
+
+![PSK-Reporter-Spots im Wasserfall](bilder/80-psk-reporter.png)
+
 **Aufteilung und Ansichten:** Zwischen Spektrum und Wasserfall sitzt ein **Griff**: Ziehen ändert die Größe beider Teile (Doppelklick setzt sie zurück; in 3D+2D gilt der Griff zwischen Landschaft und dem Rest). Die Taste **Spek.** zeigt nur das Spektrum ohne Wasserfall. Beides lässt sich unter **F8 → Wasserfall → Bedienelemente** abschalten.
 
 ![Einstellungen der Sprachausgabe](bilder/78-sprachausgabe.png)
@@ -342,6 +346,10 @@ Von Hand lässt sich jeder Schritt von 10 Hz bis 100 kHz festlegen. Ein **Klick 
 ### Bandplan: Betriebsart und Filter automatisch
 
 RigVibe kennt den Bandplan (Region 1 nach dem IARU-Bandplan von 160 m bis 23 cm, Region 2 und 3 vereinfacht; Region an der Bandleiste wählen). Die Bereiche sind auf den Bandskalen farbig: **blau** CW, **violett** Schmalband/Digimodes, **grün** SSB, **türkis** alle Betriebsarten, **gelb** Baken, **orange** FM und Relais, **rot** Satelliten. Der aktuelle Bereich steht als Kennzeichen unter der Anzeige (z. B. „CW“, „SSB“, „Digimodes / APRS“ oder „FT8 · WSJT-X Standardfrequenz“).
+
+**Band-Stacks (mehrere Plätze je Band):** Die Bandtasten der Gerätesteuerung merken sich je Band bis zu **8 Plätze** (Frequenz, Betriebsart und Filter; Standard 3). Wechselst du das Band, merkt RigVibe den aktuellen Stand und ruft den **jüngsten Platz** des neuen Bandes auf. **Drückst du die Taste des Bandes, in dem du schon bist, noch einmal, blättert RigVibe zum nächsten Platz** – so springst du auf 20 m zwischen FT8, CW und SSB. Stimmst du dich weit von dem Platz weg (mehr als 3 kHz), wird der neue Stand als **neuer Platz** angelegt, sonst wird der Platz nur aktualisiert. Der Hinweistext der Bandtaste zeigt die Plätze (▶ = aktueller), im **Rechtsklick-Menü** der Taste springst du direkt auf einen Platz oder vergisst sie. Gilt auch für die MIDI-Tasten Band weiter/zurück. **F8 → Bandplan** schaltet Band-Stacks aus (dann wie früher eine Frequenz je Band) und stellt die Zahl der Plätze ein.
+
+![Plätze eines Bandes im Rechtsklick-Menü der Bandtaste](bilder/81-band-stack.png)
 
 Wechselst du in einen anderen Bereich oder stimmst du auf eine bekannte Digi-Frequenz ab (z. B. FT8 auf 7,074 MHz), stellt RigVibe **Betriebsart und Filter** passend ein: CW mit 500 Hz, SSB mit 2,4 kHz (unter 10 MHz LSB, darüber USB), Digimodes PKTUSB mit 3 kHz, FM. Stellst du die Betriebsart von Hand um, bleibt sie, bis du den Bereich verlässt. Bei Bandtasten mit gemerkter Betriebsart und während der Signalerkennung greift die Automatik nicht. Abschalten unter **Optionen → Bandplan**.
 
@@ -890,6 +898,18 @@ KG-STV überträgt das Bild digital in Blöcken zu 16 × 16 Bildpunkten, jeder m
 - **Senden:** **Bild senden …**, Modus **KG-STV 4L-FSK** (schneller, ca. 70 s für 320 × 240) oder **KG-STV MSK** (robuster, ca. 90 s). **Bildqualität** 0–15 (10 = Standard; kleiner = schärfer, aber länger) und **Fehlerschutz (FEC)** für schwierige Verbindungen (dauert etwa die Hälfte länger). Gesendet wird immer 320 × 240.
 - Funkgerät auf USB bzw. FM wie bei SSTV; Ton zwischen 1200 und 1800 Hz. Leichtes Verstimmen (±60 Hz) stört nicht.
 - Beim **Quansheng UV-K1/K5 mit RigVibe-Firmware** geht KG-STV auch ohne Soundkarte über USB-C (senden und empfangen).
+
+### Wetterfax (WEFAX)
+
+![Wetterfax-Empfang](bilder/79-wetterfax.png)
+
+Wetterkarten und Satellitenbilder, die Wetterdienste auf Kurzwelle senden (z. B. der Deutsche Wetterdienst), empfängt RigVibe im **Wetterfax-Fenster** (Digitalbetrieb → Ansicht → Wetterfax, oder im Wasserfall auf das Signal klicken und **Wetterfax-Empfang öffnen** wählen). Das Bild liegt als FM-Signal im Ton: Schwarz 1500 Hz, Weiß 2300 Hz, Mitte 1900 Hz – der Empfänger steht in **USB 1,9 kHz unter der Sendefrequenz**.
+
+- **Ablauf:** Mit **Empfang** wartet RigVibe auf den **Starton** (300 Hz = IOC 576, 675 Hz = IOC 288), misst im **Phasiersignal** den Zeilenanfang (der schwarze Impuls) und die Mitte des Signals und schreibt dann das Bild Zeile für Zeile. Der **Stopton** (450 Hz) beendet es; das fertige Bild landet in der Bildergalerie (wie SSTV) und lässt sich als PNG speichern.
+- **Einstellungen:** **Zeilen/min** (60, 90, 120, 240), **IOC** (automatisch aus dem Starton, 576 oder 288), **Mitte** (mit „automatisch“ aus dem Phasiersignal nachgeführt), **Schräglage** in ppm (steht das Bild schief, weil die Soundkarte nicht genau läuft, gleichst du hier aus), **Versatz** (Bild nach links oder rechts schieben, wenn es ohne Phasiersignal begann) und **Negativ**. **Jetzt starten** schreibt ein schon laufendes Bild ab dem aktuellen Takt mit.
+- **Geprüft** ist der Empfang mit **künstlichen Signalen** (Starton, Phasieren, Bild, Stopton; mit Fehlabstimmung, Taktfehler, Rauschen und 90 sowie 120 Zeilen/min) und in der Oberfläche mit einer künstlichen Wetterkarte (das Bild oben). **Mit einem echten Wetterfax-Sender habe ich es noch nicht probiert.**
+
+
 
 ## 12. Winlink (E-Mail über Funk)
 
