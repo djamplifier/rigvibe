@@ -33,15 +33,21 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+          pip install -q numpy
+          echo "--- A: loadModules ohne Vorladen"
           python -X faulthandler -c "
-          import ctypes, os, glob
+          import ctypes, os
           d = os.path.abspath('packaging/sdrlibs/soapy'); os.add_dll_directory(d); os.add_dll_directory(d + '/modules')
-          L = ctypes.CDLL(d + '/SoapySDR.dll'); print('Kern ok', flush=True)
-          for f in glob.glob(d + '/modules/*.dll'):
-              try: ctypes.CDLL(f); print('direkt ok', f, flush=True)
-              except OSError as e: print('direkt FEHLER', f, e, flush=True)
-          os.environ['SOAPY_SDR_ROOT'] = d
-          L.SoapySDR_setLogLevel(8); print('loadModules ...', flush=True); L.SoapySDR_loadModules(); print('loadModules fertig', flush=True)
+          L = ctypes.CDLL(d + '/SoapySDR.dll'); os.environ['SOAPY_SDR_ROOT'] = d
+          L.SoapySDR_setLogLevel(8); print('loadModules ...', flush=True); L.SoapySDR_loadModules(); print('fertig', flush=True)
+          " 2>&1 || true
+          echo "--- B: soapy.modules()"
+          python -X faulthandler -c "
+          from wellenwerk.sdr import soapy
+          L = soapy.lib(); print('lib', L, soapy.error(), flush=True)
+          L.SoapySDR_setLogLevel(8); print('abi', soapy.abi(), flush=True)
+          import os; print('ROOT', os.environ.get('SOAPY_SDR_ROOT'), 'PLUG', os.environ.get('SOAPY_SDR_PLUGIN_PATH'), flush=True)
+          print(soapy.modules(), flush=True)
           " 2>&1 || true
       - name: Laden pruefen
         shell: bash
