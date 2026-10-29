@@ -1,0 +1,37 @@
+name: SDR-Bibliotheken testen
+# Baut librtlsdr/libhackrf/SoapySDR (mit Airspy-Treibern) je System aus dem (nicht oeffentlichen) Quelltext-Repo und prueft, dass Python sie laedt.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Stand im Quelltext-Repo (Tag oder Zweig)"
+        default: "main"
+jobs:
+  libs:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, macos-15-intel, ubuntu-22.04, ubuntu-22.04-arm]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: djamplifier/rigvibe-src
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.SRC_DEPLOY_KEY }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bibliotheken
+        shell: bash
+        run: .github/scripts/sdrlibs.sh
+      - name: SoapySDR mit Airspy-Treibern
+        shell: bash
+        run: .github/scripts/soapylibs.sh
+      - name: Laden pruefen
+        shell: bash
+        run: pip install -q numpy && python -c "from wellenwerk.sdr import usbsdr, soapy; print(usbsdr.selftest()); m = soapy.modules(); print('Soapy', soapy.abi(), m); assert any('airspySupport' in x['path'] and not x['error'] for x in m) and any('airspyhfSupport' in x['path'] and not x['error'] for x in m), 'Airspy-Module fehlen'"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdrlibs-${{ runner.os }}-${{ runner.arch }}
+          path: packaging/sdrlibs
