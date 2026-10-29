@@ -243,6 +243,7 @@ When a receiver is the current radio, the display only shows the bands it can re
 **Your own SDR hardware** (bottom of the tab, “enter receiver directly”):
 - **RTL-SDR stick directly on USB:** choose the type **“RTL-SDR (USB direct)”**. RigVibe finds the stick and enters its serial number; leave the address empty. No extra program is needed; the driver library (RTL-SDR Blog version) is included in the desktop program. The **RTL-SDR Blog V4** receives shortwave from 500 kHz this way. Older sticks without a built-in converter need `direct=2` for shortwave. Further parameters: `gain=auto` or dB, `ppm=…`, `bias=1` (supply voltage for active antennas).
 - **HackRF One directly on USB:** type **“HackRF One (USB)”**. Reception from 1 MHz to 6 GHz at 4.8 MS/s. Parameters: `gain=auto` or 0–102 dB, `amp=1` (preamplifier), `bias=1`.
+- **SoapySDR (Airspy, SDRplay, LimeSDR, RX-888 …):** Type **“SoapySDR (Airspy, SDRplay, LimeSDR, RX-888 …)”**. RigVibe uses the *SoapySDR* library and its **driver modules** for this; both must be installed on the computer (Linux: `apt install soapysdr-tools soapysdr-module-all`, macOS: `brew install soapysdr` plus the module for your device, e.g. `soapyairspy`, Windows: PothosSDR). The dialog lists the devices found and fills in the identifier. Parameters: `args=driver=airspy,serial=…` (exact device), `driver=…`, `index=…`, `rate=…` (default: the largest suitable rate of 2.4 / 3 / 1.2 / 4.8 / 6 MS/s …), `gain=auto|<dB>` (for devices without gain control RigVibe chooses cautiously; **strong nearby signals overload the receiver otherwise**), `antenna=…`, `bandwidth=…`, `ppm=…`, `channel=…`. **Receive only.** RigVibe needs a sample rate that is a multiple of 12 kHz; devices that only offer other rates (Airspy R2 with 2.5 and 10 MS/s) do not work yet. **Only the HackRF via SoapySDR has been tested so far** (with real radio, skimmer on); Airspy, SDRplay, LimeSDR and RX-888 were not tried on the device. SoapySDR is not yet included in the finished packages.
 - **RTL-SDR over the network:** type “RTL-SDR (rtl_tcp)” and enter `127.0.0.1:1234` or the computer running `rtl_tcp` as address.
 - **Hermes Lite 2** (and other openHPSDR devices): leave the address empty – RigVibe searches the network – or enter the IP. Parameters `rate=192000`, `gain=20`.
 - **Windows:** The **HackRF One** (firmware from 2017 on) makes Windows 10/11 load the right driver by itself – just plug it in. **RTL-SDR** sticks (and HackRFs with very old firmware) need the WinUSB driver once: RigVibe detects this when connecting and shows the button **“Set up driver (once)”**. One click, Windows asks once for administrator rights, done – no extra tool such as Zadig needed. **Linux:** install the udev rules from the *rtl-sdr* or *hackrf* packages; for the RTL-SDR block the DVB-T driver (`blacklist dvb_usb_rtl28xxu`).
@@ -291,6 +292,24 @@ In the toolbar above the waterfall:
 ![Spectrum with area, smoothing, peak hold, labels and grid](bilder/40-spektrum.png)
 
 - **Remembered per band:** the waterfall remembers the section (zoom), contrast and brightness for every band. When you come to a band – by band button, frequency entry, spot or memory – it looks the way you left it; without your own zoom it shows the whole band. The band button always shows the whole band. Own receivers (HackRF, RTL-SDR, Hermes Lite 2, Pluto) move their centre into the band for this if it fits their bandwidth (40 m with 200 kHz, for example, needs 384 kS/s).
+
+![3D+2D waterfall](bilder/77-wasserfall-3d-2d-en.png)
+
+**3D+2D:** The *3D+2D* button in the window bar shows the 3D landscape on top (the latest lines as mountains, newest line in front) and the scale and 2D waterfall below – on the **same frequency axis**: a peak above stands exactly over its trace below. Zooming, panning and click-to-tune work in both parts as in the 2D view; the tuning line and passband also run across the landscape. Peak height and depth are set under **F8 → Waterfall**.
+
+**Dragging the passband:** The edges of the glowing frame can be moved with the mouse (the pointer becomes a double arrow), in the spectrum, the waterfall and the 3D landscape. In SSB the dragged edge moves; in AM, FM and CW the frame widens or narrows symmetrically; the width snaps to 50 Hz. On receivers (SDR) the filter follows while you drag; on other radios the width is set when you let go.
+
+**Buttons in the bar:** *FIT* keeps the level fitted to the visible signals, *CTR* keeps the receive frequency in the middle of the view, *MARK* labels the strongest signals with their frequency (in 3D+2D below the scale). More **colour palettes** (Viridis, Magma, Plasma, Inferno, Turbo, Ice, Phosphor) are under **F8 → Waterfall → Colours**.
+
+**Skimmer (CW, PSK31, RTTY):** With your own SDR (RTL-SDR, HackRF, Pluto …) RigVibe reads many stations at once. In the *Data reception* window choose the decoder **Skimmer**: RigVibe looks for signals within 48 kHz around the receive frequency and reads up to 12 at the same time. A single narrow tone is tried as **CW** and as **PSK31** at the same time (the readable result wins), two tones 170 Hz apart as **RTTY** (45.45 Bd, both tone orders; a carrier in the middle, as in FM RTTY, is removed). Callsign, mode, speed and text are listed; the callsign also appears as a tag at the signal in the waterfall. Tested with synthetic signals (all three modes at once, noise without any report) and with real radio: a Quansheng UV-K1 sending on 70 cm, received by a HackRF; **CW** (18 WPM) and **RTTY** (both sidebands of the FM transmission) were read correctly with callsign. **PSK31 was tested with synthetic signals only**, not over the air. Noise, carriers and wide signals are discarded; the first characters of a transmission are often lost while the decoder settles. The tags can be switched off under **F8 → Waterfall**. CPU load: about one sixth of a core more at 2.4 MS/s (measured on a Mac, not on a Raspberry Pi).
+
+**Showing and hiding controls:** Under **F8 → Waterfall → Controls** the 3D+2D button, the FIT, CTR and MARK switches, dragging the passband and the skimmer tags can each be switched on or off.
+
+**Layout and views:** A **handle** sits between the spectrum and the waterfall: dragging changes the size of both parts (double-click resets; in 3D+2D the handle sits between the landscape and the rest). The **Spec.** button shows only the spectrum without a waterfall. Both can be switched off under **F8 → Waterfall → Controls**.
+
+![Speech output settings](bilder/78-sprachausgabe-en.png)
+
+**Speech output:** Under **F8 → Speech output** RigVibe can announce the **frequency** (when you stop turning), the **mode**, warn about a **high SWR** (from 3.0, only while transmitting) and read out the **notification messages**. The voice comes from your browser or operating system (nothing is sent to the network); speed, volume and voice can be set, **Test** plays a sentence. For **screen readers** (NVDA, Orca, VoiceOver) the messages are also provided in an invisible region (can be switched off). Default: off. Frequency, mode and SWR are not announced while the output is off.
 
 The waterfall scrolls at a constant speed even when a source sends its lines in bursts (KiwiSDR, OpenWebRX, internet): RigVibe shows the lines with a small delay and blends between them. Speed, colours, levels and 3D depth under **F8 → Waterfall**.
 
@@ -447,7 +466,9 @@ Also read by RigVibe itself:
 
 ![World map – ships and radiosonde](bilder/74-karte-schiffe-sonden-en.png)
 
-**FM broadcast with RDS (your own SDRs):** RTL-SDR, HackRF and Pluto receive FM broadcast (87.5–108 MHz) in **WFM** mode – with their own wide channel, full-bandwidth audio (48 kHz, mono) and **RDS**: station name, programme type and radio text appear below the frequency, and the **Data reception** window also lists the programme identification (PI) and the time sent by the station. Choose WFM with the mode button or pick the **Broadcast (LW, MW, SW, FM)** band plan below the band buttons and press **UKW**. The Quansheng cannot do this: its FM radio chip has no RDS and its audio does not go over USB.
+**FM broadcast with RDS (your own SDRs):** RTL-SDR, HackRF and Pluto receive FM broadcast (87.5–108 MHz) in **WFM** mode – with their own wide channel, full-bandwidth audio (48 kHz, mono or stereo) and **RDS**: station name, programme type and radio text appear below the frequency, and the **Data reception** window also lists the programme identification (PI) and the time sent by the station. Choose WFM with the mode button or pick the **Broadcast (LW, MW, SW, FM)** band plan below the band buttons and press **UKW**. The Quansheng cannot do this: its FM radio chip has no RDS and its audio does not go over USB.
+
+**Stereo:** If the station sends the 19 kHz pilot tone, RigVibe plays FM broadcast in **stereo** (the pilot is measured as a phase, from which the 38 kHz carrier for L−R is built). If the pilot is too weak or there is only noise, it stays mono. In stereo the interface noise filter is off (it works with mono only); the decoders still get the mono part. **Tested with synthetic signals only** (channel separation over 30 dB, noise and interference lines stay mono); I could not listen to a real stereo station for lack of reception.
 
 ![FM broadcast with RDS](bilder/75-ukw-rds-en.png)
 
@@ -500,6 +521,8 @@ The red **Record** button in the toolbar of Radio control records the **received
 ### Beacon monitor (NCDXF/IARU)
 
 **View → Beacon monitor** shows the 18 beacons of the international beacon project, transmitting in turn for 10 seconds each on 14.100 / 18.110 / 21.150 / 24.930 and 28.200 MHz. **Start** tunes the radio to the chosen beacon band in CW; the beacon currently transmitting is outlined. RigVibe measures every transmission in the received audio (as for the recorder: receiver directly or sound card input): **green** = heard, with signal-to-noise ratio in dB; the **dots** show down to which power step the beacon was audible (100 W · 10 W · 1 W · 0.1 W). With **all bands in turn** RigVibe moves to the next band after each 3-minute cycle – giving a picture of current propagation. The computer clock must be correct.
+
+**Meteor showers:** Above the table the window shows the meteor showers that are currently active with their peak and rate (ZHR, approximate values from the IMO calendar) and the next shower – useful for meteor scatter on 50 and 144 MHz. The **Meteor showers** tick in the bar hides the line.
 
 ![Beacon monitor](bilder/51-baken.png)
 

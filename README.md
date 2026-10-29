@@ -5,17 +5,17 @@
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.7.0)
+## Download (Version 1.8.0)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.7.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.7.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.7.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.7.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.7.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/rigvibe_1.7.0_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.7.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux-Server.tar.gz) |
-| Raspberry Pi / Linux ARM64 (64-Bit-System), Programm | [RigVibe-1.7.0-Linux-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux-ARM64.AppImage) oder [rigvibe_1.7.0_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/rigvibe_1.7.0_arm64.deb) |
-| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.7.0-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux-ARM64-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.8.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.8.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.8.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.8.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.8.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/rigvibe_1.8.0_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.8.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Linux-Server.tar.gz) |
+| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.8.0-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.8.0_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/rigvibe_1.8.0_arm64.deb) |
+| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.8.0-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.0/RigVibe-1.8.0-Linux-ARM64-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -39,6 +39,10 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
   SSTV mit Bildmodus, FreeDV RADE/700D/700E/1600, CW mit Tempo, Olivia, Sprache, AM) – SSTV und FreeDV schon nach 4 Sekunden – und öffnet auf Wunsch gleich den passenden Dekoder
 - **Empfänger ohne Funkgerät**: KiwiSDR, OpenWebRX, öffentliche Empfängerlisten, Wasserfall 2D/3D mit DX-Cluster- und POTA/SOTA/WWFF-Spots (Rufzeichen mit Flagge, Klick stimmt ab)
 - **Eigene SDRs**: RTL-SDR (auch V4), HackRF One und ADALM-Pluto direkt (Pluto auch im Netzwerk, mit automatischer Suche), Hermes Lite 2 im Netz; **Senden** mit HackRF, Pluto und Hermes Lite 2; **UKW-Rundfunk mit RDS** (Sendername, Radiotext), **Schiffe (AIS)** und **Wettersonden (RS41)** selbst dekodiert, mit Weltkarte
+- **Skimmer** (eigene SDRs): liest bis zu 12 **CW-, PSK31- und RTTY-Signale gleichzeitig** mit, zeigt Rufzeichen, Geschwindigkeit und Text und markiert das Rufzeichen am Signal im Wasserfall
+- **Wasserfall**: 2D, 3D und **3D+2D** auf einer Frequenzachse, nur Spektrum, ziehbare Aufteilung und **ziehbarer Durchlassbereich**, FIT/CTR/MARK, zehn Farbpaletten; alle Bedienelemente einzeln ein- und ausblendbar
+- **Sprachausgabe** (aus dem Browser, abschaltbar): Frequenz, Betriebsart, SWR-Warnung und Hinweise; Hinweise auch für Screenreader (NVDA, Orca, VoiceOver)
+- **SoapySDR** (Airspy, SDRplay, LimeSDR, RX-888 …, SoapySDR muss installiert sein) und **Raspberry Pi** (Linux ARM64) als weitere Plattform
 - **Handfunkgeräte Quansheng UV-K1 / UV-K5 V3** über USB-C: mit der mitgelieferten RigVibe-Firmware (Aufspielen per Assistent, ohne Zusatzprogramm) steuert RigVibe das Gerät komplett – Frequenz, Betriebsart, Leistung, Senden über USB, Rauschsperre, Bandübersicht, fester Tonpegel für die Soundkarte; Ton und Daten über das USB-C-Kabel ohne Soundkarte (APRS, Packet, SSTV, KG-STV, PSK, RTTY …), FT8/FT4/JS8 und echtes CW direkt mit dem Sender, **Packet 9600 Bd, D-STAR, DMR, YSF und M17** über USB-C, **AIS und Wettersonden**, Firmware-Updates über USB
 - **Relais & Suchlauf**: Relais im Umkreis mit Betriebsarten (Klick stimmt ab), schneller Bandscan mit dem Quansheng, Suchlauf über Relais oder eigene Frequenzen, der auf belegten Kanälen anhält – auch ohne Wasserfall
 - **QO-100**: Pluto mit LNB im Vollduplex, Uplink automatisch, LNB-Drift über die Bake ausgeglichen, Transponder-Bandplan, Satelliten-QSO im Logbuch (nur in den Amateurfunkbändern)
@@ -75,7 +79,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
 RigVibe ist ein Desktop-Programm mit eigenem Fenster; der Dienst und Hamlib (Funkgeräte-/Rotorsteuerung) sind eingebaut.
 - **Windows:** `RigVibe-x.y.z-Windows-Setup.exe` ausführen. Beim ersten Start meldet Windows evtl. „Unbekannter Herausgeber“ → „Weitere Informationen“ → „Trotzdem ausführen“. USB-Treiber des Funkgeräts (z. B. Silicon Labs CP210x) installieren.
 - **macOS:** `RigVibe-x.y.z-Mac-AppleSilicon.dmg` (Apple-Chip) bzw. `-Mac-Intel.dmg` öffnen, RigVibe in „Programme“ ziehen. Beim ersten Start Rechtsklick → „Öffnen“ (nicht notarisiert). Mikrofon-Zugriff erlauben (für Digitalbetrieb/SSTV).
-- **Linux:** `.deb` installieren oder die `.AppImage` ausführbar machen und starten; Benutzer in die Gruppe `dialout` aufnehmen. **Raspberry Pi:** die ARM64-Pakete (Raspberry Pi 4/5 mit 64-Bit-System); in der Bauprobe getestet (Dienst startet, Oberfläche lädt), auf echter Pi-Hardware noch nicht.
+- **Linux:** `.deb` installieren oder die `.AppImage` ausführbar machen und starten; Benutzer in die Gruppe `dialout` aufnehmen. **Raspberry Pi:** die ARM64-Pakete (Raspberry Pi 4/5 mit 64-Bit-System); im Bau getestet, auf echter Pi-Hardware noch nicht.
 
 Danach: Gerätesteuerung → Verbinden → Hersteller/Modell, COM-Port, Baudrate (oder „Baudrate suchen“), bei Icom die CI-V-Adresse.
 Daten liegen im Benutzerordner (Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`).
