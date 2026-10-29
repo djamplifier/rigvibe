@@ -34,21 +34,25 @@ jobs:
         shell: bash
         run: |
           pip install -q numpy
-          echo "--- A: loadModules ohne Vorladen"
+          echo "--- C1: Soapy zuerst, dann selftest"
           python -X faulthandler -c "
-          import ctypes, os
-          d = os.path.abspath('packaging/sdrlibs/soapy'); os.add_dll_directory(d); os.add_dll_directory(d + '/modules')
-          L = ctypes.CDLL(d + '/SoapySDR.dll'); os.environ['SOAPY_SDR_ROOT'] = d
-          L.SoapySDR_setLogLevel(8); print('loadModules ...', flush=True); L.SoapySDR_loadModules(); print('fertig', flush=True)
-          " 2>&1 || true
-          echo "--- B: soapy.modules()"
+          from wellenwerk.sdr import usbsdr, soapy
+          print(soapy.modules(), flush=True); print(usbsdr.selftest(), flush=True)
+          " 2>&1 | tail -8 || true
+          echo "--- C2: selftest zuerst, dann Soapy; Module im Prozess"
           python -X faulthandler -c "
-          from wellenwerk.sdr import soapy
-          L = soapy.lib(); print('lib', L, soapy.error(), flush=True)
-          L.SoapySDR_setLogLevel(8); print('abi', soapy.abi(), flush=True)
-          import os; print('ROOT', os.environ.get('SOAPY_SDR_ROOT'), 'PLUG', os.environ.get('SOAPY_SDR_PLUGIN_PATH'), flush=True)
+          import ctypes, ctypes.wintypes as w
+          from wellenwerk.sdr import usbsdr, soapy
+          print(usbsdr.selftest(), flush=True)
+          k = ctypes.WinDLL('kernel32'); k.K32EnumProcessModules.argtypes = [w.HANDLE, ctypes.POINTER(w.HMODULE), w.DWORD, ctypes.POINTER(w.DWORD)]
+          h = (w.HMODULE * 1024)(); n = w.DWORD(); k.GetCurrentProcess.restype = w.HANDLE
+          k.K32EnumProcessModules(k.GetCurrentProcess(), h, ctypes.sizeof(h), ctypes.byref(n))
+          buf = ctypes.create_unicode_buffer(500)
+          for i in range(n.value // ctypes.sizeof(w.HMODULE)):
+              k.GetModuleFileNameW(h[i], buf, 500); b = buf.value.lower()
+              if any(x in b for x in ('usb', 'pthread', 'airspy', 'hackrf', 'rtlsdr', 'soapy')): print('MOD', buf.value, flush=True)
           print(soapy.modules(), flush=True)
-          " 2>&1 || true
+          " 2>&1 | tail -20 || true
       - name: Laden pruefen
         shell: bash
         run: pip install -q numpy && python -c "from wellenwerk.sdr import usbsdr, soapy; print(usbsdr.selftest()); m = soapy.modules(); print('Soapy', soapy.abi(), m); assert any('airspySupport' in x['path'] and not x['error'] and 'airspy' in x['drivers'] for x in m) and any('airspyhfSupport' in x['path'] and not x['error'] and 'airspyhf' in x['drivers'] for x in m), 'Airspy-Module fehlen'"
