@@ -14,6 +14,8 @@ Code, Logo und Icons sind eigenständig.
 | Linux (alle Distributionen) | [RigVibe-1.7.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux.AppImage) |
 | Debian/Ubuntu | [rigvibe_1.7.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/rigvibe_1.7.0_amd64.deb) |
 | Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.7.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux-Server.tar.gz) |
+| Raspberry Pi / Linux ARM64 (64-Bit-System), Programm | [RigVibe-1.7.0-Linux-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux-ARM64.AppImage) oder [rigvibe_1.7.0_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/rigvibe_1.7.0_arm64.deb) |
+| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.7.0-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.7.0/RigVibe-1.7.0-Linux-ARM64-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -73,7 +75,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
 RigVibe ist ein Desktop-Programm mit eigenem Fenster; der Dienst und Hamlib (Funkgeräte-/Rotorsteuerung) sind eingebaut.
 - **Windows:** `RigVibe-x.y.z-Windows-Setup.exe` ausführen. Beim ersten Start meldet Windows evtl. „Unbekannter Herausgeber“ → „Weitere Informationen“ → „Trotzdem ausführen“. USB-Treiber des Funkgeräts (z. B. Silicon Labs CP210x) installieren.
 - **macOS:** `RigVibe-x.y.z-Mac-AppleSilicon.dmg` (Apple-Chip) bzw. `-Mac-Intel.dmg` öffnen, RigVibe in „Programme“ ziehen. Beim ersten Start Rechtsklick → „Öffnen“ (nicht notarisiert). Mikrofon-Zugriff erlauben (für Digitalbetrieb/SSTV).
-- **Linux:** `.deb` installieren oder die `.AppImage` ausführbar machen und starten; Benutzer in die Gruppe `dialout` aufnehmen.
+- **Linux:** `.deb` installieren oder die `.AppImage` ausführbar machen und starten; Benutzer in die Gruppe `dialout` aufnehmen. **Raspberry Pi:** die ARM64-Pakete (Raspberry Pi 4/5 mit 64-Bit-System); in der Bauprobe getestet (Dienst startet, Oberfläche lädt), auf echter Pi-Hardware noch nicht.
 
 Danach: Gerätesteuerung → Verbinden → Hersteller/Modell, COM-Port, Baudrate (oder „Baudrate suchen“), bei Icom die CI-V-Adresse.
 Daten liegen im Benutzerordner (Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`).
