@@ -28,6 +28,21 @@ jobs:
       - name: SoapySDR mit Airspy-Treibern
         shell: bash
         run: .github/scripts/soapylibs.sh
+      - name: Diagnose Windows
+        if: runner.os == 'Windows'
+        continue-on-error: true
+        shell: bash
+        run: |
+          ls -R packaging/sdrlibs/soapy
+          for f in packaging/sdrlibs/soapy/modules/*.dll packaging/sdrlibs/soapy/*.dll; do echo "== $f"; dumpbin //dependents "$f" 2>&1 | grep -i "\.dll" | head -12; done
+          python -X faulthandler -c "
+          import ctypes, os, glob
+          d = os.path.abspath('packaging/sdrlibs/soapy'); os.add_dll_directory(d); os.add_dll_directory(d + '/modules')
+          L = ctypes.CDLL(d + '/SoapySDR.dll'); print('Kern ok')
+          for f in glob.glob(d + '/modules/*.dll'):
+              try: ctypes.CDLL(f); print('direkt ok', f)
+              except OSError as e: print('direkt FEHLER', f, e)
+          "
       - name: Laden pruefen
         shell: bash
         run: pip install -q numpy && python -c "from wellenwerk.sdr import usbsdr, soapy; print(usbsdr.selftest()); m = soapy.modules(); print('Soapy', soapy.abi(), m); assert any('airspySupport' in x['path'] and not x['error'] and 'airspy' in x['drivers'] for x in m) and any('airspyhfSupport' in x['path'] and not x['error'] and 'airspyhf' in x['drivers'] for x in m), 'Airspy-Module fehlen'"
