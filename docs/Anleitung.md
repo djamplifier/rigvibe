@@ -646,6 +646,10 @@ Eine Auswahl:
 
 Die Werkzeugleiste des Logbuchs: **Logbücher · Neuer Eintrag**, **DX-Cluster · Spot-Alarm · QSL & Online · Diplome**, **Einstellungen**; rechts ein Kästchen mit Rufzeichen, Locator, Frequenz (Klick: VFO A abstimmen) und UTC. Menüs: **QSO & QSL** (Logbücher, QSL-Abgleich, Diplome, Statistik) und **Werkzeuge** (Einstellungen, Stationsprofile, POTA/SOTA/WWFF, Cluster-Alarme, Kalender); VFO A/B abstimmen unter **Bearbeiten**.
 
+**Warnungen beim Eintragen:** Liegt die Frequenz nicht im eingetragenen Band (z. B. 14,200 MHz bei „40m“), meldet RigVibe das beim Ändern des Bandes und fragt beim Speichern nach. Wird dasselbe QSO (Rufzeichen, Datum, Zeit, Band, Betriebsart) innerhalb von 20 Sekunden noch einmal gespeichert, fragt RigVibe ebenfalls nach.
+
+**QSO teilen:** Rechtsklick auf ein QSO → **Teilen**: Text kopieren oder direkt zu Bluesky, X, Telegram oder WhatsApp (öffnet die Seite des Dienstes mit vorbereitetem Text, gesendet wird erst dort).
+
 **QSO eintragen:** **Neu** (oder **Eintrag** in der Werkzeugleiste). Rufzeichen eintippen – Land, Entfernung, Richtung, frühere QSOs und Callbook-Daten erscheinen sofort. Frequenz, Band und Betriebsart kommen vom Funkgerät. **Enter** speichert, **Esc** leert.
 
 ![Neuer Eintrag](bilder/08-neuer-eintrag.png)
@@ -745,6 +749,9 @@ In den Optionen unter **Online-Dienste**:
 - **eQSL:** Benutzername und Passwort.
 - **LoTW:** Zugangsdaten für den Abgleich und das **.p12-Zertifikat** (aus TQSL exportieren) mit Passwort für den Upload.
 - **Club Log:** E-Mail, Passwort, Rufzeichen.
+- **HRDLog.net:** Rufzeichen (leer = dein eigenes) und der **Upload-Code** von hrdlog.net (Mein Konto → Upload-Code). Je QSO ein Aufruf; Haken „Neue QSOs sofort zu HRDLog.net“.
+- **QO-100 Dx Club:** der **API-Schlüssel** aus deinem Profil bei qo100dx.club. Es gehen nur QO-100-Kontakte hinaus (Satellitenname QO-100, oder Weg „SAT“ auf 13 cm/3 cm ohne Satellitennamen); RigVibe ergänzt Satellit und Weg selbst. Haken „Neue QO-100-QSOs sofort …“.
+- Beide Dienste sind **nur gegen nachgebaute Antworten getestet**, nicht gegen die echten Server (kein Konto zur Hand).
 
 Neue QSOs können automatisch hochgeladen werden (Haken „Neue QSOs sofort …“). Bestätigungen holt **LoTW holen** (Werkzeugleiste des Logbuchs) bzw. der Bereich **QSL & Online** ab.
 

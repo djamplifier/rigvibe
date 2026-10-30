@@ -646,6 +646,10 @@ A selection:
 
 The logbook toolbar: **Logbooks · New entry**, **DX cluster · Spot alarm · QSL & Online · Awards**, **Settings**; on the right a box with callsign, locator, frequency (click: tune VFO A) and UTC. Menus: **QSO & QSL** (logbooks, QSL matching, awards, statistics) and **Tools** (settings, station profiles, POTA/SOTA/WWFF, cluster alarms, calendar); tune VFO A/B under **Edit**.
 
+**Warnings while logging:** if the frequency is not inside the entered band (e.g. 14.200 MHz with “40m”), RigVibe warns when you change the band and asks again when saving. If the same QSO (callsign, date, time, band, mode) is saved again within 20 seconds, RigVibe asks as well.
+
+**Sharing a QSO:** right-click a QSO → **Share**: copy the text or send it to Bluesky, X, Telegram or WhatsApp (opens the service's page with the text prepared; nothing is sent until you confirm there).
+
 **Logging a QSO:** **New** (or **Entry** in the toolbar). Type the callsign – country, distance, direction, previous QSOs and callbook data appear immediately. Frequency, band and mode come from the radio. **Enter** saves, **Esc** clears.
 
 ![New entry](bilder/08-neuer-eintrag.png)
@@ -743,6 +747,9 @@ In the options under **Online services**:
 - **eQSL:** user name and password.
 - **LoTW:** credentials for syncing and the **.p12 certificate** (exported from TQSL) with password for uploading.
 - **Club Log:** e-mail, password, callsign.
+- **HRDLog.net:** callsign (empty = your own) and the **upload code** from hrdlog.net (My account → upload code). One call per QSO; tick “Send new QSOs to HRDLog.net immediately”.
+- **QO-100 Dx Club:** the **API key** from your profile at qo100dx.club. Only QO-100 contacts are sent (satellite name QO-100, or propagation “SAT” on 13 cm/3 cm without a satellite name); RigVibe adds satellite and propagation itself. Tick “Send new QO-100 QSOs … immediately”.
+- Both services are **tested against simulated replies only**, not against the real servers (no account at hand).
 
 New QSOs can be uploaded automatically (ticks “New QSOs to … immediately”). Confirmations are fetched with **Fetch LoTW** (logbook toolbar) or in the **QSL & Online** area.
 
