@@ -5,17 +5,17 @@
 Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
 Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.8.5)
+## Download (Version 1.8.6)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.8.5-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.8.5-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.8.5-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.8.5-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.8.5_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/rigvibe_1.8.5_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.8.5-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Linux-Server.tar.gz) |
-| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.8.5-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.8.5_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/rigvibe_1.8.5_arm64.deb) |
-| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.8.5-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.5/RigVibe-1.8.5-Linux-ARM64-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.8.6-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.8.6-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.8.6-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.8.6-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.8.6_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/rigvibe_1.8.6_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.8.6-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Linux-Server.tar.gz) |
+| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.8.6-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.8.6_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/rigvibe_1.8.6_arm64.deb) |
+| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.8.6-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.6/RigVibe-1.8.6-Linux-ARM64-Server.tar.gz) |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
