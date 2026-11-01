@@ -75,7 +75,7 @@ Zum Ausprobieren ist ein **Demo-Funkgerät** voreingestellt – damit lässt sic
 
 Weitere Einstellungen:
 - **Beim Start immer verbinden** – für das Hauptgerät.
-- **Wasserfall ohne eigenes Spektrum:** Hat das gewählte Gerät keinen Wasserfall (z. B. ein Fernempfänger, dessen Wasserfall-Kanäle belegt sind), zeigt der Wasserfall bei „aktuelles Gerät“ automatisch das Spektrum eines anderen verbundenen Geräts, das eines hat. Beim Wechsel zwischen Geräten wird Bild und Ansicht der alten Quelle sofort verworfen (auch im 3D-Wasserfall), jedes Gerät beginnt mit seinem eigenen Bild.
+- **Wasserfall ohne eigenes Spektrum:** Hat das gewählte Gerät keinen Wasserfall (z. B. ein Fernempfänger, dessen Wasserfall-Kanäle belegt sind), zeigt der Wasserfall bei „aktuelles Gerät“ automatisch das Spektrum eines anderen verbundenen Geräts, das eines hat. Beim Wechsel zwischen Geräten werden Spektrumkurve, Wasserfall und Ansicht der alten Quelle gemeinsam und sofort verworfen (auch im 3D-Wasserfall), jedes Gerät beginnt mit seinem eigenen Bild.
 - **Panadapter: Scope-Daten vom Gerät** – bei Icom-Geräten mit eingebautem Spektrum (IC-7300/705/9700/7610 …). Im Gerät „CI-V USB Port“ auf **Unlinked** und 115200 Baud stellen.
 - **Für andere Rechner freigeben** – siehe unten.
 - **Frequenzversatz (Transverter, LNB, QO-100)** – siehe unten.

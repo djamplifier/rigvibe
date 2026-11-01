@@ -81,7 +81,7 @@ A **demo radio** is preset for trying things out – everything can be operated 
 
 More settings:
 - **Always connect on start** – for the main radio.
-- **Waterfall without its own spectrum:** if the selected device has no waterfall (e.g. a remote receiver whose waterfall channels are taken), the waterfall set to “current device” automatically shows the spectrum of another connected device that has one. Switching devices discards the old source's picture and view immediately (3D waterfall too); each device starts with its own picture.
+- **Waterfall without its own spectrum:** if the selected device has no waterfall (e.g. a remote receiver whose waterfall channels are taken), the waterfall set to “current device” automatically shows the spectrum of another connected device that has one. Switching devices discards the old source's spectrum curve, waterfall and view together and immediately (3D waterfall too); each device starts with its own picture.
 - **Panadapter: scope data from the radio** – for Icom radios with built-in spectrum (IC-7300/705/9700/7610 …). In the radio set “CI-V USB Port” to **Unlinked** and 115200 baud.
 - **Share with other computers** – see below.
 - **Frequency offset (transverter, LNB, QO-100)** – see below.
