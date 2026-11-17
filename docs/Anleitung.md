@@ -75,6 +75,7 @@ Zum Ausprobieren ist ein **Demo-Funkgerät** voreingestellt – damit lässt sic
 
 Weitere Einstellungen:
 - **Beim Start immer verbinden** – für das Hauptgerät.
+- **Stumme Verbindung zwischen Fenster und Dienst:** Der Dienst schickt alle 5 Sekunden ein Lebenszeichen. Bleibt es 15 Sekunden aus (Wasserfall steht, Frequenzanzeige und Gerätewechsel reagieren nicht mehr), baut das Fenster die Verbindung selbst neu auf; Strg+R ist nicht mehr nötig.
 - **Wasserfall ohne eigenes Spektrum:** Hat das gewählte Gerät keinen Wasserfall (z. B. ein Fernempfänger, dessen Wasserfall-Kanäle belegt sind), zeigt der Wasserfall bei „aktuelles Gerät“ automatisch das Spektrum eines anderen verbundenen Geräts, das eines hat. Beim Wechsel zwischen Geräten werden Spektrumkurve, Wasserfall und Ansicht der alten Quelle gemeinsam und sofort verworfen (auch im 3D-Wasserfall), jedes Gerät beginnt mit seinem eigenen Bild.
 - **Panadapter: Scope-Daten vom Gerät** – bei Icom-Geräten mit eingebautem Spektrum (IC-7300/705/9700/7610 …). Im Gerät „CI-V USB Port“ auf **Unlinked** und 115200 Baud stellen.
 - **Für andere Rechner freigeben** – siehe unten.
@@ -228,6 +229,17 @@ Mit der RigVibe-Firmware ab Stand 6 braucht der Digitalbetrieb mit dem UV-K1 / U
 **Gerät → Schnappschüsse …** speichert den kompletten Gerätezustand unter einem Namen – Frequenz, Betriebsart und Bandbreite, Split mit Sendefrequenz, RIT und alle Regler und Schalter, die das Gerät setzen kann – und stellt ihn mit **Abrufen** wieder her (z. B. „40 m FT8“, „Contest SSB“). Einmal-Aktionen wie Tuner-Start oder Tonruf werden dabei nie ausgelöst.
 
 **Funkgerät → Synchronisieren …**: Ein zweites verbundenes Gerät folgt dem ersten – Frequenz plus einstellbarer **Versatz** und auf Wunsch die Betriebsart (Zweitempfänger, SDR als Panadapter, Transverter-ZF).
+
+### Handfunkgerät TIDRADIO TD-H3 Plus (USB-C oder Bluetooth, Entwicklungsstand)
+
+Das TD-H3 Plus lässt sich als Gerät **th3plus** einrichten: im Fenster *Empfänger* die Art **TIDRADIO TD-H3 Plus** wählen und in den Parametern die Verbindung angeben: `port=/dev/ttyACM0` (bzw. `COM5`) für den seitlichen USB-C-Anschluss, oder `ble=84:C4:28:…` (Adresse des Funkgeräts) für Bluetooth. Ohne Angabe sucht RigVibe den USB-Anschluss mit der Kennung 4C4A:4155 selbst.
+
+- **Voraussetzung:** Das Funkgerät braucht ein Firmware-Abbild mit dem RigVibe-Monitor (Sende-Watchdog, Befehle über USB und Bluetooth). Dieses Abbild liegt RigVibe noch **nicht** bei; mit der Original-Firmware 1.0.50 verbindet sich das Gerät nicht. Für Bluetooth muss Bluetooth am Funkgerät einmal eingeschaltet worden sein (Bluetooth-Taste lang drücken); die Einstellung bleibt über das Ausschalten erhalten.
+- **Was geht:** Frequenz (2 m, 70 cm und weitere), FM, S-Meter aus dem Funkchip, **Senden** (Träger und Töne des Funkchips). Senden gibt es nur mit dem Parameter `tx=1` und nur in Amateurfunkbändern, wie bei den anderen Geräten.
+- **Sicherheit beim Senden:** Die Firmware beendet das Senden von selbst, wenn 4–5 Sekunden kein Befehl mehr vom Rechner kommt (Kabel gezogen, Bluetooth weg, Programm abgestürzt) und stellt den Funkchip auf Empfang zurück. Beim Tastendruck ist die Grenze zunächst großzügiger (~8 s), weil die ersten Befehle während des Sendestarts verloren gehen.
+- **Datenempfang ohne Audiopfad:** Über das FSK-Modem des Funkchips empfängt das Gerät Rahmen (`fsk_receive`; über USB-C und Bluetooth; Bluetooth liefert etwa eine Sekunde verzögert und hält bei mehr als einem Rahmen je Sekunde mit, im Test 12 von 12 Rahmen): Präambel 0xAA, Sync (Standard `RVNQ`), dann genau **16 Nutzbytes** je Rahmen (das Modem puffert höchstens 8 Wörter; Rahmenlänge bei Sender und Empfänger gleich). RigVibe setzt die über zwei Ereignisse verteilten FIFO-Wörter wieder zu einem Rahmen zusammen. Mit einem echten Quansheng UV-K1 als Sender (1 200 Bd) kamen 47 von 48 Rahmen vollständig und richtig an.
+- **Datensendung ohne Audiopfad:** `fsk_send` sendet Rahmen (bis 64 Byte, 1 200 Bd, Sync `RVNQ`) über das FSK-Modem – nur mit `tx=1` und nur in Amateurfunkbändern. Im Test empfing ein Quansheng UV-K1 die Rahmen des H3 (mit vereinzelten Bitfehlern bei schwachem Pegel; eine eigene Prüfsumme je Block ist daher nötig). Gesendet wird über die virtuelle PTT der Original-Firmware (die Firmware bekommt ein „+SPP=P“ wie von einem Bluetooth-Taster), also mit voller Endstufe und Leistungsregelung des Geräts; im Test empfing der K1 12 von 12 Rahmen ohne Bitfehler (Pegel um das Zweieinhalbfache höher als vorher). Die Sendefrequenz ist dabei die Kanalfrequenz der Firmware des Geräts (hier 434,5002 MHz); andere Sendefrequenzen lehnt RigVibe ab, bis die Kanalfrequenz frei einstellbar ist. Der Sende-Watchdog stoppt den Träger spätestens nach der eingestellten Zeit ohne Lebenszeichen.
+- **Was nicht geht:** Empfangston und Sprache/Digitalfunk (DMR, D-STAR, YSF) im Fenster – das Funkgerät führt das Empfangs-Audio nicht zum Prozessor, es gibt dafür keine Verbindung ohne Eingriff in die Hardware. Dafür bleibt ein zweiter Empfänger (z. B. HackRF). Bluetooth überträgt bisher nur Befehle (Frequenz, S-Meter, Senden); die Antwort kommt zeilenweise und braucht ~0,3 s je Befehl.
 
 ### Empfänger ohne eigenes Funkgerät (KiwiSDR, OpenWebRX, WebSDR)
 
@@ -1096,3 +1108,76 @@ Einstellungen unter **F8 → Zugang & API**.
 ![Erweiterungs-Betriebsart – Beispiel FSK-Text im Trockenlauf](bilder/76-erweiterungs-betriebsart.png)
 
 Im Fenster: Eingabefelder der Betriebsart (Werte werden gemerkt, mit „je Kanal“ je Frequenz), **Senden**, **Not-Aus**, Tonquelle (Mikrofon, ohne Ton, Sprachspeicher), „Aufbereitung“ (Mikrofon mit RigVibes Sendeton-Kette), **Trockenlauf** (ohne PTT, Signal in eine Datei, mit „zurückspielen“ in den eigenen Empfänger), **Mitschnitt**, Höchstdauer und Lautstärke des Tons. Darunter Sende- und Empfangsweg des Geräts, die letzte Aussendung und die empfangenen Stationen (sie erscheinen auch unter der Frequenz und in „zuletzt gehört“). **Gerät …** stellt Vorlaufzeit (PTT → erster Wert), Vorrat, Polarität, Sendesperre ein und **misst den Hub ein**: 2 s Prüfton, gemessen mit einem eigenen SDR auf derselben Frequenz (danach den Sendepegel nicht mehr ändern). **Protokoll** zeigt Unterläufe, Lücken und Fehler der Erweiterung. Funkgeräte an der Soundkarte brauchen ein offenes RigVibe-Fenster: Dort läuft der Ton unbearbeitet zur Soundkarte, und der Empfang kommt aus dem Eingang des Digitalbetriebs. Zum Ausprobieren: **F8 → Erweiterungen → Beispiel „Eigene Betriebsart: FSK-Text“**.
+## 19. RigVibe als eigenständiges Gerät (Raspberry Pi, sBitx)
+
+Auf einem Raspberry Pi mit Bildschirm wird RigVibe zum Funkgerät ohne Desktop und ohne Browser. Die Geräte-Oberfläche startet im Vollbild und wird über Touch und, beim sBitx v3, über die beiden Drehknöpfe bedient. Die Weboberfläche bleibt im Netz erreichbar.
+
+**Installation** (Raspberry Pi OS 64 Bit):
+```
+curl -fsSL https://rigvibe.de/install.sh | bash
+```
+Das Skript erkennt einen sBitx und richtet auf Nachfrage den **Gerätemodus** ein: Nach dem Einschalten startet die RigVibe-Oberfläche, Desktop und sBitx-Software bleiben aus. `--deinstallieren` stellt alles wieder her. Updates gibt es am Gerät unter **Menü → Einstellungen → RigVibe**.
+
+### Gerätedesigns (Skins)
+Unter **Menü → Gerätedesign** stehen die eingebauten Designs zur Wahl:
+- **RigVibe (Standard)** und **Matrix**: Im Matrix-Design wird der 2D-Wasserfall zu fallendem Zeichenregen.
+- Nachbauten bekannter Funkgeräte (IC-7300, FT-710, TS-890S, G7250).
+- **Funkzentrale** und acht Szenen-Skins.
+
+![Szenen-Skins auf dem sBitx: Synthwave, Neon-Raster, Gold-Sternenschiff, Raketenstart](bilder/83-skins.png)
+
+**Eigene Skins** liegen im Ordner `~/.config/rigvibe/skins/`. Jeder Unterordner ist ein Skin mit einer `skin.json` und auf Wunsch Bildern (JPG/PNG). Am einfachsten geht es als **ZIP**: in den Ordner kopieren oder auf einen USB-Stick legen und unter **Gerätedesign → Skins vom USB-Stick laden** antippen. Auf dem Stick muss „skin“ im Dateinamen stehen, oder das ZIP liegt im Ordner `rigvibe-skins/`.
+
+Eine `skin.json` legt fest:
+- Farben und einen Farbton für die ganze Oberfläche,
+- ein Hintergrundbild (800×480) oder eine eingebaute Szene,
+- ein Bild nur hinter dem Spektrum (800×130),
+- ein schwaches Bild über dem Wasserfall (800×190, dunkler Grund),
+- den Wasserfall-Farbverlauf, den Zeichenregen und die leuchtende Spektrumlinie.
+
+Das Hauptmotiv eines Hintergrundbilds gehört in den Spektrumbereich (y 108–235). Bilder dürfen keine eigene Oberfläche enthalten, also keine Tasten und keine Frequenz: Die Bedienelemente zeichnet RigVibe selbst darüber. Die vollständige Beschreibung liegt als `LIESMICH.txt` im Skin-Ordner, ein Beispiel-Skin ist dabei.
+
+### Funkzentrale
+Alles auf einer Seite:
+- **Kopf:** Frequenz, Betriebsart, Filter, S-Meter, NR/NB/AGC/Ton.
+- **Links Ausbreitung:** MUF der nächsten Ionosonde, Kp-Index, Sonnenflux und die Spots des Bands als Richtungskreis.
+- **Mitte:** das Panorama.
+- **Rechts:** Dekoder bzw. die Cluster-Spots des Bands und die letzten QSOs.
+- **Unten:** Schrittweite und Abstimmknopf, AGC, Filter-Vorwahl (CW 300 Hz, SSB 2,4 kHz, RTTY 500 Hz), Regler für RF, Lautstärke und Sperre, Schieber für Rauschfilter und Störaustaster, Antennenwahl.
+- **Fußzeile:** SWR-Zeiger, Tonspektrum, Leistung, Senden, Ton, Bandplan.
+
+Der **Abstimmknopf** dreht man mit dem Finger im Kreis, 12° sind ein Schritt; Antippen links oder rechts stimmt einen Schritt ab bzw. auf. Die **Antennen** heißen in `~/.config/rigvibe-antennen.json`. Die gewählte Antenne schreibt RigVibe als `MY_ANTENNA` ins Logbuch.
+
+![Funkzentrale](bilder/82-funkzentrale.png)
+
+### Wasserfall und Spektrum
+- Das Zahnrad öffnet links **WF Rauschen** und **WF Kontrast** sowie die Farbpaletten. Rechts liegen **Spek. Grund** (Grundlinie, am Rauschteppich ausgerichtet) und **Spek. Verst.** (angezeigter Bereich, weiter rechts = Signale höher). Alle Schieber lassen sich ziehen.
+- Gezoomt holt RigVibe nur den sichtbaren Ausschnitt vom Empfänger. So bleibt der Wasserfall fein, und der Filterrahmen sitzt genau auf dem Signal.
+- Liefert ein Empfänger seine Zeilen stoßweise, etwa ein KiwiSDR über das Netz, gleicht RigVibe das aus: Der Wasserfall läuft gleichmäßig.
+
+### DAB+ (Digitalradio)
+Mit einem RTL-SDR, HackRF, Airspy oder einem SoapySDR-Gerät und einer Antenne für Band III (174–240 MHz). Voraussetzung ist welle.io; das Installationsskript richtet es mit ein, sonst `sudo apt install welle.io ffmpeg`.
+
+Unter **Menü → DAB+** legst du den Empfänger an. Dann suchst du die Sender (Band III, 5A–13F, dauert etwa 3 Minuten) und wählst einen aus. Angezeigt werden Ensemble, Kanal, Signal-Rausch-Abstand, Lauftext und Senderbild; Antippen der obersten Zeile zeigt das Bild groß. Der Ton läuft in Stereo.
+
+DAB+ und der UKW-/SDR-Empfänger dürfen denselben Stick benutzen, RigVibe gibt ihn beim Umschalten frei.
+
+![DAB+](bilder/84-dab.png)
+
+### UKW mit RDS und Verkehrsmeldungen
+Für UKW reicht derselbe Stick in der Betriebsart **WFM**. RigVibe zeigt Sendername, Programmart, Radiotext und Verkehrsfunk; während einer Verkehrsdurchsage steht „VERKEHRSDURCHSAGE“ in der Kopfzeile.
+
+Unter **Menü → Verkehr** stehen die **TMC-Verkehrsmeldungen** des eingestellten Senders: Straße, Abschnitt und Ereignis auf Deutsch, zum Beispiel „A 255 · zwischen Dreieck Norderelbe und Hamburg – Stau“. Auf der **Karte** ist jede Meldung als rote Strecke vom Anfang bis zum Ende eingezeichnet.
+
+Die Orte stammen aus OpenStreetMap und werden einmal mit **Ortsdaten laden** geholt (ca. 2 MB). Meldungen senden zum Beispiel die ARD-Landeswellen; sie kommen nach und nach im Abstand von einigen Sekunden.
+
+![Verkehr: Liste und Karte](bilder/85-verkehr.png)
+
+> DAB+ und die UKW-Verkehrsmeldungen sind neu in 1.9.0 und wurden bisher nur ohne Antenne bzw. mit nachgebauten RDS-Daten geprüft.
+
+### sBitx v3
+RigVibe steuert die Hardware des sBitx selbst (Si5351, Tiefpässe, Codec, Messbrücke, Drehknöpfe). Die sBitx-Software wird nicht gebraucht.
+
+**Senden ist ab Werk aus.** Freigeschaltet wird es unter **Menü → Funkgerät** nach Bestätigung des Hinweises. Keine Haftung für Schäden: Erst mit Kunstantenne oder abgestimmter Antenne und kleiner Leistung testen; oberhalb von SWR 2,5 schaltet RigVibe ab.
+
+Die Lautstärke folgt dem rechten Drehknopf sofort.

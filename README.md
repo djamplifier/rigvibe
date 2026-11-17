@@ -2,20 +2,21 @@
 
 *(bis Version 1.4.3 „Wellenwerk“ – Einstellungen, Logbuch und Anordnung übernimmt RigVibe beim ersten Start automatisch)*
 
-Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux.
+Stationssteuerung, Logbuch und Digitalbetrieb für Funkamateure – ein Desktop-Programm für Windows, macOS und Linux, und auf dem Raspberry Pi ein eigenständiges Funkgerät (z. B. sBitx v3).
 Code, Logo und Icons sind eigenständig.
 
-## Download (Version 1.8.11)
+## Download (Version 1.9.0)
 | System | Datei |
 |---|---|
-| Windows 10/11 | [RigVibe-1.8.11-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Windows-Setup.exe) |
-| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.8.11-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Mac-AppleSilicon.dmg) |
-| Mac mit Intel-Chip | [RigVibe-1.8.11-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Mac-Intel.dmg) |
-| Linux (alle Distributionen) | [RigVibe-1.8.11-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Linux.AppImage) |
-| Debian/Ubuntu | [rigvibe_1.8.11_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/rigvibe_1.8.11_amd64.deb) |
-| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.8.11-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Linux-Server.tar.gz) |
-| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.8.11-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.8.11_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/rigvibe_1.8.11_arm64.deb) |
-| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.8.11-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.8.11/RigVibe-1.8.11-Linux-ARM64-Server.tar.gz) |
+| Windows 10/11 | [RigVibe-1.9.0-Windows-Setup.exe](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Windows-Setup.exe) |
+| Mac mit Apple-Chip (M1–M4) | [RigVibe-1.9.0-Mac-AppleSilicon.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Mac-AppleSilicon.dmg) |
+| Mac mit Intel-Chip | [RigVibe-1.9.0-Mac-Intel.dmg](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Mac-Intel.dmg) |
+| Linux (alle Distributionen) | [RigVibe-1.9.0-Linux.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Linux.AppImage) |
+| Debian/Ubuntu | [rigvibe_1.9.0_amd64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/rigvibe_1.9.0_amd64.deb) |
+| Linux-Server (Dienst, z. B. für einen Heimserver) | [RigVibe-1.9.0-Linux-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Linux-Server.tar.gz) |
+| Raspberry Pi / Linux ARM64, Programm (64-Bit-System) | [RigVibe-1.9.0-Raspberry-Pi-ARM64.AppImage](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Raspberry-Pi-ARM64.AppImage) oder [rigvibe_1.9.0_arm64.deb](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/rigvibe_1.9.0_arm64.deb) |
+| Raspberry Pi / Linux ARM64, Server (Dienst) | [RigVibe-1.9.0-Linux-ARM64-Server.tar.gz](https://github.com/djamplifier/rigvibe/releases/download/v1.9.0/RigVibe-1.9.0-Linux-ARM64-Server.tar.gz) |
+| **Raspberry Pi als eigenes Gerät** (Touch-Oberfläche, sBitx v3) | `curl -fsSL https://rigvibe.de/install.sh \| bash` |
 
 Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe/releases). Installierte Programme melden neue Versionen selbst.
 
@@ -25,6 +26,8 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
   Scanner, Makros, Sprachspeicher, Band-Durchlauf, **Band-Stacks** (mehrere Plätze je Band), Panadapter (Geräte-Scope oder IQ-Soundkarte), WinKeyer,
   Freigabe des Geräts für andere Programme (Hamlib NET rigctl oder CAT-Emulation Kenwood TS-2000), Schnappschüsse,
   Synchronisierung zweier Geräte, Fernbetrieb-Audio (WebRTC) mit PTT, TCI-Schnittstelle für Log-/Contest-Programme, Layout frei anpassbar
+- **Eigenständiges Gerät auf dem Raspberry Pi**: Touch-Oberfläche im Vollbild ohne Desktop und Browser, am **sBitx v3** mit direkter Hardware-Steuerung (Empfang, Drehknöpfe, Messbrücke; Senden experimentell, ab Werk aus); **Funkzentrale** mit Ausbreitung, Panorama, Dekoder, QSOs und Abstimmknopf; **Gerätedesigns** und **eigene Skins** (ZIP vom USB-Stick)
+- **Rundfunk**: **DAB+** (welle-cli, Senderliste, Lauftext, Senderbild) und **UKW mit RDS** samt **TMC-Verkehrsmeldungen** auf der Straßenkarte (neu, noch ohne Empfangstest)
 - **Contest**: Super Check Partial, Doppel-Prüfung und neue Multiplikatoren schon beim Tippen, Wertungen (CQ WW, WPX, IARU, UKW-km, DOK, eigene), laufender Punktestand mit Rate, F-Tasten und „Enter sendet Text“, Cabrillo mit Punktzahl; **„Was fehlt mir?“** ordnet Cluster- und FT8-Stationen danach, was sie dem Log bringen; **Diagnose „Warum dekodiert nichts?“**; Speicherkanäle und Relais als **CHIRP-Datei**
 - **Club-Anzeigetafel**: Rangliste der Club-Mitglieder, gemeinsame Ziele, Weltkarte der Club-Länder und Live-Ticker – im eigenen Netz oder übers Internet, ein RigVibe ist Gastgeber; nur Zahlen werden übertragen, keine Logbücher; Vollbild für den Beamer
 - **Logbuch**: mehrere Logbücher, Rufzeichen-Info mit Callbook (HamQTH/QRZ.com) und gearbeitet-Matrix, DX-Cluster mit
@@ -79,7 +82,7 @@ Alle Versionen und Neuerungen: [Releases](https://github.com/djamplifier/rigvibe
 RigVibe ist ein Desktop-Programm mit eigenem Fenster; der Dienst und Hamlib (Funkgeräte-/Rotorsteuerung) sind eingebaut.
 - **Windows:** `RigVibe-x.y.z-Windows-Setup.exe` ausführen. Beim ersten Start meldet Windows evtl. „Unbekannter Herausgeber“ → „Weitere Informationen“ → „Trotzdem ausführen“. USB-Treiber des Funkgeräts (z. B. Silicon Labs CP210x) installieren.
 - **macOS:** `RigVibe-x.y.z-Mac-AppleSilicon.dmg` (Apple-Chip) bzw. `-Mac-Intel.dmg` öffnen, RigVibe in „Programme“ ziehen. Beim ersten Start Rechtsklick → „Öffnen“ (nicht notarisiert). Mikrofon-Zugriff erlauben (für Digitalbetrieb/SSTV).
-- **Linux:** `.deb` installieren oder die `.AppImage` ausführbar machen und starten; Benutzer in die Gruppe `dialout` aufnehmen. **Raspberry Pi:** die ARM64-Pakete (Raspberry Pi 4/5 mit 64-Bit-System); im Bau getestet, auf echter Pi-Hardware noch nicht.
+- **Linux:** `.deb` installieren oder die `.AppImage` ausführbar machen und starten; Benutzer in die Gruppe `dialout` aufnehmen. **Raspberry Pi:** die ARM64-Pakete (Raspberry Pi 4/5 mit 64-Bit-System). Als eigenständiges Gerät mit Touch-Oberfläche (z. B. sBitx v3): `curl -fsSL https://rigvibe.de/install.sh | bash` – geprüft auf einem sBitx v3 (Raspberry Pi 4).
 
 Danach: Gerätesteuerung → Verbinden → Hersteller/Modell, COM-Port, Baudrate (oder „Baudrate suchen“), bei Icom die CI-V-Adresse.
 Daten liegen im Benutzerordner (Windows `%APPDATA%\RigVibe`, macOS `~/Library/Application Support/RigVibe`).

@@ -81,6 +81,7 @@ A **demo radio** is preset for trying things out – everything can be operated 
 
 More settings:
 - **Always connect on start** – for the main radio.
+- **Silent connection between window and service:** the service sends a heartbeat every 5 seconds. If it stays away for 15 seconds (waterfall frozen, frequency display and device switching unresponsive), the window re-establishes the connection by itself; Ctrl+R is no longer needed.
 - **Waterfall without its own spectrum:** if the selected device has no waterfall (e.g. a remote receiver whose waterfall channels are taken), the waterfall set to “current device” automatically shows the spectrum of another connected device that has one. Switching devices discards the old source's spectrum curve, waterfall and view together and immediately (3D waterfall too); each device starts with its own picture.
 - **Panadapter: scope data from the radio** – for Icom radios with built-in spectrum (IC-7300/705/9700/7610 …). In the radio set “CI-V USB Port” to **Unlinked** and 115200 baud.
 - **Share with other computers** – see below.
@@ -234,6 +235,17 @@ Via an interface (Digirig, AIOC) or an APRS cable on a USB sound card; select th
 **Device → Snapshots …** saves the complete radio state under a name – frequency, mode and bandwidth, split with transmit frequency, RIT and all controls and switches the radio can set – and restores it with **Recall** (e.g. “40 m FT8”, “Contest SSB”). One-shot actions like starting the tuner or a tone burst are never triggered.
 
 **Device → Couple two devices …**: a second connected radio follows the first – frequency plus an adjustable **offset** and optionally the mode (second receiver, SDR as panadapter, transverter IF).
+
+### Handheld TIDRADIO TD-H3 Plus (USB-C or Bluetooth, development status)
+
+The TD-H3 Plus can be set up as device **th3plus**: in the *Receivers* window pick **TIDRADIO TD-H3 Plus** and give the connection in the parameters: `port=/dev/ttyACM0` (or `COM5`) for the side USB-C port, or `ble=84:C4:28:…` (the radio's address) for Bluetooth. Without it RigVibe looks for the USB port with ID 4C4A:4155 itself.
+
+- **Requirement:** The radio needs a firmware image with the RigVibe monitor (transmit watchdog, commands over USB and Bluetooth). That image is **not** shipped with RigVibe yet; the device does not connect with the original firmware 1.0.50. For Bluetooth, Bluetooth must have been switched on once on the radio (long-press the Bluetooth key); the setting survives power-off.
+- **What works:** frequency (2 m, 70 cm and more), FM, S-meter from the radio chip, **transmit** (carrier and tones of the radio chip). Transmitting needs the parameter `tx=1` and only works inside amateur bands, like the other devices.
+- **Transmit safety:** The firmware ends the transmission by itself when no command arrives from the computer for 4–5 seconds (cable pulled, Bluetooth lost, program crashed) and puts the radio chip back to receive. At key-down the limit is more generous at first (~8 s), because the first commands are lost during the transmit start.
+- **Data reception without an audio path:** Through the radio chip's FSK modem the device receives frames (`fsk_receive`; over USB-C and Bluetooth; Bluetooth delivers about one second late and keeps up with more than one frame per second, 12 of 12 frames in the test): preamble 0xAA, sync (default `RVNQ`), then exactly **16 payload bytes** per frame (the modem buffers 8 words at most; frame length must be the same at sender and receiver). RigVibe reassembles the FIFO words, which arrive spread over two events, into one frame. With a real Quansheng UV-K1 as the sender (1,200 baud), 47 of 48 frames arrived complete and correct.
+- **Data transmission without an audio path:** `fsk_send` sends frames (up to 64 bytes, 1,200 baud, sync `RVNQ`) through the FSK modem – only with `tx=1` and only in amateur bands. In the test a Quansheng UV-K1 received the H3's frames (with occasional bit errors at weak signal levels, so a checksum per block is needed). Transmission goes through the original firmware's virtual PTT (it receives a "+SPP=P" as if from a Bluetooth button), so it uses the full power stage and the device's power control; in the test the K1 received 12 of 12 frames without bit errors (signal level about 2.5 times higher than before). The transmit frequency is the firmware's channel frequency (here 434.5002 MHz); RigVibe rejects other transmit frequencies until the channel frequency can be set freely. The transmit watchdog stops the carrier after the configured time without a keep-alive.
+- **What does not work:** receive audio and voice/digital voice (DMR, D-STAR, YSF) in the window – the radio does not lead its receive audio to the processor, and there is no connection for it without a hardware modification. A second receiver (e.g. a HackRF) stays the way to do that. Bluetooth only carries commands so far (frequency, S-meter, transmit); each command takes about 0.3 s.
 
 ### Receivers without a radio of your own (KiwiSDR, OpenWebRX, WebSDR)
 
@@ -1291,3 +1303,77 @@ The automated tests are part of the source (`tests/test_notfunk.py`, `tests/notf
 
 **LoRa analysis (Meshtastic, MeshCom, MeshCore, LoRa-APRS, FANET):** In the *Data reception* window choose the decoder "LoRa analysis" on a HackRF, RTL-SDR or similar receiver and tune to the 433, 868 or 915 MHz band (e.g. 433.175 MHz for MeshCom, 434.1 MHz for Meshtastic, 869.618 MHz for MeshCore, 433.775 MHz for LoRa-APRS). RigVibe reads several settings at once and assigns each packet to a network by sync word and content: **Meshtastic** (unencrypted), **MeshCom** (text, position, acknowledgement), **MeshCore** (adverts with name and position; texts and groups only as "encrypted" with identifiers) and **LoRa-APRS**. Packets from unknown networks appear as **LoRa (raw)** with sync word, coding rate, length, hex and text. The chirp detector additionally reports **LoRa signal** (bandwidth, spreading factor) even when nothing can be decoded. **LoRaWAN is deliberately not decoded** (sync word 0x34 shows up only as a signal). MeshCom and MeshCore formats follow public descriptions but have not yet been verified on real nodes; neither have coding rates 4/6–4/8. The analysis loads the computer noticeably (about one CPU core at 4.8 MS/s); use a lower sample rate if needed.
 
+
+## 19. RigVibe as a standalone radio (Raspberry Pi, sBitx)
+
+On a Raspberry Pi with a display, RigVibe becomes a radio without desktop or browser. The device UI starts full screen and is operated by touch and, on the sBitx v3, by its two knobs. The web interface stays reachable on the network.
+
+**Installation** (Raspberry Pi OS 64-bit):
+```
+curl -fsSL https://rigvibe.de/install.sh | bash
+```
+The script detects an sBitx and, if you agree, sets up **device mode**: after power-on the RigVibe UI starts, the desktop and the sBitx software stay off. `--deinstallieren` undoes everything. Updates are available on the device under **Menu → Settings → RigVibe**.
+
+### Skins
+**Menu → Device design** offers the built-in designs:
+- **RigVibe (Standard)** and **Matrix**: in the Matrix design the 2D waterfall becomes falling character rain.
+- Look-alikes of well-known radios (IC-7300, FT-710, TS-890S, G7250).
+- **Radio centre** and eight scene skins.
+
+![Scene skins on the sBitx](bilder/83-skins.png)
+
+**Your own skins** live in `~/.config/rigvibe/skins/`. Each subfolder is a skin with a `skin.json` and optional images (JPG/PNG). The easiest way is a **ZIP**: copy it into the folder, or put it on a USB stick and tap **Device design → Load skins from USB stick**. On the stick, the file name must contain "skin", or the ZIP sits in a folder `rigvibe-skins/`.
+
+A `skin.json` defines:
+- colours and a tint for the whole UI,
+- a background image (800×480) or a built-in scene,
+- an image behind the spectrum only (800×130),
+- a faint image over the waterfall (800×190, dark background),
+- the waterfall gradient, the character rain and the glowing spectrum line.
+
+Put the main subject of a background in the spectrum area (y 108–235). Images must not contain a UI of their own (no buttons, no frequency): RigVibe draws its controls on top. The full description is in `LIESMICH.txt` in the skin folder, together with an example skin.
+
+### Radio centre
+Everything on one page:
+- **Header:** frequency, mode, filter, S-meter, NR/NB/AGC/sound.
+- **Left, propagation:** MUF of the nearest ionosonde, Kp index, solar flux and the band's spots as a bearing plot.
+- **Centre:** the panorama.
+- **Right:** decoder or band cluster spots and the latest QSOs.
+- **Bottom:** tuning step and tuning knob, AGC, filter presets (CW 300 Hz, SSB 2.4 kHz, RTTY 500 Hz), RF/volume/squelch knobs, noise reduction and noise blanker sliders, antenna selection.
+- **Footer:** SWR meter, audio spectrum, power, TX, sound, band plan.
+
+Turn the **tuning knob** with a circular finger movement, 12° per step; tapping its left or right half steps down or up. **Antenna** names are set in `~/.config/rigvibe-antennen.json`. RigVibe writes the selected antenna to the log as `MY_ANTENNA`.
+
+![Radio centre](bilder/82-funkzentrale.png)
+
+### Waterfall and spectrum
+- The gear opens **WF noise** and **WF contrast** plus the palettes on the left. On the right are **Spec. floor** (baseline, follows the noise floor) and **Spec. gain** (displayed range; further right = taller signals). All sliders can be dragged.
+- When zoomed, RigVibe requests only the visible span from the receiver. This keeps the waterfall fine, and the filter frame sits exactly on the signal.
+- If a receiver delivers its lines in bursts (for example a KiwiSDR over the network), RigVibe evens them out, so the waterfall runs smoothly.
+
+### DAB+ (digital radio)
+Needs an RTL-SDR, HackRF, Airspy or SoapySDR device and an antenna for Band III (174–240 MHz). It requires welle.io; the install script sets it up, otherwise run `sudo apt install welle.io ffmpeg`.
+
+Under **Menu → DAB+** you create the receiver. Then you scan for stations (Band III, 5A–13F, about 3 minutes) and pick one. The page shows ensemble, channel, SNR, scrolling text and the station slide; tapping the top row enlarges the slide. Audio plays in stereo.
+
+DAB+ and the FM/SDR receiver may share the same stick; RigVibe releases it when you switch.
+
+![DAB+](bilder/84-dab.png)
+
+### FM with RDS and traffic messages
+For FM the same stick in **WFM** mode is enough. RigVibe shows the station name, programme type, RadioText and traffic programme; during a traffic announcement the header shows "VERKEHRSDURCHSAGE".
+
+**Menu → Traffic** lists the **TMC traffic messages** of the tuned station: road, section and event in German. On the **map** every message is drawn as a red stretch from start to end.
+
+Locations come from OpenStreetMap and are fetched once with **Load location data** (about 2 MB). Messages are sent by, for example, the German ARD regional stations; they arrive gradually, a few seconds apart.
+
+![Traffic: list and map](bilder/85-verkehr.png)
+
+> DAB+ and FM traffic messages are new in 1.9.0 and have so far only been checked without an antenna or with simulated RDS data.
+
+### sBitx v3
+RigVibe drives the sBitx hardware itself (Si5351, low-pass filters, codec, SWR bridge, knobs). The sBitx software is not needed.
+
+**Transmitting is off by default.** You enable it under **Menu → Radio** after confirming the notice. No liability for damage: test first with a dummy load or a tuned antenna and low power; above SWR 2.5 RigVibe shuts off.
+
+The volume follows the right knob immediately.
