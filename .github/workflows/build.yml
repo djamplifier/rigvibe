@@ -88,14 +88,19 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          install: mingw-w64-x86_64-codec2 mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc make autoconf automake libtool git unzip patch gettext-devel pkgconf
-      - name: codec2 kopieren (Windows)
+          install: mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc make git
+      - name: codec2 bauen (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
+          # mingw-w64-x86_64-codec2 liegt nicht mehr im mingw64-Repo (nur noch clang64/ucrt64): aus den Quellen bauen
+          git clone -q --depth 1 --branch v1.2.0 https://github.com/drowe67/codec2.git /tmp/codec2-src
+          cmake -S /tmp/codec2-src -B /tmp/codec2-build -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_INSTALL_PREFIX=/mingw64
+          cmake --build /tmp/codec2-build -j4
           mkdir -p packaging/codec2
-          cp /mingw64/bin/libcodec2*.dll packaging/codec2/libcodec2.dll
+          cp "$(find /tmp/codec2-build -type f -name 'libcodec2*.dll' | head -1)" packaging/codec2/libcodec2.dll
           for d in libgcc_s_seh-1.dll libwinpthread-1.dll libstdc++-6.dll; do [ -f /mingw64/bin/$d ] && cp /mingw64/bin/$d packaging/codec2/ || true; done
+          ls -la packaging/codec2
           ls -la packaging/codec2
       - name: codec2 fuer FreeDV (macOS)
         if: runner.os == 'macOS'
