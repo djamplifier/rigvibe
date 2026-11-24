@@ -74,8 +74,8 @@ A **demo radio** is preset for trying things out – everything can be operated 
 
 1. Choose **manufacturer** and **radio** (more than 300 models).
 2. Choose the **COM port**. On Windows `COM3`, `COM4` …, on the Mac `/dev/cu.usbserial-…` or `/dev/cu.SLAB_USBtoUART`, on Linux `/dev/ttyUSB0`. The **Serial ports** tab shows which port belongs to which USB device.
-3. **Speed** as in the radio's menu (CAT/CI-V baud rate). Unknown? **Search baud rate** tries them all.
-4. **Icom:** enter the CI-V address (e.g. IC-7300 = 94, IC-705 = A4, IC-9700 = A2). In the radio “CI-V USB Echo Back” is usually off.
+3. Leave **speed** on **Auto-Detect**: when connecting, RigVibe tries 115200, 19200, 38400, 57600, 9600 and 4800 baud and remembers the rate the radio answers on. A fixed rate is tried first and corrected automatically if the radio does not answer.
+4. **Icom:** enter the CI-V address (e.g. IC-7300 = 94, IC-705 = A4, IC-9700 = A2; decimal with `d`, e.g. `164d`). In the radio set “CI-V USB Port” to **Unlink from [REMOTE]**, “CI-V USB Baud Rate” to **115200** (IC-705/7300/9700 over USB) and “CI-V USB Echo Back” off.
 5. **PTT via:** normally “CAT command”. For interfaces without CAT PTT: DTR or RTS line.
 6. **Connect**. If the radio does not answer, the reason is shown in the **Status** field.
 
@@ -1135,7 +1135,7 @@ What is new or fixed is shown in the progress window while downloading, and once
 
 | Problem | Solution |
 |---|---|
-| “Radio does not answer” | Check COM port and baud rate (**Search baud rate**), for Icom the CI-V address. No other program may use the same COM port – connect other programs via “For other programs” (Hamlib NET rigctl) instead. |
+| “Radio does not answer” | The message lists every baud rate tried. Check the COM port, for Icom the CI-V address and in the radio “CI-V USB Port” = Unlinked, 115200 baud, echo off. No other program may use the same COM port – connect other programs via “For other programs” (Hamlib NET rigctl) instead. |
 | No COM port in the list | Install the radio's USB driver, replug the cable, reopen the dialog. Linux: group `dialout`. |
 | No audio in digital modes | Choose the right **input**; macOS: allow microphone access for RigVibe (*System Settings → Privacy → Microphone*). |
 | Transmit signal distorted | Reduce the **level**, watch the radio's ALC, speech processor off. |

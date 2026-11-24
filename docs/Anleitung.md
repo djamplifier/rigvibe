@@ -68,8 +68,8 @@ Zum Ausprobieren ist ein **Demo-Funkgerät** voreingestellt – damit lässt sic
 
 1. **Hersteller** und **Funkgerät** wählen (über 300 Modelle).
 2. **COM-Port** wählen. Unter Windows `COM3`, `COM4` …, am Mac `/dev/cu.usbserial-…` bzw. `/dev/cu.SLAB_USBtoUART`, unter Linux `/dev/ttyUSB0`. Die Registerkarte **Serielle Ports** zeigt, welcher Port zu welchem USB-Gerät gehört.
-3. **Geschwindigkeit** wie im Menü des Funkgeräts (CAT/CI-V-Baudrate). Unbekannt? **Baudrate suchen** probiert alle durch.
-4. **Icom:** CI-V-Adresse eintragen (z. B. IC-7300 = 94, IC-705 = A4, IC-9700 = A2). Im Gerät „CI-V USB Echo Back“ meist aus.
+3. **Geschwindigkeit** auf **Auto-Detect** lassen: RigVibe probiert beim Verbinden 115200, 19200, 38400, 57600, 9600 und 4800 Baud durch und merkt sich die Rate, bei der das Gerät antwortet. Eine fest eingestellte Rate wird zuerst versucht und bei fehlender Antwort automatisch korrigiert.
+4. **Icom:** CI-V-Adresse eintragen (z. B. IC-7300 = 94, IC-705 = A4, IC-9700 = A2; dezimal mit `d`, etwa `164d`). Im Gerät „CI-V USB Port“ auf **Unlink from [REMOTE]**, „CI-V USB Baud Rate“ auf **115200** (IC-705/7300/9700 über USB) und „CI-V USB Echo Back“ aus.
 5. **PTT über:** normalerweise „CAT-Befehl“. Bei Interfaces ohne CAT-PTT: DTR- oder RTS-Leitung.
 6. **Verbinden**. Antwortet das Gerät nicht, steht die Ursache im Feld **Status**.
 
